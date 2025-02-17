@@ -1,0 +1,12 @@
+specVersion: "v1beta"
+serviceId: "hubpilot-free"
+location: "asia-northeast1"
+schema:
+  source: "./schema"
+  datasource:
+    postgresql:
+      database: "fdcdb"
+      cloudSql:
+        instanceId: "hubpilot-free-fdc"
+      # schemaValidation: "COMPATIBLE"
+connectorDirs: ["./connector"]
