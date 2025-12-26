@@ -1,0 +1,224 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>HubPilot Free - SEO記事作成エージェント</title>
+    <link rel="stylesheet" href="styles.css">
+</head>
+<body>
+    <div class="app-container">
+        <!-- サイドバー（ステップインジケーター） -->
+        <aside class="sidebar">
+            <div class="logo">
+                <h1>HubPilot Free</h1>
+                <p>SEO記事作成エージェント</p>
+            </div>
+            
+            <nav class="step-navigation">
+                <div class="step-item active" data-step="1">
+                    <div class="step-number">1</div>
+                    <div class="step-info">
+                        <h3>テーマ設定</h3>
+                        <p>メインテーマを入力</p>
+                    </div>
+                </div>
+                
+                <div class="step-item" data-step="2">
+                    <div class="step-number">2</div>
+                    <div class="step-info">
+                        <h3>構成案確認</h3>
+                        <p>ピラー・クラスター構成</p>
+                    </div>
+                </div>
+                
+                <div class="step-item" data-step="3">
+                    <div class="step-number">3</div>
+                    <div class="step-info">
+                        <h3>見出し構成</h3>
+                        <p>各記事の見出し設定</p>
+                    </div>
+                </div>
+                
+                <div class="step-item" data-step="4">
+                    <div class="step-number">4</div>
+                    <div class="step-info">
+                        <h3>記事執筆</h3>
+                        <p>コンテンツ生成進捗</p>
+                    </div>
+                </div>
+                
+                <div class="step-item" data-step="5">
+                    <div class="step-number">5</div>
+                    <div class="step-info">
+                        <h3>品質チェック</h3>
+                        <p>記事の品質確認</p>
+                    </div>
+                </div>
+                
+                <div class="step-item" data-step="6">
+                    <div class="step-number">6</div>
+                    <div class="step-info">
+                        <h3>最終承認</h3>
+                        <p>ピラーページ統合</p>
+                    </div>
+                </div>
+            </nav>
+        </aside>
+
+        <!-- メインコンテンツエリア -->
+        <main class="main-content">
+            <div class="content-wrapper">
+                <!-- ステップ1: テーマ設定 -->
+                <div class="step-content active" id="step-1">
+                    <div class="step-header">
+                        <h2>メインテーマを設定してください</h2>
+                        <p>あなたのコンテンツ戦略の中心となるテーマを入力してください。例：「Instagramマーケティング」</p>
+                    </div>
+                    
+                    <div class="input-section">
+                        <div class="theme-input-container">
+                            <input type="text" id="theme-input" class="theme-input" placeholder="例：Instagramマーケティング" />
+                            <div class="input-error" id="theme-error"></div>
+                        </div>
+                        
+                        <button class="btn btn-primary" id="generate-structure-btn">
+                            構成案を作成
+                        </button>
+                    </div>
+                </div>
+
+                <!-- ステップ2: 構成案確認 -->
+                <div class="step-content" id="step-2">
+                    <div class="step-header">
+                        <h2>構成案を確認してください</h2>
+                        <p>生成された構成案を確認し、必要に応じて編集してください。</p>
+                    </div>
+                    
+                    <div class="structure-section">
+                        <div class="pillar-page-section">
+                            <h3>ピラーページ</h3>
+                            <div class="pillar-page-title" id="pillar-page-title">
+                                <!-- ピラーページタイトルがここに表示される -->
+                            </div>
+                        </div>
+                        
+                        <div class="cluster-pages-section">
+                            <h3>クラスターページ（10記事）</h3>
+                            <div class="cluster-pages-list" id="cluster-pages-list">
+                                <!-- クラスターページリストがここに表示される -->
+                            </div>
+                        </div>
+                        
+                        <button class="btn btn-primary" id="proceed-to-headings-btn">
+                            この構成で進める
+                        </button>
+                    </div>
+                </div>
+
+                <!-- ステップ3: 見出し構成 -->
+                <div class="step-content" id="step-3">
+                    <div class="step-header">
+                        <h2>見出し構成を確認してください</h2>
+                        <p>各クラスターページの見出し構成を確認し、必要に応じて編集してください。</p>
+                    </div>
+                    
+                    <div class="headings-section">
+                        <div class="headings-accordion" id="headings-accordion">
+                            <!-- 見出し構成がここに表示される -->
+                        </div>
+                        
+                        <button class="btn btn-primary" id="start-writing-btn">
+                            記事執筆を開始（時間がかかります）
+                        </button>
+                    </div>
+                </div>
+
+                <!-- ステップ4: 記事執筆進捗 -->
+                <div class="step-content" id="step-4">
+                    <div class="step-header">
+                        <h2>記事を執筆中です</h2>
+                        <p>10記事の本文を生成しています。しばらくお待ちください。</p>
+                    </div>
+                    
+                    <div class="progress-section">
+                        <div class="progress-bar-container">
+                            <div class="progress-bar">
+                                <div class="progress-fill" id="progress-fill"></div>
+                            </div>
+                            <div class="progress-text" id="progress-text">記事 0/10 を作成中...</div>
+                        </div>
+                        
+                        <div class="articles-grid" id="articles-grid">
+                            <!-- 記事カードがここに表示される -->
+                        </div>
+                        
+                        <button class="btn btn-primary" id="proceed-to-quality-btn" style="display: none;">
+                            品質チェックへ
+                        </button>
+                    </div>
+                </div>
+
+                <!-- ステップ5: 品質チェック -->
+                <div class="step-content" id="step-5">
+                    <div class="step-header">
+                        <h2>品質チェック</h2>
+                        <p>生成された記事の品質をチェックしています。</p>
+                    </div>
+                    
+                    <div class="quality-check-section">
+                        <div class="quality-results" id="quality-results">
+                            <!-- 品質チェック結果がここに表示される -->
+                        </div>
+                        
+                        <button class="btn btn-primary" id="create-pillar-btn">
+                            ピラーページを作成して統合
+                        </button>
+                    </div>
+                </div>
+
+                <!-- ステップ6: 最終承認 -->
+                <div class="step-content" id="step-6">
+                    <div class="step-header">
+                        <h2>最終承認</h2>
+                        <p>ピラーページが完成しました。内容を確認してください。</p>
+                    </div>
+                    
+                    <div class="final-approval-section">
+                        <div class="pillar-preview" id="pillar-preview">
+                            <!-- ピラーページプレビューがここに表示される -->
+                        </div>
+                        
+                        <div class="final-actions">
+                            <button class="btn btn-secondary" id="download-all-btn">
+                                全記事をダウンロード
+                            </button>
+                            <button class="btn btn-primary" id="publish-cms-btn">
+                                CMSへ投稿
+                            </button>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- ナビゲーションボタン -->
+            <div class="navigation-buttons">
+                <button class="btn btn-secondary" id="prev-btn" style="display: none;">
+                    戻る
+                </button>
+                <button class="btn btn-primary" id="next-btn" style="display: none;">
+                    次へ
+                </button>
+            </div>
+        </main>
+    </div>
+
+    <!-- ローディングオーバーレイ -->
+    <div class="loading-overlay" id="loading-overlay">
+        <div class="loading-spinner"></div>
+        <div class="loading-text">処理中...</div>
+    </div>
+
+    <script src="app.js"></script>
+</body>
+</html>
