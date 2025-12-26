@@ -12,20 +12,20 @@
     <div class="overall-progress-container">
         <div class="overall-progress"></div>
     </div>
-    
+
     <div class="app-container">
         <!-- サイドバー（ステップインジケーター） -->
         <aside class="sidebar">
             <div class="logo">
                 <h1>HubPilot Free</h1>
                 <p>SEO記事作成エージェント</p>
-                
+
                 <!-- データ管理メニュー -->
                 <div class="data-management">
                     <button class="btn btn-small btn-secondary" id="data-menu-btn" title="データ管理">
                         <span class="btn-icon">⚙️</span>
                     </button>
-                    
+
                     <div class="data-menu" id="data-menu" style="display: none;">
                         <div class="menu-item" onclick="app.exportData()">
                             <span class="menu-icon">📤</span>
@@ -48,11 +48,11 @@
                             <span>データをリセット</span>
                         </div>
                     </div>
-                    
+
                     <input type="file" id="import-file" accept=".json" style="display: none;">
                 </div>
             </div>
-            
+
             <nav class="step-navigation">
                 <div class="step-item active" data-step="1">
                     <div class="step-number">1</div>
@@ -61,7 +61,7 @@
                         <p>メインテーマを入力</p>
                     </div>
                 </div>
-                
+
                 <div class="step-item" data-step="2">
                     <div class="step-number">2</div>
                     <div class="step-info">
@@ -69,7 +69,7 @@
                         <p>ピラー・クラスター構成</p>
                     </div>
                 </div>
-                
+
                 <div class="step-item" data-step="3">
                     <div class="step-number">3</div>
                     <div class="step-info">
@@ -77,7 +77,7 @@
                         <p>各記事の見出し設定</p>
                     </div>
                 </div>
-                
+
                 <div class="step-item" data-step="4">
                     <div class="step-number">4</div>
                     <div class="step-info">
@@ -85,7 +85,7 @@
                         <p>コンテンツ生成進捗</p>
                     </div>
                 </div>
-                
+
                 <div class="step-item" data-step="5">
                     <div class="step-number">5</div>
                     <div class="step-info">
@@ -93,7 +93,7 @@
                         <p>記事の品質確認</p>
                     </div>
                 </div>
-                
+
                 <div class="step-item" data-step="6">
                     <div class="step-number">6</div>
                     <div class="step-info">
@@ -114,20 +114,20 @@
                         <p>あなたのコンテンツ戦略の中心となるテーマを入力してください。<br>
                         このテーマから、1つのピラーページと10個のクラスターページを自動生成します。</p>
                     </div>
-                    
+
                     <div class="input-section">
                         <div class="theme-input-container">
                             <label for="theme-input" class="input-label">
                                 コンテンツテーマ
                                 <span class="required-mark">*</span>
                             </label>
-                            
+
                             <div class="input-wrapper">
-                                <input 
-                                    type="text" 
-                                    id="theme-input" 
-                                    class="theme-input" 
-                                    placeholder="例：Instagramマーケティング" 
+                                <input
+                                    type="text"
+                                    id="theme-input"
+                                    class="theme-input"
+                                    placeholder="例：Instagramマーケティング"
                                     maxlength="100"
                                     autocomplete="off"
                                 />
@@ -139,16 +139,16 @@
                                     </svg>
                                 </div>
                             </div>
-                            
+
                             <div class="input-help">
                                 <div class="character-count">
                                     <span id="char-count">0</span>/100文字
                                 </div>
                             </div>
-                            
+
                             <div class="input-error" id="theme-error"></div>
                         </div>
-                        
+
                         <!-- テーマ例の表示 -->
                         <div class="theme-examples">
                             <h4>テーマ例</h4>
@@ -179,7 +179,7 @@
                                 </button>
                             </div>
                         </div>
-                        
+
                         <div class="action-section">
                             <button class="btn btn-primary btn-large" id="generate-structure-btn" disabled>
                                 <span class="btn-icon">
@@ -189,7 +189,7 @@
                                 </span>
                                 構成案を作成
                             </button>
-                            
+
                             <div class="action-help">
                                 <p>💡 入力したテーマから、SEOに最適化された記事構成を自動生成します</p>
                             </div>
@@ -204,7 +204,7 @@
                         <p>生成された構成案を確認し、必要に応じて編集してください。<br>
                         この構成に基づいて、SEOに最適化された記事群を作成します。</p>
                     </div>
-                    
+
                     <div class="structure-section">
                         <!-- ピラーページセクション -->
                         <div class="pillar-page-section">
@@ -215,7 +215,7 @@
                                 </h3>
                                 <div class="section-badge">メイン記事</div>
                             </div>
-                            
+
                             <div class="pillar-page-card">
                                 <div class="pillar-page-title" id="pillar-page-title">
                                     <!-- ピラーページタイトルがここに表示される -->
@@ -227,12 +227,12 @@
                                     </button>
                                 </div>
                             </div>
-                            
+
                             <div class="pillar-page-info">
                                 <p>💡 ピラーページは、テーマ全体を包括的にカバーする中心的な記事です。</p>
                             </div>
                         </div>
-                        
+
                         <!-- クラスターページセクション -->
                         <div class="cluster-pages-section">
                             <div class="section-header">
@@ -242,7 +242,7 @@
                                 </h3>
                                 <div class="section-badge">10記事</div>
                             </div>
-                            
+
                             <div class="cluster-pages-controls">
                                 <div class="controls-left">
                                     <button class="btn btn-small btn-secondary" id="add-cluster-btn">
@@ -260,16 +260,16 @@
                                     </span>
                                 </div>
                             </div>
-                            
+
                             <div class="cluster-pages-list" id="cluster-pages-list">
                                 <!-- クラスターページリストがここに表示される -->
                             </div>
-                            
+
                             <div class="cluster-pages-info">
                                 <p>💡 クラスターページは、ピラーページの各トピックを詳しく解説する専門記事です。</p>
                             </div>
                         </div>
-                        
+
                         <!-- アクションセクション -->
                         <div class="action-section">
                             <div class="structure-summary">
@@ -286,7 +286,7 @@
                                     <span class="summary-text">合計: <span id="summary-total-count">11</span>記事</span>
                                 </div>
                             </div>
-                            
+
                             <button class="btn btn-primary btn-large" id="proceed-to-headings-btn">
                                 <span class="btn-icon">
                                     <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
@@ -295,7 +295,7 @@
                                 </span>
                                 この構成で進める
                             </button>
-                            
+
                             <div class="action-help">
                                 <p>🚀 次のステップで、各記事の見出し構成を設定します</p>
                             </div>
@@ -310,7 +310,7 @@
                         <p>各クラスターページの見出し構成を確認し、必要に応じて編集してください。<br>
                         この見出し構成に基づいて、SEOに最適化された記事を生成します。</p>
                     </div>
-                    
+
                     <div class="headings-section">
                         <!-- 見出し構成の統計 -->
                         <div class="headings-stats">
@@ -333,7 +333,7 @@
                                 </span>
                             </div>
                         </div>
-                        
+
                         <!-- 見出し構成コントロール -->
                         <div class="headings-controls">
                             <div class="controls-left">
@@ -363,17 +363,17 @@
                                 </div>
                             </div>
                         </div>
-                        
+
                         <!-- アコーディオンビュー -->
                         <div class="headings-accordion" id="headings-accordion">
                             <!-- 見出し構成がここに表示される -->
                         </div>
-                        
+
                         <!-- リストビュー -->
                         <div class="headings-list-view" id="headings-list-view" style="display: none;">
                             <!-- リスト形式の見出し構成がここに表示される -->
                         </div>
-                        
+
                         <!-- アクションセクション -->
                         <div class="action-section">
                             <div class="headings-summary">
@@ -399,7 +399,7 @@
                                     </div>
                                 </div>
                             </div>
-                            
+
                             <button class="btn btn-primary btn-large" id="start-writing-btn">
                                 <span class="btn-icon">
                                     <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
@@ -408,7 +408,7 @@
                                 </span>
                                 記事執筆を開始（時間がかかります）
                             </button>
-                            
+
                             <div class="action-help">
                                 <p>🚀 次のステップで、各記事の本文を自動生成します</p>
                                 <p>💡 生成には約25分かかります。途中でブラウザを閉じないでください。</p>
@@ -424,7 +424,7 @@
                         <p>AIが各記事の本文を生成しています。生成には時間がかかりますが、しばらくお待ちください。<br>
                         生成が完了した記事から順次プレビューできます。</p>
                     </div>
-                    
+
                     <div class="progress-section">
                         <!-- 全体進捗表示 -->
                         <div class="overall-progress-card">
@@ -435,7 +435,7 @@
                                 </h3>
                                 <div class="progress-status" id="progress-status">準備中...</div>
                             </div>
-                            
+
                             <div class="progress-bar-container">
                                 <div class="progress-bar">
                                     <div class="progress-fill" id="progress-fill"></div>
@@ -443,7 +443,7 @@
                                 </div>
                                 <div class="progress-text" id="progress-text">記事 0/10 を作成中...</div>
                             </div>
-                            
+
                             <div class="progress-stats">
                                 <div class="stat-item">
                                     <span class="stat-icon">✅</span>
@@ -465,7 +465,7 @@
                                 </div>
                             </div>
                         </div>
-                        
+
                         <!-- 記事生成コントロール -->
                         <div class="generation-controls">
                             <div class="controls-left">
@@ -489,19 +489,19 @@
                                 </div>
                             </div>
                         </div>
-                        
+
                         <!-- 記事カードグリッド -->
                         <div class="articles-grid" id="articles-grid">
                             <!-- 記事カードがここに表示される -->
                         </div>
-                        
+
                         <!-- 完了アクション -->
                         <div class="completion-section" id="completion-section" style="display: none;">
                             <div class="completion-card">
                                 <div class="completion-icon">🎉</div>
                                 <h3>記事生成が完了しました！</h3>
                                 <p>全<span id="total-generated">10</span>記事の生成が正常に完了しました。次のステップで品質チェックを行います。</p>
-                                
+
                                 <div class="completion-stats">
                                     <div class="completion-stat">
                                         <span class="stat-number" id="total-words">20,000</span>
@@ -516,7 +516,7 @@
                                         <span class="stat-label">成功率</span>
                                     </div>
                                 </div>
-                                
+
                                 <button class="btn btn-primary btn-large" id="proceed-to-quality-btn">
                                     <span class="btn-icon">
                                         <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
@@ -538,7 +538,7 @@
                         <p>生成された記事の品質をAIが自動チェックしています。<br>
                         問題が検出された記事については、修正提案を確認して改善してください。</p>
                     </div>
-                    
+
                     <div class="quality-check-section">
                         <!-- 品質チェック統計 -->
                         <div class="quality-stats-card">
@@ -549,7 +549,7 @@
                                 </h3>
                                 <div class="check-status" id="check-status">チェック中...</div>
                             </div>
-                            
+
                             <div class="quality-overview">
                                 <div class="overview-item success">
                                     <div class="overview-number" id="passed-count">0</div>
@@ -564,7 +564,7 @@
                                     <div class="overview-label">要修正</div>
                                 </div>
                             </div>
-                            
+
                             <div class="quality-progress">
                                 <div class="progress-bar">
                                     <div class="progress-fill" id="quality-progress-fill"></div>
@@ -572,7 +572,7 @@
                                 <div class="progress-text" id="quality-progress-text">品質チェック 0/10 完了</div>
                             </div>
                         </div>
-                        
+
                         <!-- 品質チェックコントロール -->
                         <div class="quality-controls">
                             <div class="controls-left">
@@ -598,12 +598,12 @@
                                 </div>
                             </div>
                         </div>
-                        
+
                         <!-- 品質チェック結果リスト -->
                         <div class="quality-results" id="quality-results">
                             <!-- 品質チェック結果がここに表示される -->
                         </div>
-                        
+
                         <!-- アクションセクション -->
                         <div class="action-section">
                             <div class="quality-summary">
@@ -629,7 +629,7 @@
                                     </div>
                                 </div>
                             </div>
-                            
+
                             <button class="btn btn-primary btn-large" id="create-pillar-btn">
                                 <span class="btn-icon">
                                     <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
@@ -642,7 +642,7 @@
                                 </span>
                                 ピラーページを作成して統合
                             </button>
-                            
+
                             <div class="action-help">
                                 <p>🚀 次のステップで、すべての記事を統合したピラーページを作成します</p>
                                 <p>💡 品質に問題がある記事も統合されますが、後から個別に修正できます</p>
@@ -658,7 +658,7 @@
                         <p>ピラーページが完成しました。内容を確認してから公開してください。<br>
                         すべての記事が統合され、SEOに最適化されたコンテンツ群が完成しています。</p>
                     </div>
-                    
+
                     <div class="final-approval-section">
                         <!-- 完成統計 -->
                         <div class="completion-stats-card">
@@ -669,7 +669,7 @@
                                 </h3>
                                 <div class="completion-badge">完了</div>
                             </div>
-                            
+
                             <div class="completion-overview">
                                 <div class="completion-item">
                                     <div class="completion-number" id="final-total-articles">11</div>
@@ -689,7 +689,7 @@
                                 </div>
                             </div>
                         </div>
-                        
+
                         <!-- ピラーページプレビュー -->
                         <div class="pillar-preview-card">
                             <div class="preview-header">
@@ -708,12 +708,12 @@
                                     </button>
                                 </div>
                             </div>
-                            
+
                             <div class="pillar-preview-content" id="pillar-preview">
                                 <!-- ピラーページプレビューがここに表示される -->
                             </div>
                         </div>
-                        
+
                         <!-- 内部リンク構造の視覚化 -->
                         <div class="link-structure-card">
                             <div class="structure-header">
@@ -850,7 +850,7 @@
                                     <span>すべての記事が準備完了です</span>
                                 </div>
                             </div>
-                            
+
                             <div class="final-actions">
                                 <div class="action-group">
                                     <button class="btn btn-secondary btn-large" id="download-all-btn">
@@ -867,7 +867,7 @@
                                         <p>HTML、Markdown、またはWordファイルとしてダウンロード</p>
                                     </div>
                                 </div>
-                                
+
                                 <div class="action-group">
                                     <button class="btn btn-primary btn-large" id="publish-cms-btn">
                                         <span class="btn-icon">
@@ -882,7 +882,7 @@
                                     </div>
                                 </div>
                             </div>
-                            
+
                             <div class="final-notes">
                                 <div class="note-item">
                                     <span class="note-icon">💡</span>

@@ -7,20 +7,20 @@ window.SUPABASE_CONFIG = {
   // Supabaseプロジェクト設定
   url: 'https://your-project-ref.supabase.co',
   anonKey: 'your-anon-key-here',
-  
+
   // Edge Functions設定
   functions: {
     generateArticle: 'generate-article',
     analyzeSeo: 'analyze-seo',
     checkQuality: 'check-quality'
   },
-  
+
   // Storage設定
   storage: {
     publicBucket: 'public',
     privateBucket: 'private'
   },
-  
+
   // Realtime設定
   realtime: {
     enabled: true,
@@ -29,21 +29,21 @@ window.SUPABASE_CONFIG = {
       articleUpdates: 'article_updates'
     }
   },
-  
+
   // AI設定
   ai: {
     defaultProvider: 'deepseek',
     fallbackProvider: 'openai',
     maxRetries: 3,
     timeout: 120000, // 2分
-    
+
     // DeepSeek設定
     deepseek: {
       model: 'deepseek-chat',
       maxTokens: 4000,
       temperature: 0.7
     },
-    
+
     // OpenAI設定（バックアップ）
     openai: {
       model: 'gpt-4',
@@ -51,7 +51,7 @@ window.SUPABASE_CONFIG = {
       temperature: 0.7
     }
   },
-  
+
   // SEO設定
   seo: {
     defaultTargetLength: 2000,
@@ -60,7 +60,7 @@ window.SUPABASE_CONFIG = {
     keywordDensityTarget: 2.5, // %
     readabilityScoreTarget: 70
   },
-  
+
   // 品質チェック設定
   quality: {
     minWordCount: 300,
@@ -68,14 +68,14 @@ window.SUPABASE_CONFIG = {
     requiredSections: ['introduction', 'body', 'conclusion'],
     seoScoreThreshold: 70
   },
-  
+
   // バッチ処理設定
   batch: {
     maxArticlesPerBatch: 50,
     batchTimeout: 1800000, // 30分
     progressUpdateInterval: 5000 // 5秒
   },
-  
+
   // コスト管理
   cost: {
     maxMonthlyBudget: 100, // USD
@@ -101,17 +101,17 @@ if (window.location.hostname === 'localhost' || window.location.hostname === '12
 // 設定検証
 function validateSupabaseConfig() {
   const config = window.SUPABASE_CONFIG;
-  
+
   if (!config.url || config.url.includes('your-project-ref')) {
     console.warn('⚠️ Supabase URL が設定されていません');
     return false;
   }
-  
+
   if (!config.anonKey || config.anonKey.includes('your-anon-key')) {
     console.warn('⚠️ Supabase Anon Key が設定されていません');
     return false;
   }
-  
+
   console.log('✅ Supabase設定が正常です');
   return true;
 }
