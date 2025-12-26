@@ -12,7 +12,8 @@ window.SUPABASE_CONFIG = {
   functions: {
     generateArticle: 'generate-article',
     analyzeSeo: 'analyze-seo',
-    checkQuality: 'check-quality'
+    checkQuality: 'check-quality',
+    generateImages: 'generate-images'
   },
 
   // Storage設定
