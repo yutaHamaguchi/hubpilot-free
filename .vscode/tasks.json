@@ -1,0 +1,264 @@
+{
+  // ===========================================
+  // HubPilot Free - VSCode タスク設定
+  // ===========================================
+
+  "version": "2.0.0",
+  "tasks": [
+    // ===========================================
+    // 開発サーバー
+    // ===========================================
+
+    {
+      "label": "🌐 Start Live Server",
+      "type": "shell",
+      "command": "python",
+      "args": ["-m", "http.server", "8000"],
+      "group": "build",
+      "presentation": {
+        "echo": true,
+        "reveal": "always",
+        "focus": false,
+        "panel": "new",
+        "showReuseMessage": true,
+        "clear": false
+      },
+      "problemMatcher": [],
+      "runOptions": {
+        "runOn": "folderOpen"
+      }
+    },
+
+    // ===========================================
+    // Supabase 関連
+    // ===========================================
+
+    {
+      "label": "🚀 Supabase Start",
+      "type": "shell",
+      "command": "supabase",
+      "args": ["start"],
+      "group": "build",
+      "presentation": {
+        "echo": true,
+        "reveal": "always",
+        "focus": false,
+        "panel": "new"
+      },
+      "problemMatcher": []
+    },
+
+    {
+      "label": "⏹️ Supabase Stop",
+      "type": "shell",
+      "command": "supabase",
+      "args": ["stop"],
+      "group": "build",
+      "presentation": {
+        "echo": true,
+        "reveal": "always",
+        "focus": false,
+        "panel": "new"
+      },
+      "problemMatcher": []
+    },
+
+    {
+      "label": "🔄 Supabase Reset",
+      "type": "shell",
+      "command": "supabase",
+      "args": ["db", "reset"],
+      "group": "build",
+      "presentation": {
+        "echo": true,
+        "reveal": "always",
+        "focus": false,
+        "panel": "new"
+      },
+      "problemMatcher": []
+    },
+
+    {
+      "label": "📊 Supabase Status",
+      "type": "shell",
+      "command": "supabase",
+      "args": ["status"],
+      "group": "test",
+      "presentation": {
+        "echo": true,
+        "reveal": "always",
+        "focus": false,
+        "panel": "new"
+      },
+      "problemMatcher": []
+    },
+
+    // ===========================================
+    // データベース マイグレーション
+    // ===========================================
+
+    {
+      "label": "🗄️ DB Push (Apply Migrations)",
+      "type": "shell",
+      "command": "supabase",
+      "args": ["db", "push"],
+      "group": "build",
+      "presentation": {
+        "echo": true,
+        "reveal": "always",
+        "focus": false,
+        "panel": "new"
+      },
+      "problemMatcher": []
+    },
+
+    {
+      "label": "📝 Generate Migration",
+      "type": "shell",
+      "command": "supabase",
+      "args": ["migration", "new", "${input:migrationName}"],
+      "group": "build",
+      "presentation": {
+        "echo": true,
+        "reveal": "always",
+        "focus": false,
+        "panel": "new"
+      },
+      "problemMatcher": []
+    },
+
+    // ===========================================
+    // Edge Functions
+    // ===========================================
+
+    {
+      "label": "🚀 Deploy Edge Functions",
+      "type": "shell",
+      "command": "supabase",
+      "args": ["functions", "deploy", "--no-verify-jwt"],
+      "group": "build",
+      "presentation": {
+        "echo": true,
+        "reveal": "always",
+        "focus": false,
+        "panel": "new"
+      },
+      "problemMatcher": []
+    },
+
+    {
+      "label": "📋 Edge Functions Logs",
+      "type": "shell",
+      "command": "supabase",
+      "args": ["functions", "logs"],
+      "group": "test",
+      "presentation": {
+        "echo": true,
+        "reveal": "always",
+        "focus": false,
+        "panel": "new"
+      },
+      "problemMatcher": []
+    },
+
+    // ===========================================
+    // 開発ツール
+    // ===========================================
+
+    {
+      "label": "🧹 Clean Project",
+      "type": "shell",
+      "command": "rm",
+      "args": ["-rf", "node_modules", ".supabase/logs/*"],
+      "group": "build",
+      "presentation": {
+        "echo": true,
+        "reveal": "always",
+        "focus": false,
+        "panel": "new"
+      },
+      "problemMatcher": []
+    },
+
+    {
+      "label": "📦 Install Dependencies",
+      "type": "shell",
+      "command": "npm",
+      "args": ["install"],
+      "group": "build",
+      "presentation": {
+        "echo": true,
+        "reveal": "always",
+        "focus": false,
+        "panel": "new"
+      },
+      "problemMatcher": []
+    },
+
+    // ===========================================
+    // テスト・品質チェック
+    // ===========================================
+
+    {
+      "label": "🧪 Run Tests",
+      "type": "shell",
+      "command": "npm",
+      "args": ["test"],
+      "group": "test",
+      "presentation": {
+        "echo": true,
+        "reveal": "always",
+        "focus": false,
+        "panel": "new"
+      },
+      "problemMatcher": []
+    },
+
+    {
+      "label": "🔍 Lint Code",
+      "type": "shell",
+      "command": "npm",
+      "args": ["run", "lint"],
+      "group": "test",
+      "presentation": {
+        "echo": true,
+        "reveal": "always",
+        "focus": false,
+        "panel": "new"
+      },
+      "problemMatcher": []
+    },
+
+    // ===========================================
+    // デプロイメント
+    // ===========================================
+
+    {
+      "label": "🚀 Deploy to Production",
+      "type": "shell",
+      "command": "npm",
+      "args": ["run", "deploy"],
+      "group": "build",
+      "presentation": {
+        "echo": true,
+        "reveal": "always",
+        "focus": false,
+        "panel": "new"
+      },
+      "problemMatcher": []
+    }
+  ],
+
+  // ===========================================
+  // 入力プロンプト
+  // ===========================================
+
+  "inputs": [
+    {
+      "id": "migrationName",
+      "description": "Migration name",
+      "default": "new_migration",
+      "type": "promptString"
+    }
+  ]
+}

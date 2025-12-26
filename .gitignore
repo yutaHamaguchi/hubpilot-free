@@ -1,0 +1,221 @@
+# ===========================================
+# HubPilot Free - .gitignore
+# Supabase + AI統合プロジェクト用
+# ===========================================
+
+# 環境変数とシークレット
+.env
+.env.local
+.env.development
+.env.test
+.env.production
+.env.staging
+
+# API キーとシークレット
+*.key
+*.pem
+secrets/
+config/secrets.json
+
+# ===========================================
+# Supabase関連
+# ===========================================
+
+# Supabaseローカル開発環境
+.supabase/
+supabase/.temp/
+supabase/logs/
+supabase/docker/
+
+# Supabase設定（プロジェクト固有）
+supabase/config.toml
+supabase/.branches/
+supabase/.temp/
+
+# Edge Functions ビルド成果物
+supabase/functions/_shared/
+supabase/functions/*/dist/
+supabase/functions/*/node_modules/
+
+# ===========================================
+# Node.js関連
+# ===========================================
+
+# 依存関係
+node_modules/
+npm-debug.log*
+yarn-debug.log*
+yarn-error.log*
+pnpm-debug.log*
+
+# パッケージマネージャーロックファイル（プロジェクトに応じて調整）
+# package-lock.json
+# yarn.lock
+# pnpm-lock.yaml
+
+# ビルド成果物
+dist/
+build/
+out/
+.next/
+.nuxt/
+.vuepress/dist/
+
+# ===========================================
+# 開発ツール関連
+# ===========================================
+
+# IDEとエディター
+.vscode/settings.json
+.vscode/launch.json
+.vscode/extensions.json
+.idea/
+*.swp
+*.swo
+*~
+
+# OS生成ファイル
+.DS_Store
+.DS_Store?
+._*
+.Spotlight-V100
+.Trashes
+ehthumbs.db
+Thumbs.db
+desktop.ini
+
+# ===========================================
+# ログとデバッグ
+# ===========================================
+
+# ログファイル
+logs/
+*.log
+npm-debug.log*
+yarn-debug.log*
+yarn-error.log*
+lerna-debug.log*
+
+# デバッグ
+.nyc_output/
+coverage/
+*.lcov
+
+# ===========================================
+# 一時ファイルとキャッシュ
+# ===========================================
+
+# 一時ファイル
+tmp/
+temp/
+.tmp/
+.temp/
+
+# キャッシュ
+.cache/
+.parcel-cache/
+.eslintcache
+.stylelintcache
+
+# ===========================================
+# AI生成コンテンツ（オプション）
+# ===========================================
+
+# 生成された記事（必要に応じてコメントアウト）
+# generated-articles/
+# exports/
+# downloads/
+
+# テスト用生成データ
+test-data/generated/
+mock-articles/
+
+# ===========================================
+# バックアップとアーカイブ
+# ===========================================
+
+# バックアップファイル
+*.backup
+*.bak
+*.old
+*.orig
+
+# アーカイブ
+*.zip
+*.tar.gz
+*.rar
+*.7z
+
+# ===========================================
+# プロジェクト固有
+# ===========================================
+
+# ローカル設定
+local-config.json
+user-settings.json
+
+# テスト結果
+test-results/
+coverage-reports/
+
+# ドキュメント生成
+docs/generated/
+api-docs/
+
+# ===========================================
+# セキュリティ関連
+# ===========================================
+
+# 証明書
+*.crt
+*.cert
+*.ca-bundle
+*.p7b
+*.p7s
+*.pfx
+
+# SSH キー
+id_rsa
+id_rsa.pub
+known_hosts
+
+# ===========================================
+# 除外しないファイル（明示的に含める）
+# ===========================================
+
+# 重要な設定ファイル
+!.gitignore
+!.gitkeep
+!README.md
+!package.json
+!supabase-config.js
+
+# サンプル設定ファイル
+!.env.example
+!config.example.json
+
+# ドキュメント
+!docs/
+!*.md
+
+# ===========================================
+# 開発環境別設定
+# ===========================================
+
+# 本番環境固有
+.vercel/
+.netlify/
+.firebase/
+
+# ローカル開発サーバー
+.vite/
+.rollup.cache/
+
+# ===========================================
+# 注意事項
+# ===========================================
+# 1. .env ファイルは絶対にコミットしない
+# 2. API キーやシークレットは環境変数で管理
+# 3. Supabaseプロジェクト設定は .env で管理
+# 4. 生成された記事は必要に応じて除外
+# 5. 本番デプロイ時は別途 .gitignore を確認

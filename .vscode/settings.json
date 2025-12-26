@@ -1,2 +1,246 @@
 {
+  // ===========================================
+  // HubPilot Free - VSCode プロジェクト設定
+  // ===========================================
+  
+  // MCP Supabase設定
+  "servers": {
+    "supabase": {
+      "type": "http",
+      "url": "https://mcp.supabase.com/mcp?project_ref=wwstpjknjqcrpzblgslo"
+    }
+  },
+
+  // ===========================================
+  // エディター設定
+  // ===========================================
+  
+  // ファイル設定
+  "files.autoSave": "afterDelay",
+  "files.autoSaveDelay": 1000,
+  "files.trimTrailingWhitespace": true,
+  "files.insertFinalNewline": true,
+  "files.trimFinalNewlines": true,
+  
+  // エディター基本設定
+  "editor.tabSize": 2,
+  "editor.insertSpaces": true,
+  "editor.detectIndentation": true,
+  "editor.formatOnSave": true,
+  "editor.formatOnPaste": true,
+  "editor.codeActionsOnSave": {
+    "source.fixAll": "explicit",
+    "source.organizeImports": "explicit"
+  },
+  
+  // 表示設定
+  "editor.minimap.enabled": true,
+  "editor.wordWrap": "on",
+  "editor.rulers": [80, 120],
+  "editor.bracketPairColorization.enabled": true,
+  "editor.guides.bracketPairs": true,
+
+  // ===========================================
+  // 言語別設定
+  // ===========================================
+  
+  // JavaScript/TypeScript
+  "[javascript]": {
+    "editor.defaultFormatter": "esbenp.prettier-vscode",
+    "editor.tabSize": 2
+  },
+  "[typescript]": {
+    "editor.defaultFormatter": "esbenp.prettier-vscode",
+    "editor.tabSize": 2
+  },
+  "[json]": {
+    "editor.defaultFormatter": "esbenp.prettier-vscode",
+    "editor.tabSize": 2
+  },
+  "[jsonc]": {
+    "editor.defaultFormatter": "esbenp.prettier-vscode",
+    "editor.tabSize": 2
+  },
+  
+  // HTML/CSS
+  "[html]": {
+    "editor.defaultFormatter": "esbenp.prettier-vscode",
+    "editor.tabSize": 2
+  },
+  "[css]": {
+    "editor.defaultFormatter": "esbenp.prettier-vscode",
+    "editor.tabSize": 2
+  },
+  
+  // SQL
+  "[sql]": {
+    "editor.defaultFormatter": "bradymholt.pgformatter",
+    "editor.tabSize": 2
+  },
+  
+  // Markdown
+  "[markdown]": {
+    "editor.defaultFormatter": "esbenp.prettier-vscode",
+    "editor.wordWrap": "on",
+    "editor.quickSuggestions": {
+      "comments": "off",
+      "strings": "off",
+      "other": "off"
+    }
+  },
+
+  // ===========================================
+  // Supabase開発設定
+  // ===========================================
+  
+  // Deno設定（Edge Functions用）
+  "deno.enable": true,
+  "deno.enablePaths": ["./supabase/functions"],
+  "deno.lint": true,
+  "deno.unstable": true,
+  
+  // TypeScript設定
+  "typescript.preferences.importModuleSpecifier": "relative",
+  "typescript.suggest.autoImports": true,
+  "typescript.updateImportsOnFileMove.enabled": "always",
+
+  // ===========================================
+  // ファイル関連付け
+  // ===========================================
+  
+  "files.associations": {
+    "*.env*": "properties",
+    "*.sql": "sql",
+    "supabase-config.js": "javascript",
+    ".env.example": "properties"
+  },
+
+  // ===========================================
+  // 検索・除外設定
+  // ===========================================
+  
+  "search.exclude": {
+    "**/node_modules": true,
+    "**/dist": true,
+    "**/build": true,
+    "**/.git": true,
+    "**/.supabase": true,
+    "**/logs": true,
+    "**/*.log": true
+  },
+  
+  "files.exclude": {
+    "**/.git": true,
+    "**/.DS_Store": true,
+    "**/Thumbs.db": true,
+    "**/.supabase/logs": true
+  },
+
+  // ===========================================
+  // 拡張機能設定
+  // ===========================================
+  
+  // Prettier設定
+  "prettier.configPath": "./.prettierrc",
+  "prettier.requireConfig": false,
+  "prettier.tabWidth": 2,
+  "prettier.semi": true,
+  "prettier.singleQuote": true,
+  "prettier.trailingComma": "es5",
+  
+  // ESLint設定
+  "eslint.workingDirectories": ["./"],
+  "eslint.validate": [
+    "javascript",
+    "typescript",
+    "html"
+  ],
+  
+  // Live Server設定
+  "liveServer.settings.port": 8000,
+  "liveServer.settings.root": "/",
+  "liveServer.settings.CustomBrowser": "chrome",
+  "liveServer.settings.donotShowInfoMsg": true,
+
+  // ===========================================
+  // Git設定
+  // ===========================================
+  
+  "git.autofetch": true,
+  "git.confirmSync": false,
+  "git.enableSmartCommit": true,
+  "git.postCommitCommand": "none",
+
+  // ===========================================
+  // ターミナル設定
+  // ===========================================
+  
+  "terminal.integrated.defaultProfile.windows": "PowerShell",
+  "terminal.integrated.fontSize": 14,
+  "terminal.integrated.cursorBlinking": true,
+
+  // ===========================================
+  // デバッグ設定
+  // ===========================================
+  
+  "debug.console.fontSize": 14,
+  "debug.inlineValues": "auto",
+
+  // ===========================================
+  // プロジェクト固有設定
+  // ===========================================
+  
+  // HubPilot固有の設定
+  "emmet.includeLanguages": {
+    "javascript": "javascriptreact"
+  },
+  
+  // コメント設定
+  "better-comments.tags": [
+    {
+      "tag": "!",
+      "color": "#FF2D00",
+      "strikethrough": false,
+      "underline": false,
+      "backgroundColor": "transparent",
+      "bold": false,
+      "italic": false
+    },
+    {
+      "tag": "?",
+      "color": "#3498DB",
+      "strikethrough": false,
+      "underline": false,
+      "backgroundColor": "transparent",
+      "bold": false,
+      "italic": false
+    },
+    {
+      "tag": "//",
+      "color": "#474747",
+      "strikethrough": true,
+      "underline": false,
+      "backgroundColor": "transparent",
+      "bold": false,
+      "italic": false
+    },
+    {
+      "tag": "todo",
+      "color": "#FF8C00",
+      "strikethrough": false,
+      "underline": false,
+      "backgroundColor": "transparent",
+      "bold": false,
+      "italic": false
+    },
+    {
+      "tag": "*",
+      "color": "#98C379",
+      "strikethrough": false,
+      "underline": false,
+      "backgroundColor": "transparent",
+      "bold": false,
+      "italic": false
+    }
+  ]
 }

@@ -1,0 +1,80 @@
+{
+  "name": "hubpilot-free",
+  "version": "2.0.0",
+  "description": "HubPilot Free - AI記事作成エージェント (Supabase構成)",
+  "main": "index.html",
+  "scripts": {
+    "dev": "supabase start && python -m http.server 8000",
+    "build": "echo 'Building static files...' && npm run validate",
+    "validate": "node scripts/validate-config.js",
+    "deploy": "npm run build && supabase db push && supabase functions deploy --no-verify-jwt",
+    "deploy:storage": "supabase storage upload --bucket public index.html && supabase storage upload --bucket public app.js && supabase storage upload --bucket public styles.css",
+    "supabase:start": "supabase start",
+    "supabase:stop": "supabase stop",
+    "supabase:reset": "supabase db reset",
+    "supabase:status": "supabase status",
+    "supabase:logs": "supabase functions logs",
+    "db:migrate": "supabase db push",
+    "db:reset": "supabase db reset",
+    "functions:deploy": "supabase functions deploy --no-verify-jwt",
+    "functions:logs": "supabase functions logs",
+    "test": "echo 'No tests specified yet'",
+    "lint": "echo 'Linting JavaScript files...'",
+    "format": "echo 'Formatting code...'",
+    "clean": "rm -rf .supabase/logs/*"
+  },
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/your-username/hubpilot-free.git"
+  },
+  "keywords": [
+    "ai",
+    "seo",
+    "article-generation",
+    "supabase",
+    "deepseek",
+    "content-marketing",
+    "hubspot",
+    "pillar-cluster"
+  ],
+  "author": "Your Name",
+  "license": "MIT",
+  "devDependencies": {
+    "supabase": "^1.142.2"
+  },
+  "dependencies": {
+    "@supabase/supabase-js": "^2.39.0"
+  },
+  "engines": {
+    "node": ">=18.0.0"
+  },
+  "browserslist": [
+    "> 1%",
+    "last 2 versions",
+    "not dead"
+  ],
+  "supabase": {
+    "projectId": "your-project-ref",
+    "functions": {
+      "generate-article": {
+        "verify_jwt": false
+      },
+      "analyze-seo": {
+        "verify_jwt": false
+      },
+      "check-quality": {
+        "verify_jwt": false
+      }
+    }
+  },
+  "config": {
+    "supabase": {
+      "url": "https://your-project-ref.supabase.co",
+      "anonKey": "your-anon-key-here"
+    },
+    "ai": {
+      "defaultProvider": "deepseek",
+      "fallbackProvider": "openai"
+    }
+  }
+}
