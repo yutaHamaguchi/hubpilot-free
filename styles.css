@@ -1965,25 +1965,505 @@ body {
 .quality-item:nth-child(9) { animation-delay: 0.5s; }
 .quality-item:nth-child(10) { animation-delay: 0.55s; }
 
-/* Step 6: 最終承認 */
+/* Step 6: 最終承認の強化 */
 .final-approval-section {
     display: flex;
     flex-direction: column;
     gap: 2rem;
+    max-width: 1000px;
+    margin: 0 auto;
 }
 
-.pillar-preview {
+/* 完成統計カード */
+.completion-stats-card {
+    background-color: var(--white);
+    padding: 2rem;
+    border-radius: var(--border-radius);
+    box-shadow: var(--box-shadow);
+    border: 2px solid var(--success-green);
+    position: relative;
+}
+
+.completion-stats-card::before {
+    content: '';
+    position: absolute;
+    top: 0;
+    left: 0;
+    right: 0;
+    height: 4px;
+    background: linear-gradient(90deg, var(--success-green), #68d391);
+    border-radius: var(--border-radius) var(--border-radius) 0 0;
+}
+
+.completion-badge {
+    background-color: var(--success-green);
+    color: var(--white);
+    padding: 0.5rem 1rem;
+    border-radius: 20px;
+    font-size: 0.875rem;
+    font-weight: 600;
+}
+
+.completion-overview {
+    display: flex;
+    justify-content: space-around;
+    gap: 2rem;
+    margin-top: 2rem;
+}
+
+.completion-item {
+    text-align: center;
+    padding: 1.5rem;
+    background-color: var(--light-gray);
+    border-radius: var(--border-radius);
+    flex: 1;
+    transition: var(--transition);
+}
+
+.completion-item:hover {
+    transform: translateY(-2px);
+    box-shadow: var(--box-shadow);
+}
+
+.completion-number {
+    font-size: 2rem;
+    font-weight: 700;
+    color: var(--success-green);
+    margin-bottom: 0.5rem;
+}
+
+.completion-label {
+    font-size: 0.875rem;
+    font-weight: 600;
+    color: var(--secondary-navy);
+    text-transform: uppercase;
+    letter-spacing: 0.5px;
+}
+
+/* ピラーページプレビューカード */
+.pillar-preview-card {
     background-color: var(--white);
     padding: 2rem;
     border-radius: var(--border-radius);
     box-shadow: var(--box-shadow);
     border: 2px solid var(--primary-orange);
+    position: relative;
+}
+
+.pillar-preview-card::before {
+    content: '';
+    position: absolute;
+    top: 0;
+    left: 0;
+    right: 0;
+    height: 4px;
+    background: linear-gradient(90deg, var(--primary-orange), #ff9a7a);
+    border-radius: var(--border-radius) var(--border-radius) 0 0;
+}
+
+.preview-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-bottom: 2rem;
+}
+
+.preview-header h3 {
+    display: flex;
+    align-items: center;
+    gap: 0.75rem;
+    font-size: 1.25rem;
+    font-weight: 600;
+    color: var(--primary-navy);
+    margin: 0;
+}
+
+.preview-icon {
+    font-size: 1.5rem;
+}
+
+.preview-actions {
+    display: flex;
+    gap: 0.75rem;
+}
+
+.pillar-preview-content {
+    max-height: 500px;
+    overflow-y: auto;
+    padding: 1.5rem;
+    background-color: var(--light-gray);
+    border-radius: var(--border-radius);
+    border: 1px solid var(--medium-gray);
+    font-family: var(--font-family);
+    line-height: 1.6;
+}
+
+.pillar-preview-content h1 {
+    color: var(--primary-navy);
+    font-size: 1.5rem;
+    font-weight: 700;
+    margin-bottom: 1rem;
+    border-bottom: 2px solid var(--primary-orange);
+    padding-bottom: 0.5rem;
+}
+
+.pillar-preview-content h2 {
+    color: var(--secondary-navy);
+    font-size: 1.25rem;
+    font-weight: 600;
+    margin: 1.5rem 0 1rem 0;
+}
+
+.pillar-preview-content p {
+    color: var(--dark-gray);
+    margin-bottom: 1rem;
+}
+
+.pillar-preview-content ul {
+    margin: 1rem 0;
+    padding-left: 2rem;
+}
+
+.pillar-preview-content li {
+    margin-bottom: 0.5rem;
+    color: var(--secondary-navy);
+}
+
+.pillar-preview-content a {
+    color: var(--primary-orange);
+    text-decoration: none;
+    font-weight: 500;
+}
+
+.pillar-preview-content a:hover {
+    text-decoration: underline;
+}
+
+/* 内部リンク構造カード */
+.link-structure-card {
+    background-color: var(--white);
+    padding: 2rem;
+    border-radius: var(--border-radius);
+    box-shadow: var(--box-shadow);
+    border: 2px solid var(--secondary-navy);
+    position: relative;
+}
+
+.link-structure-card::before {
+    content: '';
+    position: absolute;
+    top: 0;
+    left: 0;
+    right: 0;
+    height: 4px;
+    background: linear-gradient(90deg, var(--secondary-navy), #718096);
+    border-radius: var(--border-radius) var(--border-radius) 0 0;
+}
+
+.structure-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-bottom: 2rem;
+}
+
+.structure-header h3 {
+    display: flex;
+    align-items: center;
+    gap: 0.75rem;
+    font-size: 1.25rem;
+    font-weight: 600;
+    color: var(--primary-navy);
+    margin: 0;
+}
+
+.structure-icon {
+    font-size: 1.5rem;
+}
+
+.link-structure-visual {
+    display: none;
+    padding: 1.5rem;
+    background-color: var(--light-gray);
+    border-radius: var(--border-radius);
+    border: 1px solid var(--medium-gray);
+}
+
+.link-structure-visual.active {
+    display: block;
+}
+
+.structure-tree {
+    display: flex;
+    flex-direction: column;
+    gap: 1rem;
+}
+
+.pillar-node {
+    display: flex;
+    align-items: center;
+    padding: 1rem;
+    background-color: var(--primary-orange);
+    color: var(--white);
+    border-radius: var(--border-radius);
+    font-weight: 600;
+    margin-bottom: 1rem;
+}
+
+.pillar-node::before {
+    content: '🏛️';
+    margin-right: 0.75rem;
+    font-size: 1.25rem;
+}
+
+.cluster-nodes {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+    gap: 1rem;
+    margin-left: 2rem;
+    position: relative;
+}
+
+.cluster-nodes::before {
+    content: '';
+    position: absolute;
+    left: -1rem;
+    top: 0;
+    bottom: 0;
+    width: 2px;
+    background-color: var(--medium-gray);
+}
+
+.cluster-node {
+    display: flex;
+    align-items: center;
+    padding: 0.75rem;
+    background-color: var(--success-green);
+    color: var(--white);
+    border-radius: var(--border-radius);
+    font-size: 0.875rem;
+    font-weight: 500;
+    position: relative;
+}
+
+.cluster-node::before {
+    content: '📚';
+    margin-right: 0.5rem;
+}
+
+.cluster-node::after {
+    content: '';
+    position: absolute;
+    left: -1rem;
+    top: 50%;
+    transform: translateY(-50%);
+    width: 1rem;
+    height: 2px;
+    background-color: var(--medium-gray);
+}
+
+/* 最終アクションカード */
+.final-actions-card {
+    background-color: var(--white);
+    padding: 2rem;
+    border-radius: var(--border-radius);
+    box-shadow: var(--box-shadow);
+    border: 2px solid var(--primary-orange);
+    position: relative;
+}
+
+.final-actions-card::before {
+    content: '';
+    position: absolute;
+    top: 0;
+    left: 0;
+    right: 0;
+    height: 4px;
+    background: linear-gradient(90deg, var(--primary-orange), #ff9a7a);
+    border-radius: var(--border-radius) var(--border-radius) 0 0;
+}
+
+.actions-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-bottom: 2rem;
+}
+
+.actions-header h3 {
+    display: flex;
+    align-items: center;
+    gap: 0.75rem;
+    font-size: 1.25rem;
+    font-weight: 600;
+    color: var(--primary-navy);
+    margin: 0;
+}
+
+.actions-icon {
+    font-size: 1.5rem;
+}
+
+.actions-info {
+    background-color: rgba(72, 187, 120, 0.1);
+    color: var(--success-green);
+    padding: 0.5rem 1rem;
+    border-radius: 20px;
+    font-size: 0.875rem;
+    font-weight: 600;
 }
 
 .final-actions {
     display: flex;
-    gap: 1rem;
-    justify-content: center;
+    gap: 2rem;
+    margin-bottom: 2rem;
+}
+
+.action-group {
+    flex: 1;
+    text-align: center;
+}
+
+.action-group .btn-large {
+    width: 100%;
+    margin-bottom: 1rem;
+    padding: 1.25rem 2rem;
+    font-size: 1.125rem;
+}
+
+.action-description {
+    color: var(--dark-gray);
+    font-size: 0.875rem;
+    line-height: 1.4;
+}
+
+.final-notes {
+    padding: 1.5rem;
+    background-color: var(--light-gray);
+    border-radius: var(--border-radius);
+    border-left: 4px solid var(--primary-orange);
+}
+
+.note-item {
+    display: flex;
+    align-items: center;
+    gap: 0.75rem;
+    margin-bottom: 0.75rem;
+    font-size: 0.875rem;
+    color: var(--secondary-navy);
+}
+
+.note-item:last-child {
+    margin-bottom: 0;
+}
+
+.note-icon {
+    font-size: 1.25rem;
+    flex-shrink: 0;
+}
+
+/* アニメーション */
+@keyframes finalSlideIn {
+    from {
+        opacity: 0;
+        transform: translateY(30px);
+    }
+    to {
+        opacity: 1;
+        transform: translateY(0);
+    }
+}
+
+.final-approval-section > * {
+    animation: finalSlideIn 0.5s ease forwards;
+}
+
+.final-approval-section > *:nth-child(1) { animation-delay: 0.1s; }
+.final-approval-section > *:nth-child(2) { animation-delay: 0.2s; }
+.final-approval-section > *:nth-child(3) { animation-delay: 0.3s; }
+.final-approval-section > *:nth-child(4) { animation-delay: 0.4s; }
+
+/* Step 6 モバイル対応 */
+@media (max-width: 768px) {
+    .completion-overview {
+        flex-direction: column;
+        gap: 1rem;
+    }
+    
+    .completion-item {
+        padding: 1rem;
+    }
+    
+    .completion-number {
+        font-size: 1.5rem;
+    }
+    
+    .preview-header {
+        flex-direction: column;
+        gap: 1rem;
+        text-align: center;
+    }
+    
+    .preview-actions {
+        justify-content: center;
+    }
+    
+    .structure-header {
+        flex-direction: column;
+        gap: 1rem;
+        text-align: center;
+    }
+    
+    .actions-header {
+        flex-direction: column;
+        gap: 1rem;
+        text-align: center;
+    }
+    
+    .final-actions {
+        flex-direction: column;
+        gap: 1.5rem;
+    }
+    
+    .cluster-nodes {
+        grid-template-columns: 1fr;
+        margin-left: 1rem;
+    }
+    
+    .cluster-nodes::before {
+        left: -0.5rem;
+    }
+    
+    .cluster-node::after {
+        left: -0.5rem;
+        width: 0.5rem;
+    }
+}
+
+@media (max-width: 480px) {
+    .final-approval-section {
+        gap: 1.5rem;
+    }
+    
+    .completion-stats-card,
+    .pillar-preview-card,
+    .link-structure-card,
+    .final-actions-card {
+        padding: 1.5rem;
+    }
+    
+    .pillar-preview-content {
+        padding: 1rem;
+        max-height: 300px;
+    }
+    
+    .final-notes {
+        padding: 1rem;
+    }
+    
+    .note-item {
+        font-size: 0.8rem;
+    }
 }
 
 /* ナビゲーションボタン */

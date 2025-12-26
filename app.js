@@ -159,9 +159,12 @@ class HubPilotApp {
             });
         });
         
-        // Step 6: 最終承認
+        // Step 6: 最終承認の強化
         const downloadBtn = document.getElementById('download-all-btn');
         const publishBtn = document.getElementById('publish-cms-btn');
+        const editPillarPreviewBtn = document.getElementById('edit-pillar-preview-btn');
+        const previewFullscreenBtn = document.getElementById('preview-fullscreen-btn');
+        const toggleStructureBtn = document.getElementById('toggle-structure-btn');
         
         if (downloadBtn) {
             downloadBtn.addEventListener('click', () => this.downloadAll());
@@ -169,6 +172,18 @@ class HubPilotApp {
         
         if (publishBtn) {
             publishBtn.addEventListener('click', () => this.publishToCMS());
+        }
+        
+        if (editPillarPreviewBtn) {
+            editPillarPreviewBtn.addEventListener('click', () => this.editPillarPreview());
+        }
+        
+        if (previewFullscreenBtn) {
+            previewFullscreenBtn.addEventListener('click', () => this.showFullscreenPreview());
+        }
+        
+        if (toggleStructureBtn) {
+            toggleStructureBtn.addEventListener('click', () => this.toggleLinkStructure());
         }
         
         // ナビゲーションボタン
@@ -1568,27 +1583,488 @@ ${title}を効果的に活用することで、ビジネスの成長を加速さ
         this.renderPillarPreview();
     }
     
-    // ピラーページプレビューの表示
+    // ピラーページプレビューの表示（強化版）
     renderPillarPreview() {
         const preview = document.getElementById('pillar-preview');
         if (!preview) return;
         
-        preview.innerHTML = `
-            <h3>ピラーページプレビュー</h3>
-            <div class="pillar-content">
-                ${this.data.pillarPage.content}
+        // ピラーページコンテンツが存在しない場合
+        if (!this.data.pillarPage.content) {
+            preview.innerHTML = `
+                <div style="text-align: center; padding: 2rem; color: var(--dark-gray);">
+                    <p>ピラーページがまだ作成されていません。</p>
+                    <button class="btn btn-primary" onclick="app.createPillarPage()">ピラーページを作成</button>
+                </div>
+            `;
+            return;
+        }
+        
+        preview.innerHTML = this.data.pillarPage.content;
+        
+        // 内部リンク構造も更新
+        this.renderLinkStructure();
+        
+        // 最終統計を更新
+        this.updateFinalStats();
+    }
+    
+    // 内部リンク構造の表示
+    renderLinkStructure() {
+        const structureVisual = document.getElementById('link-structure-visual');
+        if (!structureVisual) return;
+        
+        const pillarTitle = this.data.pillarPage.title || 'ピラーページ';
+        const clusterPages = this.data.clusterPages || [];
+        
+        const clusterNodesHTML = clusterPages.map((title, index) => 
+            `<div class="cluster-node" data-index="${index + 1}">${title}</div>`
+        ).join('');
+        
+        structureVisual.innerHTML = `
+            <div class="structure-tree">
+                <div class="pillar-node">${pillarTitle}</div>
+                <div class="cluster-nodes">
+                    ${clusterNodesHTML}
+                </div>
             </div>
         `;
     }
     
-    // 全記事ダウンロード
-    downloadAll() {
-        alert('全記事のダウンロード機能は実装予定です（フェーズ2）');
+    // 内部リンク構造の表示切替
+    toggleLinkStructure() {
+        const structureVisual = document.getElementById('link-structure-visual');
+        const toggleBtn = document.getElementById('toggle-structure-btn');
+        
+        if (!structureVisual || !toggleBtn) return;
+        
+        const isVisible = structureVisual.classList.contains('active');
+        
+        if (isVisible) {
+            structureVisual.classList.remove('active');
+            toggleBtn.innerHTML = `
+                <span class="btn-icon">👁️</span>
+                表示
+            `;
+            this.showNotification('内部リンク構造を非表示にしました', 'info', 2000);
+        } else {
+            structureVisual.classList.add('active');
+            toggleBtn.innerHTML = `
+                <span class="btn-icon">🙈</span>
+                非表示
+            `;
+            this.renderLinkStructure();
+            this.showNotification('内部リンク構造を表示しました', 'success', 2000);
+        }
     }
     
-    // CMSへ投稿
-    publishToCMS() {
-        alert('CMS投稿機能は実装予定です（フェーズ2）');
+    // ピラーページプレビューの編集
+    editPillarPreview() {
+        this.showNotification('ピラーページ編集機能は実装予定です（フェーズ2）', 'info');
+    }
+    
+    // 全画面プレビュー
+    showFullscreenPreview() {
+        if (!this.data.pillarPage.content) {
+            this.showNotification('プレビューするコンテンツがありません', 'warning');
+            return;
+        }
+        
+        // 新しいウィンドウでプレビューを表示
+        const previewWindow = window.open('', '_blank', 'width=1200,height=800');
+        previewWindow.document.write(`
+            <html>
+                <head>
+                    <title>${this.data.pillarPage.title} - 全画面プレビュー</title>
+                    <style>
+                        body { 
+                            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif; 
+                            max-width: 1000px; 
+                            margin: 0 auto; 
+                            padding: 2rem; 
+                            line-height: 1.6; 
+                            color: #2d3748;
+                        }
+                        h1 { 
+                            color: #2d3748; 
+                            border-bottom: 3px solid #ff7a59; 
+                            padding-bottom: 1rem; 
+                            margin-bottom: 2rem;
+                        }
+                        h2 { 
+                            color: #4a5568; 
+                            margin-top: 2rem; 
+                            margin-bottom: 1rem;
+                        }
+                        p { 
+                            color: #718096; 
+                            margin-bottom: 1rem;
+                        }
+                        a { 
+                            color: #ff7a59; 
+                            text-decoration: none; 
+                            font-weight: 500;
+                        }
+                        a:hover { 
+                            text-decoration: underline; 
+                        }
+                        ul { 
+                            margin: 1rem 0; 
+                            padding-left: 2rem; 
+                        }
+                        li { 
+                            margin-bottom: 0.5rem; 
+                            color: #4a5568; 
+                        }
+                        .close-btn {
+                            position: fixed;
+                            top: 20px;
+                            right: 20px;
+                            background: #ff7a59;
+                            color: white;
+                            border: none;
+                            padding: 10px 20px;
+                            border-radius: 5px;
+                            cursor: pointer;
+                            font-weight: 600;
+                        }
+                        .close-btn:hover {
+                            background: #e56b4a;
+                        }
+                    </style>
+                </head>
+                <body>
+                    <button class="close-btn" onclick="window.close()">閉じる</button>
+                    ${this.data.pillarPage.content}
+                </body>
+            </html>
+        `);
+        previewWindow.document.close();
+        
+        this.showNotification('全画面プレビューを開きました', 'success', 2000);
+    }
+    
+    // 全記事ダウンロード（強化版）
+    async downloadAll() {
+        if (!this.data.articles || this.data.articles.length === 0) {
+            this.showNotification('ダウンロードする記事がありません', 'warning');
+            return;
+        }
+        
+        this.showLoading('記事をダウンロード準備中...');
+        
+        await this.delay(2000);
+        
+        try {
+            // ダウンロード形式の選択
+            const format = await this.selectDownloadFormat();
+            
+            if (format) {
+                await this.generateDownloadFiles(format);
+                this.showNotification(`${format}形式でのダウンロードが完了しました`, 'success');
+            }
+        } catch (error) {
+            this.showNotification('ダウンロード中にエラーが発生しました', 'error');
+            console.error('Download error:', error);
+        } finally {
+            this.hideLoading();
+        }
+    }
+    
+    // ダウンロード形式の選択
+    selectDownloadFormat() {
+        return new Promise((resolve) => {
+            const formats = [
+                { value: 'html', label: 'HTML形式（Webサイト用）' },
+                { value: 'markdown', label: 'Markdown形式（汎用）' },
+                { value: 'json', label: 'JSON形式（データ交換用）' }
+            ];
+            
+            const formatOptions = formats.map(f => f.label).join('\n');
+            const choice = prompt(`ダウンロード形式を選択してください:\n\n${formatOptions}\n\n1: HTML, 2: Markdown, 3: JSON`);
+            
+            if (choice === '1') resolve('html');
+            else if (choice === '2') resolve('markdown');
+            else if (choice === '3') resolve('json');
+            else resolve(null);
+        });
+    }
+    
+    // ダウンロードファイルの生成
+    async generateDownloadFiles(format) {
+        const timestamp = new Date().toISOString().split('T')[0];
+        const theme = this.data.theme.replace(/[^a-zA-Z0-9]/g, '-').toLowerCase();
+        
+        if (format === 'html') {
+            await this.downloadAsHTML(theme, timestamp);
+        } else if (format === 'markdown') {
+            await this.downloadAsMarkdown(theme, timestamp);
+        } else if (format === 'json') {
+            await this.downloadAsJSON(theme, timestamp);
+        }
+    }
+    
+    // HTML形式でダウンロード
+    async downloadAsHTML(theme, timestamp) {
+        const pillarHTML = `
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>${this.data.pillarPage.title}</title>
+    <style>
+        body { font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif; max-width: 800px; margin: 0 auto; padding: 2rem; line-height: 1.6; }
+        h1 { color: #2d3748; border-bottom: 3px solid #ff7a59; padding-bottom: 1rem; }
+        h2 { color: #4a5568; margin-top: 2rem; }
+        p { color: #718096; }
+        a { color: #ff7a59; text-decoration: none; }
+        a:hover { text-decoration: underline; }
+    </style>
+</head>
+<body>
+    ${this.data.pillarPage.content}
+</body>
+</html>`;
+        
+        this.downloadFile(`${theme}-pillar-page-${timestamp}.html`, pillarHTML, 'text/html');
+        
+        // 各クラスターページもダウンロード
+        this.data.articles.forEach((article, index) => {
+            const articleHTML = `
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>${article.title}</title>
+    <style>
+        body { font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif; max-width: 800px; margin: 0 auto; padding: 2rem; line-height: 1.6; }
+        h1 { color: #2d3748; border-bottom: 3px solid #ff7a59; padding-bottom: 1rem; }
+        h2 { color: #4a5568; margin-top: 2rem; }
+        p { color: #718096; }
+    </style>
+</head>
+<body>
+    <h1>${article.title}</h1>
+    ${article.content.replace(/\n/g, '<br>')}
+</body>
+</html>`;
+            
+            this.downloadFile(`${theme}-article-${index + 1}-${timestamp}.html`, articleHTML, 'text/html');
+        });
+    }
+    
+    // Markdown形式でダウンロード
+    async downloadAsMarkdown(theme, timestamp) {
+        const pillarMD = `# ${this.data.pillarPage.title}\n\n${this.data.pillarPage.content.replace(/<[^>]*>/g, '')}`;
+        this.downloadFile(`${theme}-pillar-page-${timestamp}.md`, pillarMD, 'text/markdown');
+        
+        this.data.articles.forEach((article, index) => {
+            const articleMD = `# ${article.title}\n\n${article.content}`;
+            this.downloadFile(`${theme}-article-${index + 1}-${timestamp}.md`, articleMD, 'text/markdown');
+        });
+    }
+    
+    // JSON形式でダウンロード
+    async downloadAsJSON(theme, timestamp) {
+        const exportData = {
+            metadata: {
+                theme: this.data.theme,
+                exportDate: new Date().toISOString(),
+                totalArticles: this.data.articles.length + 1,
+                totalWords: this.data.articles.reduce((sum, a) => sum + (a.wordCount || 0), 0)
+            },
+            pillarPage: this.data.pillarPage,
+            clusterPages: this.data.articles,
+            qualityChecks: this.data.qualityChecks
+        };
+        
+        const jsonContent = JSON.stringify(exportData, null, 2);
+        this.downloadFile(`${theme}-complete-export-${timestamp}.json`, jsonContent, 'application/json');
+    }
+    
+    // ファイルダウンロードのヘルパー
+    downloadFile(filename, content, mimeType) {
+        const blob = new Blob([content], { type: mimeType });
+        const url = URL.createObjectURL(blob);
+        const a = document.createElement('a');
+        a.href = url;
+        a.download = filename;
+        document.body.appendChild(a);
+        a.click();
+        document.body.removeChild(a);
+        URL.revokeObjectURL(url);
+    }
+    
+    // CMSへ投稿（強化版）
+    async publishToCMS() {
+        if (!this.data.articles || this.data.articles.length === 0) {
+            this.showNotification('投稿する記事がありません', 'warning');
+            return;
+        }
+        
+        this.showLoading('CMS投稿を準備中...');
+        
+        await this.delay(2000);
+        
+        try {
+            // CMS選択
+            const cmsType = await this.selectCMSType();
+            
+            if (cmsType) {
+                await this.publishToCMSType(cmsType);
+                this.showNotification(`${cmsType}への投稿準備が完了しました`, 'success');
+            }
+        } catch (error) {
+            this.showNotification('CMS投稿準備中にエラーが発生しました', 'error');
+            console.error('CMS publish error:', error);
+        } finally {
+            this.hideLoading();
+        }
+    }
+    
+    // CMS選択
+    selectCMSType() {
+        return new Promise((resolve) => {
+            const cmsOptions = [
+                { value: 'wordpress', label: 'WordPress' },
+                { value: 'hubspot', label: 'HubSpot' },
+                { value: 'contentful', label: 'Contentful' },
+                { value: 'other', label: 'その他のCMS' }
+            ];
+            
+            const optionsText = cmsOptions.map((cms, index) => `${index + 1}: ${cms.label}`).join('\n');
+            const choice = prompt(`投稿先CMSを選択してください:\n\n${optionsText}`);
+            
+            const selectedIndex = parseInt(choice) - 1;
+            if (selectedIndex >= 0 && selectedIndex < cmsOptions.length) {
+                resolve(cmsOptions[selectedIndex].value);
+            } else {
+                resolve(null);
+            }
+        });
+    }
+    
+    // CMS別投稿処理
+    async publishToCMSType(cmsType) {
+        const publishData = {
+            pillarPage: this.data.pillarPage,
+            articles: this.data.articles,
+            theme: this.data.theme,
+            publishDate: new Date().toISOString()
+        };
+        
+        // 実際のCMS投稿はフェーズ2で実装
+        console.log(`Publishing to ${cmsType}:`, publishData);
+        
+        // モック投稿プロセス
+        await this.delay(3000);
+        
+        // 投稿完了の通知
+        this.showPublishSuccessModal(cmsType);
+    }
+    
+    // 投稿成功モーダル
+    showPublishSuccessModal(cmsType) {
+        const modal = document.createElement('div');
+        modal.className = 'publish-success-modal';
+        modal.innerHTML = `
+            <div class="modal-overlay" onclick="this.parentElement.remove()">
+                <div class="modal-content" onclick="event.stopPropagation()">
+                    <div class="modal-header">
+                        <h3>🎉 投稿準備完了！</h3>
+                        <button class="modal-close" onclick="this.closest('.publish-success-modal').remove()">×</button>
+                    </div>
+                    <div class="modal-body">
+                        <p><strong>${cmsType}</strong>への投稿準備が完了しました。</p>
+                        <p>以下の手順で投稿を完了してください：</p>
+                        <ol>
+                            <li>${cmsType}の管理画面にログイン</li>
+                            <li>生成されたコンテンツをコピー＆ペースト</li>
+                            <li>SEO設定とメタデータを確認</li>
+                            <li>公開設定を行い投稿完了</li>
+                        </ol>
+                        <p><small>※ 実際のCMS投稿機能はフェーズ2で実装予定です</small></p>
+                    </div>
+                    <div class="modal-footer">
+                        <button class="btn btn-primary" onclick="this.closest('.publish-success-modal').remove()">
+                            了解しました
+                        </button>
+                    </div>
+                </div>
+            </div>
+        `;
+        
+        // モーダルスタイル
+        const style = document.createElement('style');
+        style.textContent = `
+            .publish-success-modal {
+                position: fixed;
+                top: 0;
+                left: 0;
+                width: 100%;
+                height: 100%;
+                z-index: 2000;
+            }
+            .modal-overlay {
+                width: 100%;
+                height: 100%;
+                background: rgba(0, 0, 0, 0.5);
+                display: flex;
+                align-items: center;
+                justify-content: center;
+                padding: 2rem;
+            }
+            .modal-content {
+                background: white;
+                border-radius: 8px;
+                max-width: 500px;
+                width: 100%;
+                max-height: 80vh;
+                overflow-y: auto;
+            }
+            .modal-header {
+                padding: 1.5rem;
+                border-bottom: 1px solid #e2e8f0;
+                display: flex;
+                justify-content: space-between;
+                align-items: center;
+            }
+            .modal-header h3 {
+                margin: 0;
+                color: #2d3748;
+            }
+            .modal-close {
+                background: none;
+                border: none;
+                font-size: 1.5rem;
+                cursor: pointer;
+                color: #718096;
+            }
+            .modal-body {
+                padding: 1.5rem;
+            }
+            .modal-body p {
+                margin-bottom: 1rem;
+                color: #4a5568;
+            }
+            .modal-body ol {
+                margin: 1rem 0;
+                padding-left: 1.5rem;
+            }
+            .modal-body li {
+                margin-bottom: 0.5rem;
+                color: #2d3748;
+            }
+            .modal-footer {
+                padding: 1.5rem;
+                border-top: 1px solid #e2e8f0;
+                text-align: right;
+            }
+        `;
+        
+        document.head.appendChild(style);
+        document.body.appendChild(modal);
     }
     
     // クラスターページ編集（強化版）
@@ -2024,6 +2500,14 @@ ${title}を効果的に活用することで、ビジネスの成長を加速さ
             case 6:
                 if (this.data.pillarPage.content) {
                     this.renderPillarPreview();
+                    this.updateFinalStats();
+                } else {
+                    // ピラーページが作成されていない場合は自動作成
+                    if (this.data.articles.length > 0) {
+                        setTimeout(() => {
+                            this.createPillarPage();
+                        }, 500);
+                    }
                 }
                 break;
         }
