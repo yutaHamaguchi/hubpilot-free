@@ -209,27 +209,49 @@ body {
     color: var(--primary-orange);
 }
 
-/* Step 1: テーマ入力 */
+/* Step 1: テーマ入力の強化 */
 .input-section {
     display: flex;
     flex-direction: column;
     align-items: center;
-    gap: 2rem;
+    gap: 2.5rem;
+    max-width: 600px;
+    margin: 0 auto;
 }
 
 .theme-input-container {
     width: 100%;
-    max-width: 500px;
+}
+
+.input-label {
+    display: block;
+    font-size: 1rem;
+    font-weight: 600;
+    color: var(--primary-navy);
+    margin-bottom: 0.75rem;
+}
+
+.required-mark {
+    color: var(--error-red);
+    margin-left: 0.25rem;
+}
+
+.input-wrapper {
+    position: relative;
+    display: flex;
+    align-items: center;
 }
 
 .theme-input {
     width: 100%;
-    padding: 1rem 1.5rem;
+    padding: 1.25rem 1.5rem;
+    padding-right: 3rem;
     font-size: 1.125rem;
     border: 2px solid var(--medium-gray);
     border-radius: var(--border-radius);
     transition: var(--transition);
     background-color: var(--white);
+    font-family: var(--font-family);
 }
 
 .theme-input:focus {
@@ -238,11 +260,175 @@ body {
     box-shadow: 0 0 0 3px rgba(255, 122, 89, 0.1);
 }
 
+.theme-input.valid {
+    border-color: var(--success-green);
+}
+
+.theme-input.invalid {
+    border-color: var(--error-red);
+}
+
+.input-icon {
+    position: absolute;
+    right: 1rem;
+    color: var(--dark-gray);
+    opacity: 0;
+    transition: var(--transition);
+}
+
+.theme-input.valid + .input-icon {
+    opacity: 1;
+    color: var(--success-green);
+}
+
+.input-help {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-top: 0.5rem;
+    font-size: 0.875rem;
+    color: var(--dark-gray);
+}
+
+.character-count {
+    margin-left: auto;
+}
+
 .input-error {
     color: var(--error-red);
     font-size: 0.875rem;
     margin-top: 0.5rem;
     min-height: 1.25rem;
+    display: flex;
+    align-items: center;
+    gap: 0.5rem;
+}
+
+.input-error:before {
+    content: "⚠️";
+    display: none;
+}
+
+.input-error:not(:empty):before {
+    display: inline;
+}
+
+/* テーマ例 */
+.theme-examples {
+    width: 100%;
+    text-align: center;
+}
+
+.theme-examples h4 {
+    font-size: 1.125rem;
+    font-weight: 600;
+    color: var(--primary-navy);
+    margin-bottom: 1rem;
+}
+
+.examples-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+    gap: 0.75rem;
+}
+
+.example-btn {
+    display: flex;
+    align-items: center;
+    gap: 0.75rem;
+    padding: 1rem;
+    background-color: var(--white);
+    border: 2px solid var(--medium-gray);
+    border-radius: var(--border-radius);
+    cursor: pointer;
+    transition: var(--transition);
+    font-size: 0.875rem;
+    font-weight: 500;
+    color: var(--secondary-navy);
+}
+
+.example-btn:hover {
+    border-color: var(--primary-orange);
+    background-color: rgba(255, 122, 89, 0.05);
+    transform: translateY(-2px);
+    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
+}
+
+.example-btn:active {
+    transform: translateY(0);
+}
+
+.example-icon {
+    font-size: 1.25rem;
+}
+
+.example-text {
+    flex: 1;
+    text-align: left;
+}
+
+/* アクションセクション */
+.action-section {
+    width: 100%;
+    text-align: center;
+}
+
+.btn-large {
+    padding: 1rem 2rem;
+    font-size: 1.125rem;
+    font-weight: 600;
+    display: inline-flex;
+    align-items: center;
+    gap: 0.75rem;
+    min-width: 200px;
+    justify-content: center;
+}
+
+.btn-icon {
+    display: flex;
+    align-items: center;
+}
+
+.btn:disabled {
+    opacity: 0.6;
+    cursor: not-allowed;
+    transform: none !important;
+}
+
+.btn:disabled:hover {
+    transform: none !important;
+    box-shadow: none !important;
+}
+
+.action-help {
+    margin-top: 1rem;
+}
+
+.action-help p {
+    font-size: 0.875rem;
+    color: var(--dark-gray);
+    font-style: italic;
+}
+
+/* アニメーション効果 */
+@keyframes inputFocus {
+    0% { transform: scale(1); }
+    50% { transform: scale(1.02); }
+    100% { transform: scale(1); }
+}
+
+.theme-input:focus {
+    animation: inputFocus 0.3s ease;
+}
+
+@keyframes exampleClick {
+    0% { transform: scale(1); }
+    50% { transform: scale(0.95); }
+    100% { transform: scale(1); }
+}
+
+.example-btn:active {
+    animation: exampleClick 0.2s ease;
 }
 
 /* Step 2: 構成案確認 */
@@ -591,6 +777,120 @@ body {
     font-weight: 600;
 }
 
+/* 通知システム */
+.notification {
+    position: fixed;
+    top: 20px;
+    right: 20px;
+    max-width: 400px;
+    background-color: var(--white);
+    border-radius: var(--border-radius);
+    box-shadow: 0 8px 25px rgba(0, 0, 0, 0.15);
+    z-index: 1001;
+    transform: translateX(100%);
+    transition: transform 0.3s ease;
+}
+
+.notification.show {
+    transform: translateX(0);
+}
+
+.notification-content {
+    padding: 1rem 1.5rem;
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 1rem;
+}
+
+.notification-message {
+    flex: 1;
+    font-size: 0.875rem;
+    line-height: 1.4;
+}
+
+.notification-close {
+    background: none;
+    border: none;
+    font-size: 1.25rem;
+    cursor: pointer;
+    color: var(--dark-gray);
+    padding: 0;
+    width: 24px;
+    height: 24px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    border-radius: 50%;
+    transition: var(--transition);
+}
+
+.notification-close:hover {
+    background-color: var(--medium-gray);
+}
+
+.notification-info {
+    border-left: 4px solid var(--primary-orange);
+}
+
+.notification-warning {
+    border-left: 4px solid var(--warning-yellow);
+}
+
+.notification-error {
+    border-left: 4px solid var(--error-red);
+}
+
+.notification-success {
+    border-left: 4px solid var(--success-green);
+}
+
+/* ステップインジケーターの改善 */
+.step-item {
+    display: flex;
+    align-items: center;
+    padding: 1rem;
+    border-radius: var(--border-radius);
+    cursor: pointer;
+    transition: var(--transition);
+    border: 2px solid transparent;
+    position: relative;
+}
+
+.step-item:hover {
+    background-color: var(--light-gray);
+}
+
+.step-item.active {
+    background-color: rgba(255, 122, 89, 0.1);
+    border-color: var(--primary-orange);
+}
+
+.step-item.completed {
+    background-color: rgba(72, 187, 120, 0.1);
+    border-color: var(--success-green);
+}
+
+.step-item:not(.accessible) {
+    opacity: 0.6;
+    cursor: not-allowed;
+}
+
+.step-item:not(.accessible):hover {
+    background-color: transparent;
+}
+
+/* ステップ遷移アニメーション */
+.step-content {
+    display: none;
+    opacity: 1;
+    transition: opacity 0.3s ease;
+}
+
+.step-content.active {
+    display: block;
+}
+
 /* レスポンシブデザイン */
 @media (max-width: 768px) {
     .app-container {
@@ -632,6 +932,26 @@ body {
         flex-direction: column;
         gap: 1rem;
     }
+    
+    /* Step 1 モバイル対応 */
+    .examples-grid {
+        grid-template-columns: 1fr;
+    }
+    
+    .example-btn {
+        justify-content: center;
+        text-align: center;
+    }
+    
+    .theme-input {
+        font-size: 1rem;
+        padding: 1rem;
+    }
+    
+    .btn-large {
+        width: 100%;
+        min-width: auto;
+    }
 }
 
 @media (max-width: 480px) {
@@ -651,5 +971,19 @@ body {
     .pillar-page-section,
     .cluster-pages-section {
         padding: 1rem;
+    }
+    
+    .examples-grid {
+        gap: 0.5rem;
+    }
+    
+    .example-btn {
+        padding: 0.75rem;
+        font-size: 0.8rem;
+    }
+    
+    .btn-large {
+        padding: 0.875rem 1.5rem;
+        font-size: 1rem;
     }
 }

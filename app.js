@@ -18,8 +18,11 @@ class HubPilotApp {
     }
     
     init() {
+        this.loadStepFromURL();
         this.loadData();
         this.bindEvents();
+        this.setupKeyboardShortcuts();
+        this.setupBrowserNavigation();
         this.updateUI();
     }
     
@@ -30,17 +33,27 @@ class HubPilotApp {
         const generateBtn = document.getElementById('generate-structure-btn');
         
         if (themeInput) {
-            themeInput.addEventListener('input', () => this.validateThemeInput());
+            themeInput.addEventListener('input', () => this.handleThemeInput());
             themeInput.addEventListener('keypress', (e) => {
-                if (e.key === 'Enter') {
+                if (e.key === 'Enter' && !generateBtn.disabled) {
                     this.generateStructure();
                 }
             });
+            themeInput.addEventListener('focus', () => this.onThemeInputFocus());
+            themeInput.addEventListener('blur', () => this.onThemeInputBlur());
         }
         
         if (generateBtn) {
             generateBtn.addEventListener('click', () => this.generateStructure());
         }
+        
+        // テーマ例ボタン
+        document.querySelectorAll('.example-btn').forEach(btn => {
+            btn.addEventListener('click', (e) => {
+                const theme = e.currentTarget.dataset.theme;
+                this.selectThemeExample(theme);
+            });
+        });
         
         // Step 2: 構成案確認
         const proceedToHeadingsBtn = document.getElementById('proceed-to-headings-btn');
@@ -94,41 +107,135 @@ class HubPilotApp {
         document.querySelectorAll('.step-item').forEach(item => {
             item.addEventListener('click', (e) => {
                 const step = parseInt(e.currentTarget.dataset.step);
-                if (step <= this.currentStep) {
+                if (step <= this.currentStep || this.canNavigateToStep(step)) {
                     this.goToStep(step);
                 }
             });
         });
     }
     
-    // テーマ入力のバリデーション
-    validateThemeInput() {
+    // テーマ入力の処理
+    handleThemeInput() {
         const input = document.getElementById('theme-input');
         const error = document.getElementById('theme-error');
         const btn = document.getElementById('generate-structure-btn');
+        const charCount = document.getElementById('char-count');
         
-        if (!input || !error || !btn) return;
+        if (!input || !error || !btn || !charCount) return;
         
         const value = input.value.trim();
+        const length = input.value.length;
         
-        if (value.length === 0) {
-            error.textContent = 'テーマを入力してください';
-            btn.disabled = true;
-            return false;
-        } else if (value.length < 2) {
-            error.textContent = 'テーマは2文字以上で入力してください';
-            btn.disabled = true;
-            return false;
-        } else {
-            error.textContent = '';
-            btn.disabled = false;
-            return true;
+        // 文字数カウント更新
+        charCount.textContent = length;
+        
+        // バリデーション
+        const validation = this.validateTheme(value);
+        
+        // UI更新
+        input.classList.remove('valid', 'invalid');
+        if (value.length > 0) {
+            input.classList.add(validation.isValid ? 'valid' : 'invalid');
         }
+        
+        error.textContent = validation.message;
+        btn.disabled = !validation.isValid;
+        
+        // データ保存
+        if (validation.isValid) {
+            this.data.theme = value;
+            this.saveData();
+        }
+        
+        return validation.isValid;
+    }
+    
+    // テーマバリデーション
+    validateTheme(theme) {
+        if (!theme || theme.length === 0) {
+            return { isValid: false, message: 'テーマを入力してください' };
+        }
+        
+        if (theme.length < 2) {
+            return { isValid: false, message: 'テーマは2文字以上で入力してください' };
+        }
+        
+        if (theme.length > 100) {
+            return { isValid: false, message: 'テーマは100文字以内で入力してください' };
+        }
+        
+        // 特殊文字のチェック
+        const invalidChars = /[<>{}[\]\\\/]/;
+        if (invalidChars.test(theme)) {
+            return { isValid: false, message: '使用できない文字が含まれています' };
+        }
+        
+        // 数字のみのチェック
+        if (/^\d+$/.test(theme)) {
+            return { isValid: false, message: '数字のみのテーマは使用できません' };
+        }
+        
+        return { isValid: true, message: '' };
+    }
+    
+    // テーマ入力フォーカス時
+    onThemeInputFocus() {
+        const container = document.querySelector('.theme-input-container');
+        if (container) {
+            container.classList.add('focused');
+        }
+        
+        // ヘルプテキストの表示
+        this.showInputHelp();
+    }
+    
+    // テーマ入力ブラー時
+    onThemeInputBlur() {
+        const container = document.querySelector('.theme-input-container');
+        if (container) {
+            container.classList.remove('focused');
+        }
+    }
+    
+    // 入力ヘルプの表示
+    showInputHelp() {
+        // 将来的にツールチップやヘルプテキストを表示
+        console.log('Input help shown');
+    }
+    
+    // テーマ例の選択
+    selectThemeExample(theme) {
+        const input = document.getElementById('theme-input');
+        if (input) {
+            input.value = theme;
+            input.focus();
+            
+            // アニメーション効果
+            input.style.transform = 'scale(1.02)';
+            setTimeout(() => {
+                input.style.transform = 'scale(1)';
+            }, 200);
+            
+            // バリデーション実行
+            this.handleThemeInput();
+            
+            // 成功通知
+            this.showNotification(`テーマ「${theme}」を選択しました`, 'success', 2000);
+        }
+    }
+    
+    // 旧メソッドとの互換性維持
+    validateThemeInput() {
+        return this.handleThemeInput();
     }
     
     // 構成案生成（Step 1 → Step 2）
     async generateStructure() {
-        if (!this.validateThemeInput()) return;
+        const validation = this.validateTheme(this.data.theme);
+        if (!validation.isValid) {
+            this.showNotification(validation.message, 'error');
+            return;
+        }
         
         const themeInput = document.getElementById('theme-input');
         const theme = themeInput.value.trim();
@@ -161,6 +268,10 @@ class HubPilotApp {
         
         this.saveData();
         this.hideLoading();
+        
+        // 成功通知
+        this.showNotification('構成案の生成が完了しました！', 'success');
+        
         this.goToStep(2);
         this.renderStructure();
     }
@@ -500,13 +611,33 @@ class HubPilotApp {
         }
     }
     
-    // ステップ移動
+    // ステップ移動時にURLも更新
     goToStep(step) {
         if (step < 1 || step > this.totalSteps) return;
         
+        // ステップ移動の検証
+        if (!this.canNavigateToStep(step)) {
+            this.showNavigationWarning(step);
+            return;
+        }
+        
+        // 現在のステップからの離脱確認
+        if (!this.confirmStepExit()) {
+            return;
+        }
+        
+        const previousStep = this.currentStep;
         this.currentStep = step;
+        
+        // ステップ変更のアニメーション
+        this.animateStepTransition(previousStep, step);
+        
         this.updateUI();
+        this.updateURL(); // URL更新を追加
         this.saveData();
+        
+        // ステップ変更イベントを発火
+        this.onStepChanged(previousStep, step);
     }
     
     nextStep() {
@@ -521,6 +652,150 @@ class HubPilotApp {
         }
     }
     
+    // ステップ移動可能性の検証
+    canNavigateToStep(targetStep) {
+        // 前のステップには常に戻れる
+        if (targetStep <= this.currentStep) {
+            return true;
+        }
+        
+        // 次のステップに進む場合の検証
+        switch (this.currentStep) {
+            case 1:
+                // テーマが入力されている場合のみStep2に進める
+                return this.data.theme && this.data.theme.trim().length > 0;
+            case 2:
+                // 構成案が生成されている場合のみStep3に進める
+                return this.data.pillarPage.title && this.data.clusterPages.length > 0;
+            case 3:
+                // 見出しが生成されている場合のみStep4に進める
+                return Object.keys(this.data.headings).length > 0;
+            case 4:
+                // 記事が生成されている場合のみStep5に進める
+                return this.data.articles.length > 0 && 
+                       this.data.articles.every(article => article.status === 'completed');
+            case 5:
+                // 品質チェックが完了している場合のみStep6に進める
+                return this.data.qualityChecks.length > 0;
+            default:
+                return true;
+        }
+    }
+    
+    // ナビゲーション警告の表示
+    showNavigationWarning(targetStep) {
+        let message = '';
+        
+        switch (this.currentStep) {
+            case 1:
+                message = 'テーマを入力してから次のステップに進んでください。';
+                break;
+            case 2:
+                message = '構成案を生成してから次のステップに進んでください。';
+                break;
+            case 3:
+                message = '見出し構成を確認してから次のステップに進んでください。';
+                break;
+            case 4:
+                message = '記事の生成を完了してから次のステップに進んでください。';
+                break;
+            case 5:
+                message = '品質チェックを完了してから次のステップに進んでください。';
+                break;
+        }
+        
+        this.showNotification(message, 'warning');
+    }
+    
+    // ステップ離脱確認
+    confirmStepExit() {
+        // 現在のステップで未保存の変更がある場合の確認
+        if (this.hasUnsavedChanges()) {
+            return confirm('未保存の変更があります。このステップを離れますか？');
+        }
+        return true;
+    }
+    
+    // 未保存変更の検出
+    hasUnsavedChanges() {
+        // 実装では、各ステップでの変更状態を追跡
+        // 現在はシンプルにfalseを返す
+        return false;
+    }
+    
+    // ステップ遷移アニメーション
+    animateStepTransition(fromStep, toStep) {
+        const fromContent = document.getElementById(`step-${fromStep}`);
+        const toContent = document.getElementById(`step-${toStep}`);
+        
+        if (fromContent && toContent) {
+            // フェードアウト → フェードイン効果
+            fromContent.style.opacity = '0';
+            
+            setTimeout(() => {
+                fromContent.classList.remove('active');
+                toContent.classList.add('active');
+                toContent.style.opacity = '0';
+                
+                // フェードイン
+                setTimeout(() => {
+                    toContent.style.opacity = '1';
+                }, 50);
+            }, 150);
+        }
+    }
+    
+    // ステップ変更イベント
+    onStepChanged(fromStep, toStep) {
+        // ステップ変更時の追加処理
+        console.log(`Step changed: ${fromStep} → ${toStep}`);
+        
+        // 特定のステップに入った時の処理
+        switch (toStep) {
+            case 1:
+                this.focusThemeInput();
+                break;
+            case 4:
+                this.prepareArticleGeneration();
+                break;
+            case 6:
+                this.prepareFinalReview();
+                break;
+        }
+    }
+    
+    // テーマ入力にフォーカス
+    focusThemeInput() {
+        setTimeout(() => {
+            const themeInput = document.getElementById('theme-input');
+            if (themeInput) {
+                themeInput.focus();
+            }
+        }, 200);
+    }
+    
+    // 記事生成の準備
+    prepareArticleGeneration() {
+        // 記事生成画面の初期化
+        if (this.data.articles.length === 0) {
+            this.renderArticlesGrid();
+        }
+    }
+    
+    // データ読み込み
+    loadData() {
+        try {
+            const saved = localStorage.getItem('hubpilot-data');
+            if (saved) {
+                const parsed = JSON.parse(saved);
+                this.currentStep = parsed.currentStep || 1;
+                this.data = { ...this.data, ...parsed.data };
+            }
+        } catch (error) {
+            console.error('データの読み込みに失敗しました:', error);
+        }
+    }
+    
     // UI更新
     updateUI() {
         // ステップコンテンツの表示/非表示
@@ -529,26 +804,105 @@ class HubPilotApp {
         });
         
         // サイドバーのステップ表示更新
-        document.querySelectorAll('.step-item').forEach((item, index) => {
-            const stepNumber = index + 1;
-            item.classList.toggle('active', stepNumber === this.currentStep);
-            item.classList.toggle('completed', stepNumber < this.currentStep);
-        });
+        this.updateStepIndicators();
         
         // ナビゲーションボタンの表示制御
+        this.updateNavigationButtons();
+        
+        // データの復元
+        this.restoreStepData();
+        
+        // プログレス表示の更新
+        this.updateProgressDisplay();
+    }
+    
+    // ステップインジケーターの更新
+    updateStepIndicators() {
+        document.querySelectorAll('.step-item').forEach((item, index) => {
+            const stepNumber = index + 1;
+            const stepNumberElement = item.querySelector('.step-number');
+            
+            // 現在のステップ
+            item.classList.toggle('active', stepNumber === this.currentStep);
+            
+            // 完了したステップ
+            const isCompleted = this.isStepCompleted(stepNumber);
+            item.classList.toggle('completed', isCompleted);
+            
+            // アクセス可能なステップ
+            const isAccessible = this.canNavigateToStep(stepNumber);
+            item.classList.toggle('accessible', isAccessible);
+            item.style.cursor = isAccessible ? 'pointer' : 'not-allowed';
+            
+            // ステップ番号の表示（完了したステップにはチェックマーク）
+            if (isCompleted && stepNumber < this.currentStep) {
+                stepNumberElement.innerHTML = '✓';
+            } else {
+                stepNumberElement.textContent = stepNumber;
+            }
+        });
+    }
+    
+    // ステップ完了状態の判定
+    isStepCompleted(stepNumber) {
+        switch (stepNumber) {
+            case 1:
+                return this.data.theme && this.data.theme.trim().length > 0;
+            case 2:
+                return this.data.pillarPage.title && this.data.clusterPages.length > 0;
+            case 3:
+                return Object.keys(this.data.headings).length > 0;
+            case 4:
+                return this.data.articles.length > 0 && 
+                       this.data.articles.every(article => article.status === 'completed');
+            case 5:
+                return this.data.qualityChecks.length > 0;
+            case 6:
+                return this.data.pillarPage.content && this.data.pillarPage.content.length > 0;
+            default:
+                return false;
+        }
+    }
+    
+    // ナビゲーションボタンの更新
+    updateNavigationButtons() {
         const prevBtn = document.getElementById('prev-btn');
         const nextBtn = document.getElementById('next-btn');
         
         if (prevBtn) {
             prevBtn.style.display = this.currentStep > 1 ? 'block' : 'none';
+            prevBtn.disabled = this.currentStep <= 1;
         }
         
         if (nextBtn) {
-            nextBtn.style.display = 'none'; // 各ステップ専用ボタンを使用
+            const canProceed = this.canNavigateToStep(this.currentStep + 1);
+            nextBtn.style.display = this.currentStep < this.totalSteps ? 'block' : 'none';
+            nextBtn.disabled = !canProceed;
+            
+            // ボタンテキストの更新
+            if (this.currentStep === this.totalSteps) {
+                nextBtn.textContent = '完了';
+            } else {
+                nextBtn.textContent = '次へ';
+            }
+        }
+    }
+    
+    // プログレス表示の更新
+    updateProgressDisplay() {
+        const completedSteps = Array.from({length: this.totalSteps}, (_, i) => i + 1)
+            .filter(step => this.isStepCompleted(step)).length;
+        
+        const progressPercentage = (completedSteps / this.totalSteps) * 100;
+        
+        // 全体プログレスバーがある場合の更新
+        const overallProgress = document.querySelector('.overall-progress');
+        if (overallProgress) {
+            overallProgress.style.width = `${progressPercentage}%`;
         }
         
-        // データの復元
-        this.restoreStepData();
+        // ページタイトルの更新
+        document.title = `HubPilot Free - Step ${this.currentStep}/${this.totalSteps}`;
     }
     
     // ステップデータの復元
@@ -556,9 +910,13 @@ class HubPilotApp {
         switch (this.currentStep) {
             case 1:
                 const themeInput = document.getElementById('theme-input');
+                const charCount = document.getElementById('char-count');
                 if (themeInput && this.data.theme) {
                     themeInput.value = this.data.theme;
-                    this.validateThemeInput();
+                    if (charCount) {
+                        charCount.textContent = this.data.theme.length;
+                    }
+                    this.handleThemeInput();
                 }
                 break;
             case 2:
@@ -656,17 +1014,99 @@ class HubPilotApp {
         }
     }
     
-    // データ読み込み
-    loadData() {
-        try {
-            const saved = localStorage.getItem('hubpilot-data');
-            if (saved) {
-                const parsed = JSON.parse(saved);
-                this.currentStep = parsed.currentStep || 1;
-                this.data = { ...this.data, ...parsed.data };
+    // 通知システム
+    showNotification(message, type = 'info', duration = 5000) {
+        // 既存の通知を削除
+        const existingNotification = document.querySelector('.notification');
+        if (existingNotification) {
+            existingNotification.remove();
+        }
+        
+        // 新しい通知を作成
+        const notification = document.createElement('div');
+        notification.className = `notification notification-${type}`;
+        notification.innerHTML = `
+            <div class="notification-content">
+                <span class="notification-message">${message}</span>
+                <button class="notification-close" onclick="this.parentElement.parentElement.remove()">×</button>
+            </div>
+        `;
+        
+        // 通知をページに追加
+        document.body.appendChild(notification);
+        
+        // アニメーション
+        setTimeout(() => notification.classList.add('show'), 100);
+        
+        // 自動削除
+        if (duration > 0) {
+            setTimeout(() => {
+                if (notification.parentElement) {
+                    notification.classList.remove('show');
+                    setTimeout(() => notification.remove(), 300);
+                }
+            }, duration);
+        }
+    }
+    
+    // キーボードショートカット
+    setupKeyboardShortcuts() {
+        document.addEventListener('keydown', (e) => {
+            // Ctrl/Cmd + 矢印キーでステップ移動
+            if ((e.ctrlKey || e.metaKey) && !e.shiftKey && !e.altKey) {
+                switch (e.key) {
+                    case 'ArrowLeft':
+                        e.preventDefault();
+                        this.previousStep();
+                        break;
+                    case 'ArrowRight':
+                        e.preventDefault();
+                        this.nextStep();
+                        break;
+                }
             }
-        } catch (error) {
-            console.error('データの読み込みに失敗しました:', error);
+            
+            // Escapeキーでローディングをキャンセル（将来の機能）
+            if (e.key === 'Escape') {
+                const loadingOverlay = document.getElementById('loading-overlay');
+                if (loadingOverlay && loadingOverlay.classList.contains('active')) {
+                    // 将来的にキャンセル機能を実装
+                    console.log('Loading cancellation requested');
+                }
+            }
+        });
+    }
+    
+    // ブラウザの戻る/進むボタン対応
+    setupBrowserNavigation() {
+        // ページ読み込み時に現在のステップをURLに反映
+        this.updateURL();
+        
+        // ブラウザの戻る/進むボタンに対応
+        window.addEventListener('popstate', (e) => {
+            if (e.state && e.state.step) {
+                this.currentStep = e.state.step;
+                this.updateUI();
+            }
+        });
+    }
+    
+    // URLの更新
+    updateURL() {
+        const url = new URL(window.location);
+        url.searchParams.set('step', this.currentStep);
+        window.history.replaceState({ step: this.currentStep }, '', url);
+    }
+    
+    // URLからステップを読み取り
+    loadStepFromURL() {
+        const url = new URL(window.location);
+        const stepParam = url.searchParams.get('step');
+        if (stepParam) {
+            const step = parseInt(stepParam);
+            if (step >= 1 && step <= this.totalSteps) {
+                this.currentStep = step;
+            }
         }
     }
 }
