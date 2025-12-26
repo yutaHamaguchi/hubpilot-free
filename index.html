@@ -18,6 +18,38 @@
             <div class="logo">
                 <h1>HubPilot Free</h1>
                 <p>SEO記事作成エージェント</p>
+                
+                <!-- データ管理メニュー -->
+                <div class="data-management">
+                    <button class="btn btn-small btn-secondary" id="data-menu-btn" title="データ管理">
+                        <span class="btn-icon">⚙️</span>
+                    </button>
+                    
+                    <div class="data-menu" id="data-menu" style="display: none;">
+                        <div class="menu-item" onclick="app.exportData()">
+                            <span class="menu-icon">📤</span>
+                            <span>データをエクスポート</span>
+                        </div>
+                        <div class="menu-item" onclick="document.getElementById('import-file').click()">
+                            <span class="menu-icon">📥</span>
+                            <span>データをインポート</span>
+                        </div>
+                        <div class="menu-item" onclick="app.showBackupList()">
+                            <span class="menu-icon">🔄</span>
+                            <span>バックアップ管理</span>
+                        </div>
+                        <div class="menu-item" onclick="app.showStorageInfo()">
+                            <span class="menu-icon">💾</span>
+                            <span>ストレージ情報</span>
+                        </div>
+                        <div class="menu-item danger" onclick="app.confirmResetData()">
+                            <span class="menu-icon">🗑️</span>
+                            <span>データをリセット</span>
+                        </div>
+                    </div>
+                    
+                    <input type="file" id="import-file" accept=".json" style="display: none;">
+                </div>
             </div>
             
             <nav class="step-navigation">
