@@ -168,27 +168,105 @@
                 <div class="step-content" id="step-2">
                     <div class="step-header">
                         <h2>構成案を確認してください</h2>
-                        <p>生成された構成案を確認し、必要に応じて編集してください。</p>
+                        <p>生成された構成案を確認し、必要に応じて編集してください。<br>
+                        この構成に基づいて、SEOに最適化された記事群を作成します。</p>
                     </div>
                     
                     <div class="structure-section">
+                        <!-- ピラーページセクション -->
                         <div class="pillar-page-section">
-                            <h3>ピラーページ</h3>
-                            <div class="pillar-page-title" id="pillar-page-title">
-                                <!-- ピラーページタイトルがここに表示される -->
+                            <div class="section-header">
+                                <h3>
+                                    <span class="section-icon">🏛️</span>
+                                    ピラーページ
+                                </h3>
+                                <div class="section-badge">メイン記事</div>
+                            </div>
+                            
+                            <div class="pillar-page-card">
+                                <div class="pillar-page-title" id="pillar-page-title">
+                                    <!-- ピラーページタイトルがここに表示される -->
+                                </div>
+                                <div class="pillar-page-actions">
+                                    <button class="btn btn-small btn-secondary" id="edit-pillar-btn">
+                                        <span class="btn-icon">✏️</span>
+                                        編集
+                                    </button>
+                                </div>
+                            </div>
+                            
+                            <div class="pillar-page-info">
+                                <p>💡 ピラーページは、テーマ全体を包括的にカバーする中心的な記事です。</p>
                             </div>
                         </div>
                         
+                        <!-- クラスターページセクション -->
                         <div class="cluster-pages-section">
-                            <h3>クラスターページ（10記事）</h3>
+                            <div class="section-header">
+                                <h3>
+                                    <span class="section-icon">📚</span>
+                                    クラスターページ
+                                </h3>
+                                <div class="section-badge">10記事</div>
+                            </div>
+                            
+                            <div class="cluster-pages-controls">
+                                <div class="controls-left">
+                                    <button class="btn btn-small btn-secondary" id="add-cluster-btn">
+                                        <span class="btn-icon">➕</span>
+                                        記事を追加
+                                    </button>
+                                    <button class="btn btn-small btn-secondary" id="regenerate-cluster-btn">
+                                        <span class="btn-icon">🔄</span>
+                                        再生成
+                                    </button>
+                                </div>
+                                <div class="controls-right">
+                                    <span class="cluster-count">
+                                        <span id="cluster-count">10</span>記事
+                                    </span>
+                                </div>
+                            </div>
+                            
                             <div class="cluster-pages-list" id="cluster-pages-list">
                                 <!-- クラスターページリストがここに表示される -->
                             </div>
+                            
+                            <div class="cluster-pages-info">
+                                <p>💡 クラスターページは、ピラーページの各トピックを詳しく解説する専門記事です。</p>
+                            </div>
                         </div>
                         
-                        <button class="btn btn-primary" id="proceed-to-headings-btn">
-                            この構成で進める
-                        </button>
+                        <!-- アクションセクション -->
+                        <div class="action-section">
+                            <div class="structure-summary">
+                                <div class="summary-item">
+                                    <span class="summary-icon">🏛️</span>
+                                    <span class="summary-text">ピラーページ: 1記事</span>
+                                </div>
+                                <div class="summary-item">
+                                    <span class="summary-icon">📚</span>
+                                    <span class="summary-text">クラスターページ: <span id="summary-cluster-count">10</span>記事</span>
+                                </div>
+                                <div class="summary-item">
+                                    <span class="summary-icon">📊</span>
+                                    <span class="summary-text">合計: <span id="summary-total-count">11</span>記事</span>
+                                </div>
+                            </div>
+                            
+                            <button class="btn btn-primary btn-large" id="proceed-to-headings-btn">
+                                <span class="btn-icon">
+                                    <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                                        <path d="M9 18l6-6-6-6"></path>
+                                    </svg>
+                                </span>
+                                この構成で進める
+                            </button>
+                            
+                            <div class="action-help">
+                                <p>🚀 次のステップで、各記事の見出し構成を設定します</p>
+                            </div>
+                        </div>
                     </div>
                 </div>
 
@@ -196,17 +274,113 @@
                 <div class="step-content" id="step-3">
                     <div class="step-header">
                         <h2>見出し構成を確認してください</h2>
-                        <p>各クラスターページの見出し構成を確認し、必要に応じて編集してください。</p>
+                        <p>各クラスターページの見出し構成を確認し、必要に応じて編集してください。<br>
+                        この見出し構成に基づいて、SEOに最適化された記事を生成します。</p>
                     </div>
                     
                     <div class="headings-section">
+                        <!-- 見出し構成の統計 -->
+                        <div class="headings-stats">
+                            <div class="stats-item">
+                                <span class="stats-icon">📚</span>
+                                <span class="stats-text">
+                                    <strong id="total-articles">10</strong>記事
+                                </span>
+                            </div>
+                            <div class="stats-item">
+                                <span class="stats-icon">📝</span>
+                                <span class="stats-text">
+                                    <strong id="total-headings">40</strong>見出し
+                                </span>
+                            </div>
+                            <div class="stats-item">
+                                <span class="stats-icon">⏱️</span>
+                                <span class="stats-text">
+                                    約<strong id="estimated-time">25</strong>分で生成
+                                </span>
+                            </div>
+                        </div>
+                        
+                        <!-- 見出し構成コントロール -->
+                        <div class="headings-controls">
+                            <div class="controls-left">
+                                <button class="btn btn-small btn-secondary" id="expand-all-btn">
+                                    <span class="btn-icon">📖</span>
+                                    すべて展開
+                                </button>
+                                <button class="btn btn-small btn-secondary" id="collapse-all-btn">
+                                    <span class="btn-icon">📕</span>
+                                    すべて折りたたみ
+                                </button>
+                                <button class="btn btn-small btn-secondary" id="regenerate-headings-btn">
+                                    <span class="btn-icon">🔄</span>
+                                    見出し再生成
+                                </button>
+                            </div>
+                            <div class="controls-right">
+                                <div class="view-toggle">
+                                    <button class="toggle-btn active" data-view="accordion">
+                                        <span class="btn-icon">📋</span>
+                                        アコーディオン
+                                    </button>
+                                    <button class="toggle-btn" data-view="list">
+                                        <span class="btn-icon">📄</span>
+                                        リスト
+                                    </button>
+                                </div>
+                            </div>
+                        </div>
+                        
+                        <!-- アコーディオンビュー -->
                         <div class="headings-accordion" id="headings-accordion">
                             <!-- 見出し構成がここに表示される -->
                         </div>
                         
-                        <button class="btn btn-primary" id="start-writing-btn">
-                            記事執筆を開始（時間がかかります）
-                        </button>
+                        <!-- リストビュー -->
+                        <div class="headings-list-view" id="headings-list-view" style="display: none;">
+                            <!-- リスト形式の見出し構成がここに表示される -->
+                        </div>
+                        
+                        <!-- アクションセクション -->
+                        <div class="action-section">
+                            <div class="headings-summary">
+                                <div class="summary-card">
+                                    <h4>📊 構成サマリー</h4>
+                                    <div class="summary-grid">
+                                        <div class="summary-item">
+                                            <span class="summary-label">平均見出し数</span>
+                                            <span class="summary-value" id="avg-headings">4.0</span>
+                                        </div>
+                                        <div class="summary-item">
+                                            <span class="summary-label">推定文字数</span>
+                                            <span class="summary-value" id="estimated-words">20,000</span>
+                                        </div>
+                                        <div class="summary-item">
+                                            <span class="summary-label">SEO最適化</span>
+                                            <span class="summary-value">✅ 完了</span>
+                                        </div>
+                                        <div class="summary-item">
+                                            <span class="summary-label">内部リンク</span>
+                                            <span class="summary-value" id="internal-links">45</span>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                            
+                            <button class="btn btn-primary btn-large" id="start-writing-btn">
+                                <span class="btn-icon">
+                                    <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                                        <path d="M12 2l3.09 6.26L22 9.27l-5 4.87 1.18 6.88L12 17.77l-6.18 3.25L7 14.14 2 9.27l6.91-1.01L12 2z"></path>
+                                    </svg>
+                                </span>
+                                記事執筆を開始（時間がかかります）
+                            </button>
+                            
+                            <div class="action-help">
+                                <p>🚀 次のステップで、各記事の本文を自動生成します</p>
+                                <p>💡 生成には約25分かかります。途中でブラウザを閉じないでください。</p>
+                            </div>
+                        </div>
                     </div>
                 </div>
 
@@ -214,24 +388,113 @@
                 <div class="step-content" id="step-4">
                     <div class="step-header">
                         <h2>記事を執筆中です</h2>
-                        <p>10記事の本文を生成しています。しばらくお待ちください。</p>
+                        <p>AIが各記事の本文を生成しています。生成には時間がかかりますが、しばらくお待ちください。<br>
+                        生成が完了した記事から順次プレビューできます。</p>
                     </div>
                     
                     <div class="progress-section">
-                        <div class="progress-bar-container">
-                            <div class="progress-bar">
-                                <div class="progress-fill" id="progress-fill"></div>
+                        <!-- 全体進捗表示 -->
+                        <div class="overall-progress-card">
+                            <div class="progress-header">
+                                <h3>
+                                    <span class="progress-icon">⚡</span>
+                                    記事生成進捗
+                                </h3>
+                                <div class="progress-status" id="progress-status">準備中...</div>
                             </div>
-                            <div class="progress-text" id="progress-text">記事 0/10 を作成中...</div>
+                            
+                            <div class="progress-bar-container">
+                                <div class="progress-bar">
+                                    <div class="progress-fill" id="progress-fill"></div>
+                                    <div class="progress-percentage" id="progress-percentage">0%</div>
+                                </div>
+                                <div class="progress-text" id="progress-text">記事 0/10 を作成中...</div>
+                            </div>
+                            
+                            <div class="progress-stats">
+                                <div class="stat-item">
+                                    <span class="stat-icon">✅</span>
+                                    <span class="stat-text">
+                                        完了: <strong id="completed-count">0</strong>記事
+                                    </span>
+                                </div>
+                                <div class="stat-item">
+                                    <span class="stat-icon">⏳</span>
+                                    <span class="stat-text">
+                                        残り: <strong id="remaining-count">10</strong>記事
+                                    </span>
+                                </div>
+                                <div class="stat-item">
+                                    <span class="stat-icon">🕒</span>
+                                    <span class="stat-text">
+                                        推定残り時間: <strong id="estimated-remaining">25分</strong>
+                                    </span>
+                                </div>
+                            </div>
                         </div>
                         
+                        <!-- 記事生成コントロール -->
+                        <div class="generation-controls">
+                            <div class="controls-left">
+                                <button class="btn btn-small btn-secondary" id="pause-generation-btn" style="display: none;">
+                                    <span class="btn-icon">⏸️</span>
+                                    一時停止
+                                </button>
+                                <button class="btn btn-small btn-secondary" id="resume-generation-btn" style="display: none;">
+                                    <span class="btn-icon">▶️</span>
+                                    再開
+                                </button>
+                                <button class="btn btn-small btn-secondary" id="cancel-generation-btn" style="display: none;">
+                                    <span class="btn-icon">⏹️</span>
+                                    キャンセル
+                                </button>
+                            </div>
+                            <div class="controls-right">
+                                <div class="generation-speed">
+                                    <span class="speed-label">生成速度:</span>
+                                    <span class="speed-value" id="generation-speed">2.4記事/分</span>
+                                </div>
+                            </div>
+                        </div>
+                        
+                        <!-- 記事カードグリッド -->
                         <div class="articles-grid" id="articles-grid">
                             <!-- 記事カードがここに表示される -->
                         </div>
                         
-                        <button class="btn btn-primary" id="proceed-to-quality-btn" style="display: none;">
-                            品質チェックへ
-                        </button>
+                        <!-- 完了アクション -->
+                        <div class="completion-section" id="completion-section" style="display: none;">
+                            <div class="completion-card">
+                                <div class="completion-icon">🎉</div>
+                                <h3>記事生成が完了しました！</h3>
+                                <p>全<span id="total-generated">10</span>記事の生成が正常に完了しました。次のステップで品質チェックを行います。</p>
+                                
+                                <div class="completion-stats">
+                                    <div class="completion-stat">
+                                        <span class="stat-number" id="total-words">20,000</span>
+                                        <span class="stat-label">総文字数</span>
+                                    </div>
+                                    <div class="completion-stat">
+                                        <span class="stat-number" id="total-time">24分</span>
+                                        <span class="stat-label">生成時間</span>
+                                    </div>
+                                    <div class="completion-stat">
+                                        <span class="stat-number">100%</span>
+                                        <span class="stat-label">成功率</span>
+                                    </div>
+                                </div>
+                                
+                                <button class="btn btn-primary btn-large" id="proceed-to-quality-btn">
+                                    <span class="btn-icon">
+                                        <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                                            <path d="M9 12l2 2 4-4"></path>
+                                            <circle cx="12" cy="12" r="10"></circle>
+                                        </svg>
+                                    </span>
+                                    品質チェックへ進む
+                                </button>
+                            </div>
+                        </div>
                     </div>
                 </div>
 
@@ -239,17 +502,119 @@
                 <div class="step-content" id="step-5">
                     <div class="step-header">
                         <h2>品質チェック</h2>
-                        <p>生成された記事の品質をチェックしています。</p>
+                        <p>生成された記事の品質をAIが自動チェックしています。<br>
+                        問題が検出された記事については、修正提案を確認して改善してください。</p>
                     </div>
                     
                     <div class="quality-check-section">
+                        <!-- 品質チェック統計 -->
+                        <div class="quality-stats-card">
+                            <div class="stats-header">
+                                <h3>
+                                    <span class="stats-icon">🔍</span>
+                                    品質チェック結果
+                                </h3>
+                                <div class="check-status" id="check-status">チェック中...</div>
+                            </div>
+                            
+                            <div class="quality-overview">
+                                <div class="overview-item success">
+                                    <div class="overview-number" id="passed-count">0</div>
+                                    <div class="overview-label">合格</div>
+                                </div>
+                                <div class="overview-item warning">
+                                    <div class="overview-number" id="warning-count">0</div>
+                                    <div class="overview-label">要注意</div>
+                                </div>
+                                <div class="overview-item error">
+                                    <div class="overview-number" id="failed-count">0</div>
+                                    <div class="overview-label">要修正</div>
+                                </div>
+                            </div>
+                            
+                            <div class="quality-progress">
+                                <div class="progress-bar">
+                                    <div class="progress-fill" id="quality-progress-fill"></div>
+                                </div>
+                                <div class="progress-text" id="quality-progress-text">品質チェック 0/10 完了</div>
+                            </div>
+                        </div>
+                        
+                        <!-- 品質チェックコントロール -->
+                        <div class="quality-controls">
+                            <div class="controls-left">
+                                <button class="btn btn-small btn-secondary" id="recheck-all-btn">
+                                    <span class="btn-icon">🔄</span>
+                                    全記事再チェック
+                                </button>
+                                <button class="btn btn-small btn-secondary" id="auto-fix-btn">
+                                    <span class="btn-icon">🛠️</span>
+                                    自動修正
+                                </button>
+                                <button class="btn btn-small btn-secondary" id="export-report-btn">
+                                    <span class="btn-icon">📊</span>
+                                    レポート出力
+                                </button>
+                            </div>
+                            <div class="controls-right">
+                                <div class="filter-toggle">
+                                    <button class="filter-btn active" data-filter="all">すべて</button>
+                                    <button class="filter-btn" data-filter="passed">合格</button>
+                                    <button class="filter-btn" data-filter="warning">要注意</button>
+                                    <button class="filter-btn" data-filter="failed">要修正</button>
+                                </div>
+                            </div>
+                        </div>
+                        
+                        <!-- 品質チェック結果リスト -->
                         <div class="quality-results" id="quality-results">
                             <!-- 品質チェック結果がここに表示される -->
                         </div>
                         
-                        <button class="btn btn-primary" id="create-pillar-btn">
-                            ピラーページを作成して統合
-                        </button>
+                        <!-- アクションセクション -->
+                        <div class="action-section">
+                            <div class="quality-summary">
+                                <div class="summary-card">
+                                    <h4>📋 品質サマリー</h4>
+                                    <div class="summary-grid">
+                                        <div class="summary-item">
+                                            <span class="summary-label">平均品質スコア</span>
+                                            <span class="summary-value" id="avg-quality-score">85%</span>
+                                        </div>
+                                        <div class="summary-item">
+                                            <span class="summary-label">SEO最適化率</span>
+                                            <span class="summary-value" id="seo-optimization">92%</span>
+                                        </div>
+                                        <div class="summary-item">
+                                            <span class="summary-label">読みやすさ</span>
+                                            <span class="summary-value" id="readability-score">良好</span>
+                                        </div>
+                                        <div class="summary-item">
+                                            <span class="summary-label">推定改善時間</span>
+                                            <span class="summary-value" id="improvement-time">15分</span>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                            
+                            <button class="btn btn-primary btn-large" id="create-pillar-btn">
+                                <span class="btn-icon">
+                                    <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                                        <path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"></path>
+                                        <polyline points="14,2 14,8 20,8"></polyline>
+                                        <line x1="16" y1="13" x2="8" y2="13"></line>
+                                        <line x1="16" y1="17" x2="8" y2="17"></line>
+                                        <polyline points="10,9 9,9 8,9"></polyline>
+                                    </svg>
+                                </span>
+                                ピラーページを作成して統合
+                            </button>
+                            
+                            <div class="action-help">
+                                <p>🚀 次のステップで、すべての記事を統合したピラーページを作成します</p>
+                                <p>💡 品質に問題がある記事も統合されますが、後から個別に修正できます</p>
+                            </div>
+                        </div>
                     </div>
                 </div>
 

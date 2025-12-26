@@ -55,29 +55,109 @@ class HubPilotApp {
             });
         });
         
-        // Step 2: 構成案確認
+        // Step 2: 構成案確認の強化
         const proceedToHeadingsBtn = document.getElementById('proceed-to-headings-btn');
+        const editPillarBtn = document.getElementById('edit-pillar-btn');
+        const addClusterBtn = document.getElementById('add-cluster-btn');
+        const regenerateClusterBtn = document.getElementById('regenerate-cluster-btn');
+        
         if (proceedToHeadingsBtn) {
             proceedToHeadingsBtn.addEventListener('click', () => this.proceedToHeadings());
         }
         
-        // Step 3: 見出し構成
+        if (editPillarBtn) {
+            editPillarBtn.addEventListener('click', () => this.editPillarPage());
+        }
+        
+        if (addClusterBtn) {
+            addClusterBtn.addEventListener('click', () => this.addClusterPage());
+        }
+        
+        if (regenerateClusterBtn) {
+            regenerateClusterBtn.addEventListener('click', () => this.regenerateClusterPages());
+        }
+        
+        // Step 3: 見出し構成の強化
         const startWritingBtn = document.getElementById('start-writing-btn');
+        const expandAllBtn = document.getElementById('expand-all-btn');
+        const collapseAllBtn = document.getElementById('collapse-all-btn');
+        const regenerateHeadingsBtn = document.getElementById('regenerate-headings-btn');
+        
         if (startWritingBtn) {
             startWritingBtn.addEventListener('click', () => this.startWriting());
         }
         
-        // Step 4: 記事執筆
+        if (expandAllBtn) {
+            expandAllBtn.addEventListener('click', () => this.expandAllAccordions());
+        }
+        
+        if (collapseAllBtn) {
+            collapseAllBtn.addEventListener('click', () => this.collapseAllAccordions());
+        }
+        
+        if (regenerateHeadingsBtn) {
+            regenerateHeadingsBtn.addEventListener('click', () => this.regenerateAllHeadings());
+        }
+        
+        // ビュー切り替え
+        document.querySelectorAll('.toggle-btn').forEach(btn => {
+            btn.addEventListener('click', (e) => {
+                const view = e.currentTarget.dataset.view;
+                this.switchHeadingsView(view);
+            });
+        });
+        
+        // Step 4: 記事執筆進捗の強化
         const proceedToQualityBtn = document.getElementById('proceed-to-quality-btn');
+        const pauseGenerationBtn = document.getElementById('pause-generation-btn');
+        const resumeGenerationBtn = document.getElementById('resume-generation-btn');
+        const cancelGenerationBtn = document.getElementById('cancel-generation-btn');
+        
         if (proceedToQualityBtn) {
             proceedToQualityBtn.addEventListener('click', () => this.proceedToQuality());
         }
         
-        // Step 5: 品質チェック
+        if (pauseGenerationBtn) {
+            pauseGenerationBtn.addEventListener('click', () => this.pauseGeneration());
+        }
+        
+        if (resumeGenerationBtn) {
+            resumeGenerationBtn.addEventListener('click', () => this.resumeGeneration());
+        }
+        
+        if (cancelGenerationBtn) {
+            cancelGenerationBtn.addEventListener('click', () => this.cancelGeneration());
+        }
+        
+        // Step 5: 品質チェックの強化
         const createPillarBtn = document.getElementById('create-pillar-btn');
+        const recheckAllBtn = document.getElementById('recheck-all-btn');
+        const autoFixBtn = document.getElementById('auto-fix-btn');
+        const exportReportBtn = document.getElementById('export-report-btn');
+        
         if (createPillarBtn) {
             createPillarBtn.addEventListener('click', () => this.createPillarPage());
         }
+        
+        if (recheckAllBtn) {
+            recheckAllBtn.addEventListener('click', () => this.recheckAllArticles());
+        }
+        
+        if (autoFixBtn) {
+            autoFixBtn.addEventListener('click', () => this.autoFixArticles());
+        }
+        
+        if (exportReportBtn) {
+            exportReportBtn.addEventListener('click', () => this.exportQualityReport());
+        }
+        
+        // フィルターボタン
+        document.querySelectorAll('.filter-btn').forEach(btn => {
+            btn.addEventListener('click', (e) => {
+                const filter = e.currentTarget.dataset.filter;
+                this.filterQualityResults(filter);
+            });
+        });
         
         // Step 6: 最終承認
         const downloadBtn = document.getElementById('download-all-btn');
@@ -276,7 +356,7 @@ class HubPilotApp {
         this.renderStructure();
     }
     
-    // 構成案の表示
+    // 構成案の表示（強化版）
     renderStructure() {
         const pillarTitle = document.getElementById('pillar-page-title');
         const clusterList = document.getElementById('cluster-pages-list');
@@ -290,16 +370,112 @@ class HubPilotApp {
             this.data.clusterPages.forEach((title, index) => {
                 const item = document.createElement('div');
                 item.className = 'cluster-page-item';
+                item.setAttribute('data-index', index + 1);
                 item.innerHTML = `
-                    <div class="cluster-page-title">${index + 1}. ${title}</div>
+                    <div class="cluster-page-content">
+                        <div class="cluster-page-title">${title}</div>
+                        <div class="cluster-page-meta">
+                            <span>📝 約2000文字</span>
+                            <span>🎯 SEO最適化</span>
+                        </div>
+                    </div>
                     <div class="cluster-page-actions">
-                        <button class="btn btn-small btn-secondary" onclick="app.editClusterPage(${index})">編集</button>
-                        <button class="btn btn-small btn-secondary" onclick="app.deleteClusterPage(${index})">削除</button>
+                        <button class="btn btn-small btn-secondary" onclick="app.editClusterPage(${index})">
+                            <span class="btn-icon">✏️</span>
+                            編集
+                        </button>
+                        <button class="btn btn-small btn-secondary" onclick="app.deleteClusterPage(${index})">
+                            <span class="btn-icon">🗑️</span>
+                            削除
+                        </button>
                     </div>
                 `;
                 clusterList.appendChild(item);
             });
         }
+        
+        // カウンターの更新
+        this.updateStructureCounts();
+    }
+    
+    // 構成カウンターの更新
+    updateStructureCounts() {
+        const clusterCount = this.data.clusterPages.length;
+        const totalCount = clusterCount + 1; // ピラーページ + クラスターページ
+        
+        const elements = {
+            'cluster-count': clusterCount,
+            'summary-cluster-count': clusterCount,
+            'summary-total-count': totalCount
+        };
+        
+        Object.entries(elements).forEach(([id, count]) => {
+            const element = document.getElementById(id);
+            if (element) {
+                element.textContent = count;
+            }
+        });
+    }
+    
+    // ピラーページの編集
+    editPillarPage() {
+        const currentTitle = this.data.pillarPage.title;
+        const newTitle = prompt('ピラーページのタイトルを編集してください:', currentTitle);
+        
+        if (newTitle && newTitle.trim() && newTitle.trim() !== currentTitle) {
+            this.data.pillarPage.title = newTitle.trim();
+            this.saveData();
+            this.renderStructure();
+            this.showNotification('ピラーページタイトルを更新しました', 'success');
+        }
+    }
+    
+    // クラスターページの追加
+    addClusterPage() {
+        const newTitle = prompt('新しいクラスターページのタイトルを入力してください:');
+        
+        if (newTitle && newTitle.trim()) {
+            this.data.clusterPages.push(newTitle.trim());
+            this.saveData();
+            this.renderStructure();
+            this.showNotification('クラスターページを追加しました', 'success');
+        }
+    }
+    
+    // クラスターページの再生成
+    async regenerateClusterPages() {
+        if (!confirm('クラスターページを再生成しますか？現在の内容は失われます。')) {
+            return;
+        }
+        
+        this.showLoading('クラスターページを再生成中...');
+        
+        await this.delay(2000);
+        
+        const theme = this.data.theme;
+        const variations = [
+            '基本概念と重要性',
+            '始めるための準備と必要なツール',
+            '効果的な戦略立案方法',
+            'ベストプラクティス10選',
+            'よくある失敗とその対策',
+            '成功事例とケーススタディ',
+            '最新トレンドと将来展望',
+            'ROI測定と効果分析',
+            '役立つツールとリソース',
+            'エキスパートが教える上級テクニック',
+            '初心者向け完全ガイド',
+            '実践的な活用方法'
+        ];
+        
+        // ランダムに10個選択
+        const shuffled = variations.sort(() => 0.5 - Math.random());
+        this.data.clusterPages = shuffled.slice(0, 10).map(variation => `${theme}の${variation}`);
+        
+        this.saveData();
+        this.hideLoading();
+        this.renderStructure();
+        this.showNotification('クラスターページを再生成しました', 'success');
     }
     
     // 見出し構成へ進む（Step 2 → Step 3）
@@ -325,9 +501,11 @@ class HubPilotApp {
         this.renderHeadings();
     }
     
-    // 見出し構成の表示
+    // 見出し構成の表示（強化版）
     renderHeadings() {
         const accordion = document.getElementById('headings-accordion');
+        const listView = document.getElementById('headings-list-view');
+        
         if (!accordion) return;
         
         accordion.innerHTML = '';
@@ -337,68 +515,309 @@ class HubPilotApp {
             item.className = 'accordion-item';
             
             const headings = this.data.headings[index] || [];
-            const headingsHTML = headings.map(heading => 
-                `<div class="heading-item">H2: ${heading}</div>`
+            const headingsHTML = headings.map((heading, hIndex) => 
+                `<div class="heading-item">
+                    <div class="heading-content">
+                        <div class="heading-level">H2</div>
+                        <div class="heading-text">${heading}</div>
+                    </div>
+                    <div class="heading-actions">
+                        <button class="btn btn-small btn-secondary" onclick="app.editHeading(${index}, ${hIndex})">
+                            <span class="btn-icon">✏️</span>
+                        </button>
+                        <button class="btn btn-small btn-secondary" onclick="app.deleteHeading(${index}, ${hIndex})">
+                            <span class="btn-icon">🗑️</span>
+                        </button>
+                    </div>
+                </div>`
             ).join('');
             
             item.innerHTML = `
-                <div class="accordion-header" onclick="app.toggleAccordion(${index})">
-                    <h4>${index + 1}. ${title}</h4>
+                <div class="accordion-header" onclick="app.toggleAccordion(${index})" data-index="${index + 1}">
+                    <div class="accordion-title">${title}</div>
+                    <div class="accordion-meta">
+                        <span>📝 ${headings.length}見出し</span>
+                        <span>⏱️ 約${Math.ceil(headings.length * 0.5)}分</span>
+                    </div>
                     <span class="accordion-icon">▼</span>
                 </div>
                 <div class="accordion-content" id="accordion-content-${index}">
                     <div class="headings-list">
                         ${headingsHTML}
+                        <button class="btn btn-small btn-secondary" onclick="app.addHeading(${index})" style="margin-top: 1rem;">
+                            <span class="btn-icon">➕</span>
+                            見出しを追加
+                        </button>
                     </div>
                 </div>
             `;
             
             accordion.appendChild(item);
         });
+        
+        // リストビューも更新
+        this.renderHeadingsListView();
+        
+        // 統計を更新
+        this.updateHeadingsStats();
     }
     
-    // アコーディオンの開閉
+    // リストビューの表示
+    renderHeadingsListView() {
+        const listView = document.getElementById('headings-list-view');
+        if (!listView) return;
+        
+        listView.innerHTML = '';
+        
+        this.data.clusterPages.forEach((title, index) => {
+            const headings = this.data.headings[index] || [];
+            
+            const article = document.createElement('div');
+            article.className = 'list-view-article';
+            
+            const headingsHTML = headings.map(heading => 
+                `<div class="list-view-heading">H2: ${heading}</div>`
+            ).join('');
+            
+            article.innerHTML = `
+                <div class="list-view-title">
+                    <span>${index + 1}.</span>
+                    ${title}
+                </div>
+                <div class="list-view-headings">
+                    ${headingsHTML}
+                </div>
+            `;
+            
+            listView.appendChild(article);
+        });
+    }
+    
+    // 見出し統計の更新
+    updateHeadingsStats() {
+        const totalArticles = this.data.clusterPages.length;
+        const totalHeadings = Object.values(this.data.headings).reduce((sum, headings) => sum + headings.length, 0);
+        const avgHeadings = totalHeadings / totalArticles;
+        const estimatedTime = Math.ceil(totalHeadings * 0.6); // 見出し1つあたり約0.6分
+        const estimatedWords = totalHeadings * 500; // 見出し1つあたり約500文字
+        const internalLinks = Math.ceil(totalHeadings * 1.1); // 見出し1つあたり約1.1個のリンク
+        
+        const updates = {
+            'total-articles': totalArticles,
+            'total-headings': totalHeadings,
+            'estimated-time': estimatedTime,
+            'avg-headings': avgHeadings.toFixed(1),
+            'estimated-words': estimatedWords.toLocaleString(),
+            'internal-links': internalLinks
+        };
+        
+        Object.entries(updates).forEach(([id, value]) => {
+            const element = document.getElementById(id);
+            if (element) {
+                element.textContent = value;
+            }
+        });
+    }
+    
+    // アコーディオンの開閉（強化版）
     toggleAccordion(index) {
         const content = document.getElementById(`accordion-content-${index}`);
         const header = content.previousElementSibling;
         const icon = header.querySelector('.accordion-icon');
+        const item = header.parentElement;
         
-        if (content.classList.contains('active')) {
+        const isActive = content.classList.contains('active');
+        
+        if (isActive) {
             content.classList.remove('active');
             header.classList.remove('active');
+            item.classList.remove('active');
             icon.textContent = '▼';
         } else {
-            // 他のアコーディオンを閉じる
-            document.querySelectorAll('.accordion-content.active').forEach(item => {
-                item.classList.remove('active');
-                item.previousElementSibling.classList.remove('active');
-                item.previousElementSibling.querySelector('.accordion-icon').textContent = '▼';
-            });
-            
             content.classList.add('active');
             header.classList.add('active');
+            item.classList.add('active');
             icon.textContent = '▲';
         }
     }
     
-    // 記事執筆開始（Step 3 → Step 4）
-    async startWriting() {
-        this.goToStep(4);
-        this.renderArticlesGrid();
+    // すべてのアコーディオンを展開
+    expandAllAccordions() {
+        document.querySelectorAll('.accordion-content').forEach((content, index) => {
+            const header = content.previousElementSibling;
+            const icon = header.querySelector('.accordion-icon');
+            const item = header.parentElement;
+            
+            content.classList.add('active');
+            header.classList.add('active');
+            item.classList.add('active');
+            icon.textContent = '▲';
+        });
         
-        // 記事を順次生成
-        for (let i = 0; i < this.data.clusterPages.length; i++) {
-            await this.generateArticle(i);
+        this.showNotification('すべての記事を展開しました', 'success', 2000);
+    }
+    
+    // すべてのアコーディオンを折りたたみ
+    collapseAllAccordions() {
+        document.querySelectorAll('.accordion-content').forEach((content, index) => {
+            const header = content.previousElementSibling;
+            const icon = header.querySelector('.accordion-icon');
+            const item = header.parentElement;
+            
+            content.classList.remove('active');
+            header.classList.remove('active');
+            item.classList.remove('active');
+            icon.textContent = '▼';
+        });
+        
+        this.showNotification('すべての記事を折りたたみました', 'success', 2000);
+    }
+    
+    // ビュー切り替え
+    switchHeadingsView(view) {
+        const accordionView = document.getElementById('headings-accordion');
+        const listView = document.getElementById('headings-list-view');
+        const toggleBtns = document.querySelectorAll('.toggle-btn');
+        
+        // ボタンの状態更新
+        toggleBtns.forEach(btn => {
+            btn.classList.toggle('active', btn.dataset.view === view);
+        });
+        
+        // ビューの切り替え
+        if (view === 'accordion') {
+            accordionView.style.display = 'flex';
+            listView.style.display = 'none';
+        } else {
+            accordionView.style.display = 'none';
+            listView.style.display = 'block';
         }
         
-        // 完了ボタンを表示
-        const proceedBtn = document.getElementById('proceed-to-quality-btn');
-        if (proceedBtn) {
-            proceedBtn.style.display = 'block';
+        this.showNotification(`${view === 'accordion' ? 'アコーディオン' : 'リスト'}ビューに切り替えました`, 'info', 2000);
+    }
+    
+    // 見出しの編集
+    editHeading(articleIndex, headingIndex) {
+        const currentHeading = this.data.headings[articleIndex][headingIndex];
+        const newHeading = prompt('見出しを編集してください:', currentHeading);
+        
+        if (newHeading && newHeading.trim() && newHeading.trim() !== currentHeading) {
+            this.data.headings[articleIndex][headingIndex] = newHeading.trim();
+            this.saveData();
+            this.renderHeadings();
+            this.showNotification('見出しを更新しました', 'success');
         }
     }
     
-    // 記事グリッドの表示
+    // 見出しの削除
+    deleteHeading(articleIndex, headingIndex) {
+        const heading = this.data.headings[articleIndex][headingIndex];
+        const shortHeading = heading.length > 30 ? heading.substring(0, 30) + '...' : heading;
+        
+        if (confirm(`見出し「${shortHeading}」を削除しますか？`)) {
+            this.data.headings[articleIndex].splice(headingIndex, 1);
+            this.saveData();
+            this.renderHeadings();
+            this.showNotification('見出しを削除しました', 'success');
+        }
+    }
+    
+    // 見出しの追加
+    addHeading(articleIndex) {
+        const newHeading = prompt('新しい見出しを入力してください:');
+        
+        if (newHeading && newHeading.trim()) {
+            this.data.headings[articleIndex].push(newHeading.trim());
+            this.saveData();
+            this.renderHeadings();
+            this.showNotification('見出しを追加しました', 'success');
+        }
+    }
+    
+    // すべての見出しを再生成
+    async regenerateAllHeadings() {
+        if (!confirm('すべての見出しを再生成しますか？現在の見出しは失われます。')) {
+            return;
+        }
+        
+        this.showLoading('見出しを再生成中...');
+        
+        await this.delay(2500);
+        
+        // 見出しのバリエーション
+        const headingTemplates = [
+            '基本的な考え方と重要性',
+            '実践的なアプローチと手法',
+            '成功のためのポイントと注意点',
+            'よくある課題と解決策',
+            '効果的な活用方法',
+            '最新のトレンドと動向',
+            '具体的な事例と実績',
+            'まとめと次のステップ'
+        ];
+        
+        // 各クラスターページの見出しを再生成
+        this.data.headings = {};
+        this.data.clusterPages.forEach((title, index) => {
+            const baseTheme = title.replace(/の.*/, '');
+            const shuffled = headingTemplates.sort(() => 0.5 - Math.random());
+            const selectedTemplates = shuffled.slice(0, 3 + Math.floor(Math.random() * 2)); // 3-4個
+            
+            this.data.headings[index] = selectedTemplates.map(template => 
+                `${baseTheme}の${template}`
+            );
+        });
+        
+        this.saveData();
+        this.hideLoading();
+        this.renderHeadings();
+        this.showNotification('すべての見出しを再生成しました', 'success');
+    }
+    
+    // 記事執筆開始（Step 3 → Step 4）強化版
+    async startWriting() {
+        this.goToStep(4);
+        this.renderArticlesGrid();
+        this.initializeGenerationControls();
+        
+        // 生成開始時刻を記録
+        this.generationStartTime = Date.now();
+        this.generationPaused = false;
+        this.generationCancelled = false;
+        
+        // 記事を順次生成
+        for (let i = 0; i < this.data.clusterPages.length; i++) {
+            if (this.generationCancelled) break;
+            
+            // 一時停止中は待機
+            while (this.generationPaused && !this.generationCancelled) {
+                await this.delay(500);
+            }
+            
+            if (!this.generationCancelled) {
+                await this.generateArticle(i);
+            }
+        }
+        
+        if (!this.generationCancelled) {
+            this.showCompletionSection();
+        }
+    }
+    
+    // 生成コントロールの初期化
+    initializeGenerationControls() {
+        const pauseBtn = document.getElementById('pause-generation-btn');
+        const resumeBtn = document.getElementById('resume-generation-btn');
+        const cancelBtn = document.getElementById('cancel-generation-btn');
+        const progressStatus = document.getElementById('progress-status');
+        
+        if (pauseBtn) pauseBtn.style.display = 'inline-flex';
+        if (resumeBtn) resumeBtn.style.display = 'none';
+        if (cancelBtn) cancelBtn.style.display = 'inline-flex';
+        if (progressStatus) progressStatus.textContent = '生成中...';
+    }
+    
+    // 記事グリッドの表示（強化版）
     renderArticlesGrid() {
         const grid = document.getElementById('articles-grid');
         if (!grid) return;
@@ -407,131 +826,711 @@ class HubPilotApp {
         
         this.data.clusterPages.forEach((title, index) => {
             const card = document.createElement('div');
-            card.className = 'article-card';
+            card.className = 'article-card pending';
             card.id = `article-card-${index}`;
             
             card.innerHTML = `
                 <div class="article-header">
-                    <div class="article-title">${index + 1}. ${title}</div>
+                    <div class="article-number">${index + 1}</div>
+                    <div class="article-title">${title}</div>
                     <div class="article-status status-pending" id="status-${index}">待機中</div>
+                </div>
+                <div class="article-meta">
+                    <span>📝 推定2000文字</span>
+                    <span>⏱️ 約2.5分</span>
+                </div>
+                <div class="article-progress">
+                    <div class="article-progress-fill" id="progress-${index}"></div>
                 </div>
                 <div class="article-preview" id="preview-${index}">
                     記事生成待機中...
+                </div>
+                <div class="article-actions">
+                    <button class="btn btn-small btn-secondary" onclick="app.previewArticle(${index})">
+                        <span class="btn-icon">👁️</span>
+                        プレビュー
+                    </button>
+                    <button class="btn btn-small btn-secondary" onclick="app.editArticle(${index})">
+                        <span class="btn-icon">✏️</span>
+                        編集
+                    </button>
                 </div>
             `;
             
             grid.appendChild(card);
         });
+        
+        // 統計を初期化
+        this.updateProgressStats();
     }
     
-    // 個別記事の生成
+    // 個別記事の生成（強化版）
     async generateArticle(index) {
         const card = document.getElementById(`article-card-${index}`);
         const status = document.getElementById(`status-${index}`);
         const preview = document.getElementById(`preview-${index}`);
-        const progressFill = document.getElementById('progress-fill');
+        const progressFill = document.getElementById(`progress-${index}`);
+        const overallProgressFill = document.getElementById('progress-fill');
         const progressText = document.getElementById('progress-text');
+        const progressPercentage = document.getElementById('progress-percentage');
         
         // 進行中状態に更新
-        card.classList.add('in-progress');
+        card.className = 'article-card in-progress';
         status.className = 'article-status status-in-progress';
         status.textContent = '生成中';
-        preview.textContent = '記事を生成しています...';
+        preview.textContent = 'AIが記事を生成しています...';
         
         // プログレスバー更新
         progressText.textContent = `記事 ${index + 1}/10 を作成中...`;
         
-        // 2-4秒の生成時間をシミュレート
-        await this.delay(2000 + Math.random() * 2000);
+        // 段階的な進捗表示
+        const progressSteps = [20, 40, 60, 80, 100];
+        for (const step of progressSteps) {
+            if (this.generationCancelled || this.generationPaused) break;
+            
+            progressFill.style.width = `${step}%`;
+            await this.delay(400 + Math.random() * 400);
+        }
+        
+        // 最終的な生成時間（2-4秒）
+        const finalDelay = 1000 + Math.random() * 2000;
+        await this.delay(finalDelay);
+        
+        if (this.generationCancelled) return;
         
         // 完了状態に更新
-        card.classList.remove('in-progress');
-        card.classList.add('completed');
+        card.className = 'article-card completed';
         status.className = 'article-status status-completed';
         status.textContent = '完了';
+        progressFill.className = 'article-progress-fill completed';
         
         // モック記事内容
-        const mockContent = `${this.data.clusterPages[index]}について詳しく解説します。この記事では、基本的な概念から実践的な手法まで、幅広くカバーしています。約2000文字の充実した内容で、読者の理解を深めることができます...`;
-        
-        preview.textContent = mockContent.substring(0, 100) + '...';
+        const mockContent = this.generateMockArticleContent(this.data.clusterPages[index]);
+        preview.textContent = mockContent.substring(0, 120) + '...';
+        preview.classList.add('has-content');
         
         // 記事データを保存
         this.data.articles[index] = {
             title: this.data.clusterPages[index],
             content: mockContent,
-            wordCount: 2000 + Math.floor(Math.random() * 400) - 200, // 1800-2200文字
-            status: 'completed'
+            wordCount: 1800 + Math.floor(Math.random() * 400), // 1800-2200文字
+            status: 'completed',
+            generatedAt: new Date().toISOString()
         };
         
-        // プログレスバー更新
+        // 全体プログレスバー更新
         const progress = ((index + 1) / this.data.clusterPages.length) * 100;
-        progressFill.style.width = `${progress}%`;
+        overallProgressFill.style.width = `${progress}%`;
+        progressPercentage.textContent = `${Math.round(progress)}%`;
+        
+        // 統計更新
+        this.updateProgressStats();
+        this.updateGenerationSpeed();
         
         if (index === this.data.clusterPages.length - 1) {
             progressText.textContent = '全記事の生成が完了しました！';
+            const progressStatus = document.getElementById('progress-status');
+            if (progressStatus) progressStatus.textContent = '完了';
         }
         
         this.saveData();
     }
     
-    // 品質チェックへ進む（Step 4 → Step 5）
+    // モック記事コンテンツの生成
+    generateMockArticleContent(title) {
+        const templates = [
+            `${title}について詳しく解説します。この記事では、基本的な概念から実践的な手法まで、幅広くカバーしています。`,
+            `${title}は現代のビジネスにおいて重要な要素です。効果的な活用方法を具体例とともに紹介します。`,
+            `${title}を成功させるためには、戦略的なアプローチが必要です。専門家の視点から詳しく説明します。`,
+            `${title}の最新動向と実践的なノウハウを、豊富な事例とともにお伝えします。`
+        ];
+        
+        const randomTemplate = templates[Math.floor(Math.random() * templates.length)];
+        const additionalContent = `
+
+## 主要なポイント
+
+1. **基本理解**: ${title}の基礎知識を身につける
+2. **実践応用**: 具体的な活用方法を学ぶ
+3. **効果測定**: 成果を適切に評価する
+4. **継続改善**: 長期的な成功を目指す
+
+## まとめ
+
+${title}を効果的に活用することで、ビジネスの成長を加速させることができます。継続的な学習と実践を通じて、より良い結果を目指しましょう。`;
+        
+        return randomTemplate + additionalContent;
+    }
+    
+    // 進捗統計の更新
+    updateProgressStats() {
+        const completedCount = this.data.articles.filter(a => a && a.status === 'completed').length;
+        const remainingCount = this.data.clusterPages.length - completedCount;
+        const estimatedRemaining = Math.max(0, remainingCount * 2.5); // 記事1つあたり2.5分
+        
+        const elements = {
+            'completed-count': completedCount,
+            'remaining-count': remainingCount,
+            'estimated-remaining': `${Math.ceil(estimatedRemaining)}分`
+        };
+        
+        Object.entries(elements).forEach(([id, value]) => {
+            const element = document.getElementById(id);
+            if (element) {
+                element.textContent = value;
+            }
+        });
+    }
+    
+    // 生成速度の更新
+    updateGenerationSpeed() {
+        if (!this.generationStartTime) return;
+        
+        const completedCount = this.data.articles.filter(a => a && a.status === 'completed').length;
+        const elapsedMinutes = (Date.now() - this.generationStartTime) / (1000 * 60);
+        const speed = completedCount / Math.max(elapsedMinutes, 0.1);
+        
+        const speedElement = document.getElementById('generation-speed');
+        if (speedElement) {
+            speedElement.textContent = `${speed.toFixed(1)}記事/分`;
+        }
+    }
+    
+    // 完了セクションの表示
+    showCompletionSection() {
+        const completionSection = document.getElementById('completion-section');
+        const totalWords = this.data.articles.reduce((sum, article) => sum + (article?.wordCount || 0), 0);
+        const totalTime = Math.ceil((Date.now() - this.generationStartTime) / (1000 * 60));
+        
+        // 統計を更新
+        const elements = {
+            'total-generated': this.data.articles.length,
+            'total-words': totalWords.toLocaleString(),
+            'total-time': `${totalTime}分`
+        };
+        
+        Object.entries(elements).forEach(([id, value]) => {
+            const element = document.getElementById(id);
+            if (element) {
+                element.textContent = value;
+            }
+        });
+        
+        if (completionSection) {
+            completionSection.style.display = 'block';
+            
+            // アニメーション効果
+            setTimeout(() => {
+                completionSection.scrollIntoView({ behavior: 'smooth', block: 'center' });
+            }, 500);
+        }
+        
+        // コントロールボタンを非表示
+        const controlBtns = ['pause-generation-btn', 'resume-generation-btn', 'cancel-generation-btn'];
+        controlBtns.forEach(id => {
+            const btn = document.getElementById(id);
+            if (btn) btn.style.display = 'none';
+        });
+    }
+    
+    // 生成の一時停止
+    pauseGeneration() {
+        this.generationPaused = true;
+        
+        const pauseBtn = document.getElementById('pause-generation-btn');
+        const resumeBtn = document.getElementById('resume-generation-btn');
+        const progressStatus = document.getElementById('progress-status');
+        
+        if (pauseBtn) pauseBtn.style.display = 'none';
+        if (resumeBtn) resumeBtn.style.display = 'inline-flex';
+        if (progressStatus) progressStatus.textContent = '一時停止中...';
+        
+        this.showNotification('記事生成を一時停止しました', 'info');
+    }
+    
+    // 生成の再開
+    resumeGeneration() {
+        this.generationPaused = false;
+        
+        const pauseBtn = document.getElementById('pause-generation-btn');
+        const resumeBtn = document.getElementById('resume-generation-btn');
+        const progressStatus = document.getElementById('progress-status');
+        
+        if (pauseBtn) pauseBtn.style.display = 'inline-flex';
+        if (resumeBtn) resumeBtn.style.display = 'none';
+        if (progressStatus) progressStatus.textContent = '生成中...';
+        
+        this.showNotification('記事生成を再開しました', 'success');
+    }
+    
+    // 生成のキャンセル
+    cancelGeneration() {
+        if (!confirm('記事生成をキャンセルしますか？進行中の作業は失われます。')) {
+            return;
+        }
+        
+        this.generationCancelled = true;
+        this.generationPaused = false;
+        
+        const progressStatus = document.getElementById('progress-status');
+        if (progressStatus) progressStatus.textContent = 'キャンセル済み';
+        
+        // コントロールボタンを非表示
+        const controlBtns = ['pause-generation-btn', 'resume-generation-btn', 'cancel-generation-btn'];
+        controlBtns.forEach(id => {
+            const btn = document.getElementById(id);
+            if (btn) btn.style.display = 'none';
+        });
+        
+        this.showNotification('記事生成をキャンセルしました', 'warning');
+    }
+    
+    // 記事プレビュー
+    previewArticle(index) {
+        const article = this.data.articles[index];
+        if (!article) {
+            this.showNotification('記事がまだ生成されていません', 'warning');
+            return;
+        }
+        
+        // モーダルまたは新しいウィンドウでプレビュー表示
+        const previewWindow = window.open('', '_blank', 'width=800,height=600');
+        previewWindow.document.write(`
+            <html>
+                <head>
+                    <title>${article.title} - プレビュー</title>
+                    <style>
+                        body { font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif; 
+                               max-width: 800px; margin: 0 auto; padding: 2rem; line-height: 1.6; }
+                        h1 { color: #2d3748; border-bottom: 2px solid #ff7a59; padding-bottom: 1rem; }
+                        h2 { color: #4a5568; margin-top: 2rem; }
+                        p { color: #718096; }
+                    </style>
+                </head>
+                <body>
+                    <h1>${article.title}</h1>
+                    <p><strong>文字数:</strong> ${article.wordCount}文字</p>
+                    <div>${article.content.replace(/\n/g, '<br>')}</div>
+                </body>
+            </html>
+        `);
+        previewWindow.document.close();
+    }
+    
+    // 記事編集
+    editArticle(index) {
+        const article = this.data.articles[index];
+        if (!article) {
+            this.showNotification('記事がまだ生成されていません', 'warning');
+            return;
+        }
+        
+        this.showNotification('記事編集機能は実装予定です（フェーズ2）', 'info');
+    }
+    
+    // 品質チェックへ進む（Step 4 → Step 5）強化版
     async proceedToQuality() {
+        this.goToStep(5);
+        
+        // 品質チェック進捗の初期化
+        const checkStatus = document.getElementById('check-status');
+        const qualityProgressFill = document.getElementById('quality-progress-fill');
+        const qualityProgressText = document.getElementById('quality-progress-text');
+        
+        if (checkStatus) checkStatus.textContent = 'チェック中...';
+        if (qualityProgressFill) qualityProgressFill.style.width = '0%';
+        if (qualityProgressText) qualityProgressText.textContent = '品質チェック 0/10 完了';
+        
         this.showLoading('品質チェック中...');
         
-        await this.delay(2000);
+        // 品質チェック開始時刻を記録
+        this.qualityCheckStartTime = Date.now();
+        
+        await this.delay(1500);
         
         // 品質チェック結果を生成
-        this.data.qualityChecks = this.data.articles.map((article, index) => ({
-            articleIndex: index,
-            wordCount: { status: 'OK', value: article.wordCount },
-            factCheck: { 
-                status: Math.random() > 0.7 ? '要修正' : 'OK',
-                issues: Math.random() > 0.7 ? ['統計データの確認が必要', '引用元の追加を推奨'] : []
+        this.data.qualityChecks = this.data.articles.map((article, index) => {
+            const wordCount = article.wordCount;
+            const score = 70 + Math.random() * 25; // 70-95点のランダムスコア
+            
+            // スコアに基づいて品質レベルを決定
+            let qualityLevel, issues = [], suggestions = [];
+            
+            if (score >= 85) {
+                qualityLevel = 'passed';
+                suggestions = [
+                    '素晴らしい品質です。そのまま公開できます。',
+                    'SEO最適化も適切に行われています。'
+                ];
+            } else if (score >= 70) {
+                qualityLevel = 'warning';
+                issues = [
+                    '一部のセクションでより詳細な説明が必要です',
+                    'キーワード密度を調整することを推奨します'
+                ];
+                suggestions = [
+                    '具体例を追加して内容を充実させてください',
+                    'メタディスクリプションを最適化してください'
+                ];
+            } else {
+                qualityLevel = 'failed';
+                issues = [
+                    '文字数が推奨範囲を下回っています',
+                    'SEOキーワードの使用頻度が不適切です',
+                    '読みやすさの改善が必要です'
+                ];
+                suggestions = [
+                    '内容をより詳しく展開してください',
+                    'キーワードを自然に組み込んでください',
+                    '段落構成を見直してください'
+                ];
             }
-        }));
+            
+            return {
+                articleIndex: index,
+                score: Math.round(score),
+                qualityLevel: qualityLevel,
+                wordCount: { 
+                    status: wordCount >= 1800 && wordCount <= 2200 ? 'passed' : 'warning', 
+                    value: wordCount 
+                },
+                seoCheck: { 
+                    status: score >= 80 ? 'passed' : 'warning',
+                    score: Math.round(score * 0.9)
+                },
+                readability: { 
+                    status: score >= 75 ? 'passed' : 'warning',
+                    score: Math.round(score * 1.1)
+                },
+                factCheck: { 
+                    status: Math.random() > 0.3 ? 'passed' : 'warning',
+                    issues: Math.random() > 0.3 ? [] : ['統計データの確認が必要']
+                },
+                issues: issues,
+                suggestions: suggestions
+            };
+        });
         
         this.saveData();
         this.hideLoading();
-        this.goToStep(5);
         this.renderQualityResults();
+        this.updateQualityStats();
+        
+        // 成功通知
+        this.showNotification('品質チェックが完了しました', 'success');
     }
     
-    // 品質チェック結果の表示
+    // 品質チェック結果の表示（強化版）
     renderQualityResults() {
         const results = document.getElementById('quality-results');
         if (!results) return;
         
+        // 品質チェックデータが存在しない場合の処理
+        if (!this.data.qualityChecks || this.data.qualityChecks.length === 0) {
+            results.innerHTML = `
+                <div style="text-align: center; padding: 2rem; color: var(--dark-gray);">
+                    <p>品質チェックデータがありません。</p>
+                    <button class="btn btn-primary" onclick="app.proceedToQuality()">品質チェックを開始</button>
+                </div>
+            `;
+            return;
+        }
+        
         results.innerHTML = '';
         
         this.data.qualityChecks.forEach((check, index) => {
-            const hasIssues = check.factCheck.status === '要修正';
+            const article = this.data.articles[index];
             const item = document.createElement('div');
-            item.className = `quality-item ${hasIssues ? 'warning' : 'ok'}`;
+            item.className = `quality-item ${check.qualityLevel}`;
+            item.setAttribute('data-filter', check.qualityLevel);
             
-            const issuesHTML = hasIssues ? 
-                `<div class="quality-issues">
-                    <strong>修正提案:</strong>
+            // チェック項目の生成
+            const checksHTML = [
+                { name: '文字数', status: check.wordCount.status, value: `${check.wordCount.value}文字` },
+                { name: 'SEO最適化', status: check.seoCheck.status, value: `${check.seoCheck.score}点` },
+                { name: '読みやすさ', status: check.readability.status, value: `${check.readability.score}点` },
+                { name: 'ファクトチェック', status: check.factCheck.status, value: check.factCheck.issues.length === 0 ? '問題なし' : '要確認' }
+            ].map(checkItem => `
+                <div class="check-item ${checkItem.status}">
+                    <span class="check-icon">${checkItem.status === 'passed' ? '✅' : checkItem.status === 'warning' ? '⚠️' : '❌'}</span>
+                    <div>
+                        <div>${checkItem.name}</div>
+                        <div style="font-size: 0.75rem; color: var(--dark-gray);">${checkItem.value}</div>
+                    </div>
+                </div>
+            `).join('');
+            
+            const issuesHTML = check.issues.length > 0 ? `
+                <div class="quality-issues">
+                    <h5>🚨 検出された問題</h5>
                     <ul>
-                        ${check.factCheck.issues.map(issue => `<li>${issue}</li>`).join('')}
+                        ${check.issues.map(issue => `<li>${issue}</li>`).join('')}
                     </ul>
-                </div>` : '';
+                </div>
+            ` : '';
+            
+            const suggestionsHTML = check.suggestions.length > 0 ? `
+                <div class="quality-suggestions">
+                    <h5>💡 改善提案</h5>
+                    <ul>
+                        ${check.suggestions.map(suggestion => `<li>${suggestion}</li>`).join('')}
+                    </ul>
+                </div>
+            ` : '';
+            
+            const badgeClass = check.qualityLevel === 'passed' ? 'badge-passed' : 
+                              check.qualityLevel === 'warning' ? 'badge-warning' : 'badge-failed';
+            const badgeText = check.qualityLevel === 'passed' ? '合格' : 
+                             check.qualityLevel === 'warning' ? '要注意' : '要修正';
             
             item.innerHTML = `
+                <div class="quality-score ${check.qualityLevel}" style="--score: ${check.score}">
+                    ${check.score}
+                </div>
                 <div class="quality-header">
-                    <h4>${index + 1}. ${this.data.articles[index].title}</h4>
-                    <div class="quality-badge ${hasIssues ? 'badge-warning' : 'badge-ok'}">
-                        ${hasIssues ? '要修正' : 'OK'}
+                    <div class="quality-article-info">
+                        <div class="quality-article-number">${index + 1}</div>
+                        <div class="quality-article-title">${article.title}</div>
+                        <div class="quality-article-meta">
+                            <span>📝 ${article.wordCount}文字</span>
+                            <span>⏱️ 生成済み</span>
+                            <span>🎯 品質スコア: ${check.score}点</span>
+                        </div>
+                    </div>
+                    <div class="quality-badge ${badgeClass}">
+                        ${badgeText}
                     </div>
                 </div>
                 <div class="quality-details">
-                    <p><strong>文字数:</strong> ${check.wordCount.value}文字 (${check.wordCount.status})</p>
-                    <p><strong>ファクトチェック:</strong> ${check.factCheck.status}</p>
+                    <div class="quality-checks">
+                        ${checksHTML}
+                    </div>
                     ${issuesHTML}
+                    ${suggestionsHTML}
+                </div>
+                <div class="quality-actions">
+                    <button class="btn btn-small btn-secondary" onclick="app.previewArticle(${index})">
+                        <span class="btn-icon">👁️</span>
+                        プレビュー
+                    </button>
+                    <button class="btn btn-small btn-secondary" onclick="app.fixArticle(${index})">
+                        <span class="btn-icon">🛠️</span>
+                        修正
+                    </button>
+                    <button class="btn btn-small btn-secondary" onclick="app.recheckArticle(${index})">
+                        <span class="btn-icon">🔄</span>
+                        再チェック
+                    </button>
                 </div>
             `;
             
             results.appendChild(item);
         });
+    }
+    
+    // 品質統計の更新
+    updateQualityStats() {
+        // 品質チェックデータが存在しない場合の処理
+        if (!this.data.qualityChecks || this.data.qualityChecks.length === 0) {
+            const updates = {
+                'passed-count': 0,
+                'warning-count': 0,
+                'failed-count': 0,
+                'quality-progress-fill': '0%',
+                'quality-progress-text': '品質チェック 0/0 完了',
+                'avg-quality-score': '0%',
+                'seo-optimization': '0%',
+                'readability-score': '未実施',
+                'improvement-time': '0分',
+                'check-status': '未実施'
+            };
+            
+            Object.entries(updates).forEach(([id, value]) => {
+                const element = document.getElementById(id);
+                if (element) {
+                    if (id === 'quality-progress-fill') {
+                        element.style.width = value;
+                    } else {
+                        element.textContent = value;
+                    }
+                }
+            });
+            return;
+        }
+        
+        const passedCount = this.data.qualityChecks.filter(c => c.qualityLevel === 'passed').length;
+        const warningCount = this.data.qualityChecks.filter(c => c.qualityLevel === 'warning').length;
+        const failedCount = this.data.qualityChecks.filter(c => c.qualityLevel === 'failed').length;
+        
+        const avgScore = this.data.qualityChecks.reduce((sum, c) => sum + c.score, 0) / this.data.qualityChecks.length;
+        const seoOptimization = this.data.qualityChecks.reduce((sum, c) => sum + c.seoCheck.score, 0) / this.data.qualityChecks.length;
+        const readabilityGood = this.data.qualityChecks.filter(c => c.readability.status === 'passed').length;
+        const improvementTime = failedCount * 5 + warningCount * 3; // 修正時間の推定
+        
+        const updates = {
+            'passed-count': passedCount,
+            'warning-count': warningCount,
+            'failed-count': failedCount,
+            'quality-progress-fill': `${(passedCount / this.data.qualityChecks.length) * 100}%`,
+            'quality-progress-text': `品質チェック ${this.data.qualityChecks.length}/${this.data.qualityChecks.length} 完了`,
+            'avg-quality-score': `${Math.round(avgScore)}%`,
+            'seo-optimization': `${Math.round(seoOptimization)}%`,
+            'readability-score': readabilityGood >= this.data.qualityChecks.length * 0.8 ? '良好' : '要改善',
+            'improvement-time': `${improvementTime}分`,
+            'check-status': '完了'
+        };
+        
+        Object.entries(updates).forEach(([id, value]) => {
+            const element = document.getElementById(id);
+            if (element) {
+                if (id === 'quality-progress-fill') {
+                    element.style.width = value;
+                } else {
+                    element.textContent = value;
+                }
+            }
+        });
+    }
+    
+    // 品質結果のフィルタリング
+    filterQualityResults(filter) {
+        const filterBtns = document.querySelectorAll('.filter-btn');
+        const qualityItems = document.querySelectorAll('.quality-item');
+        
+        // ボタンの状態更新
+        filterBtns.forEach(btn => {
+            btn.classList.toggle('active', btn.dataset.filter === filter);
+        });
+        
+        // アイテムの表示/非表示
+        qualityItems.forEach(item => {
+            if (filter === 'all') {
+                item.style.display = 'block';
+            } else {
+                item.style.display = item.dataset.filter === filter ? 'block' : 'none';
+            }
+        });
+        
+        this.showNotification(`${filter === 'all' ? 'すべて' : filter === 'passed' ? '合格' : filter === 'warning' ? '要注意' : '要修正'}の記事を表示中`, 'info', 2000);
+    }
+    
+    // 全記事の再チェック
+    async recheckAllArticles() {
+        if (!confirm('すべての記事を再チェックしますか？')) return;
+        
+        this.showLoading('全記事を再チェック中...');
+        await this.delay(3000);
+        
+        // 品質チェック結果を再生成（少し改善された結果）
+        this.data.qualityChecks = this.data.qualityChecks.map(check => ({
+            ...check,
+            score: Math.min(95, check.score + Math.random() * 10),
+            qualityLevel: check.score >= 85 ? 'passed' : check.score >= 70 ? 'warning' : 'failed'
+        }));
+        
+        this.saveData();
+        this.hideLoading();
+        this.renderQualityResults();
+        this.updateQualityStats();
+        this.showNotification('全記事の再チェックが完了しました', 'success');
+    }
+    
+    // 自動修正
+    async autoFixArticles() {
+        const failedArticles = this.data.qualityChecks.filter(c => c.qualityLevel === 'failed').length;
+        const warningArticles = this.data.qualityChecks.filter(c => c.qualityLevel === 'warning').length;
+        
+        if (failedArticles === 0 && warningArticles === 0) {
+            this.showNotification('修正が必要な記事はありません', 'info');
+            return;
+        }
+        
+        if (!confirm(`${failedArticles + warningArticles}記事の自動修正を実行しますか？`)) return;
+        
+        this.showLoading('記事を自動修正中...');
+        await this.delay(4000);
+        
+        // 品質スコアを改善
+        this.data.qualityChecks = this.data.qualityChecks.map(check => {
+            if (check.qualityLevel !== 'passed') {
+                const improvedScore = Math.min(95, check.score + 15 + Math.random() * 10);
+                return {
+                    ...check,
+                    score: Math.round(improvedScore),
+                    qualityLevel: improvedScore >= 85 ? 'passed' : 'warning',
+                    issues: improvedScore >= 85 ? [] : check.issues.slice(0, 1),
+                    suggestions: improvedScore >= 85 ? ['自動修正により品質が改善されました'] : check.suggestions
+                };
+            }
+            return check;
+        });
+        
+        this.saveData();
+        this.hideLoading();
+        this.renderQualityResults();
+        this.updateQualityStats();
+        this.showNotification('自動修正が完了しました', 'success');
+    }
+    
+    // 品質レポートの出力
+    exportQualityReport() {
+        const report = {
+            timestamp: new Date().toISOString(),
+            theme: this.data.theme,
+            totalArticles: this.data.qualityChecks.length,
+            summary: {
+                passed: this.data.qualityChecks.filter(c => c.qualityLevel === 'passed').length,
+                warning: this.data.qualityChecks.filter(c => c.qualityLevel === 'warning').length,
+                failed: this.data.qualityChecks.filter(c => c.qualityLevel === 'failed').length,
+                averageScore: Math.round(this.data.qualityChecks.reduce((sum, c) => sum + c.score, 0) / this.data.qualityChecks.length)
+            },
+            details: this.data.qualityChecks.map((check, index) => ({
+                articleTitle: this.data.articles[index].title,
+                score: check.score,
+                qualityLevel: check.qualityLevel,
+                issues: check.issues,
+                suggestions: check.suggestions
+            }))
+        };
+        
+        const blob = new Blob([JSON.stringify(report, null, 2)], { type: 'application/json' });
+        const url = URL.createObjectURL(blob);
+        const a = document.createElement('a');
+        a.href = url;
+        a.download = `quality-report-${this.data.theme}-${new Date().toISOString().split('T')[0]}.json`;
+        document.body.appendChild(a);
+        a.click();
+        document.body.removeChild(a);
+        URL.revokeObjectURL(url);
+        
+        this.showNotification('品質レポートをダウンロードしました', 'success');
+    }
+    
+    // 個別記事の修正
+    fixArticle(index) {
+        this.showNotification('記事修正機能は実装予定です（フェーズ2）', 'info');
+    }
+    
+    // 個別記事の再チェック
+    async recheckArticle(index) {
+        this.showLoading('記事を再チェック中...');
+        await this.delay(1500);
+        
+        // 該当記事の品質スコアを改善
+        const check = this.data.qualityChecks[index];
+        const improvedScore = Math.min(95, check.score + 5 + Math.random() * 10);
+        
+        this.data.qualityChecks[index] = {
+            ...check,
+            score: Math.round(improvedScore),
+            qualityLevel: improvedScore >= 85 ? 'passed' : improvedScore >= 70 ? 'warning' : 'failed'
+        };
+        
+        this.saveData();
+        this.hideLoading();
+        this.renderQualityResults();
+        this.updateQualityStats();
+        this.showNotification('記事の再チェックが完了しました', 'success');
     }
     
     // ピラーページ作成（Step 5 → Step 6）
@@ -592,22 +1591,29 @@ class HubPilotApp {
         alert('CMS投稿機能は実装予定です（フェーズ2）');
     }
     
-    // クラスターページ編集
+    // クラスターページ編集（強化版）
     editClusterPage(index) {
-        const newTitle = prompt('新しいタイトルを入力してください:', this.data.clusterPages[index]);
-        if (newTitle && newTitle.trim()) {
+        const currentTitle = this.data.clusterPages[index];
+        const newTitle = prompt('クラスターページのタイトルを編集してください:', currentTitle);
+        
+        if (newTitle && newTitle.trim() && newTitle.trim() !== currentTitle) {
             this.data.clusterPages[index] = newTitle.trim();
             this.saveData();
             this.renderStructure();
+            this.showNotification('クラスターページを更新しました', 'success');
         }
     }
     
-    // クラスターページ削除
+    // クラスターページ削除（強化版）
     deleteClusterPage(index) {
-        if (confirm('このクラスターページを削除しますか？')) {
+        const title = this.data.clusterPages[index];
+        const shortTitle = title.length > 30 ? title.substring(0, 30) + '...' : title;
+        
+        if (confirm(`「${shortTitle}」を削除しますか？`)) {
             this.data.clusterPages.splice(index, 1);
             this.saveData();
             this.renderStructure();
+            this.showNotification('クラスターページを削除しました', 'success');
         }
     }
     
@@ -780,6 +1786,40 @@ class HubPilotApp {
         if (this.data.articles.length === 0) {
             this.renderArticlesGrid();
         }
+    }
+    
+    // 最終レビューの準備
+    prepareFinalReview() {
+        // Step6の最終レビュー画面の準備
+        if (this.data.pillarPage.content) {
+            this.renderPillarPreview();
+        }
+        
+        // 最終統計の更新
+        this.updateFinalStats();
+    }
+    
+    // 最終統計の更新
+    updateFinalStats() {
+        const totalArticles = this.data.articles.length;
+        const totalWords = this.data.articles.reduce((sum, article) => sum + (article?.wordCount || 0), 0);
+        const avgQualityScore = this.data.qualityChecks.length > 0 ? 
+            Math.round(this.data.qualityChecks.reduce((sum, c) => sum + c.score, 0) / this.data.qualityChecks.length) : 0;
+        
+        // 最終統計をページに反映（Step6で使用）
+        const elements = {
+            'final-total-articles': totalArticles,
+            'final-total-words': totalWords.toLocaleString(),
+            'final-avg-quality': `${avgQualityScore}点`,
+            'final-pillar-words': this.data.pillarPage.content ? this.data.pillarPage.content.length : 0
+        };
+        
+        Object.entries(elements).forEach(([id, value]) => {
+            const element = document.getElementById(id);
+            if (element) {
+                element.textContent = value;
+            }
+        });
     }
     
     // データ読み込み
@@ -971,6 +2011,14 @@ class HubPilotApp {
             case 5:
                 if (this.data.qualityChecks.length > 0) {
                     this.renderQualityResults();
+                    this.updateQualityStats();
+                } else {
+                    // 品質チェックデータがない場合は自動生成
+                    if (this.data.articles.length > 0) {
+                        setTimeout(() => {
+                            this.proceedToQuality();
+                        }, 500);
+                    }
                 }
                 break;
             case 6:
