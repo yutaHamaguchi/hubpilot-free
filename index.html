@@ -5,6 +5,7 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>HubPilot Free - SEO記事作成エージェント</title>
     <link rel="stylesheet" href="styles.css">
+    <link rel="stylesheet" href="image-generation-styles.css">
 </head>
 <body>
     <!-- 全体プログレスバー -->
@@ -727,12 +728,117 @@
                                     </button>
                                 </div>
                             </div>
-                            
+
                             <div class="link-structure-visual" id="link-structure-visual">
                                 <!-- 内部リンク構造の視覚化がここに表示される -->
                             </div>
                         </div>
-                        
+
+                        <!-- 画像生成セクション -->
+                        <div class="image-generation-card">
+                            <div class="image-gen-header">
+                                <h3>
+                                    <span class="image-gen-icon">🎨</span>
+                                    記事画像の自動生成
+                                </h3>
+                                <div class="image-gen-status">
+                                    <span class="status-badge" id="image-gen-status">未生成</span>
+                                </div>
+                            </div>
+
+                            <div class="image-gen-description">
+                                <p>各記事にヒーロー画像と説明画像（2〜3枚）を自動生成します。</p>
+                                <p>AIが記事内容を分析し、適切な画像を生成してMarkdownに自動挿入します。</p>
+                            </div>
+
+                            <div class="image-gen-options">
+                                <div class="option-row">
+                                    <label class="checkbox-label">
+                                        <input type="checkbox" checked id="generate-hero">
+                                        <span>ヒーロー画像を生成（1枚/記事）</span>
+                                    </label>
+                                    <span class="option-info">記事のメイン画像</span>
+                                </div>
+
+                                <div class="option-row">
+                                    <label class="checkbox-label">
+                                        <input type="checkbox" checked id="generate-illustrations">
+                                        <span>説明画像を生成</span>
+                                    </label>
+                                    <select id="illustration-count" class="illustration-count-select">
+                                        <option value="2">2枚/記事</option>
+                                        <option value="3" selected>3枚/記事</option>
+                                    </select>
+                                </div>
+
+                                <div class="option-row">
+                                    <label class="select-label">
+                                        <span>画像生成プロバイダー:</span>
+                                        <select id="image-provider" class="provider-select">
+                                            <option value="auto">自動選択（コスト最適化）</option>
+                                            <option value="dalle3">DALL-E 3（高品質 - $0.20/記事）</option>
+                                            <option value="stability">Stability AI（低コスト - $0.04/記事）</option>
+                                        </select>
+                                    </label>
+                                </div>
+                            </div>
+
+                            <div class="cost-estimate-panel">
+                                <div class="cost-item">
+                                    <span class="cost-label">推定コスト:</span>
+                                    <span class="cost-value" id="image-cost-estimate">$2.00</span>
+                                </div>
+                                <div class="cost-item">
+                                    <span class="cost-label">記事数:</span>
+                                    <span class="cost-value" id="image-article-count">10</span>
+                                </div>
+                                <div class="cost-item">
+                                    <span class="cost-label">総画像数:</span>
+                                    <span class="cost-value" id="image-total-count">40</span>
+                                </div>
+                            </div>
+
+                            <div class="image-gen-actions">
+                                <button class="btn btn-primary btn-large" id="generate-images-btn">
+                                    <span class="btn-icon">🎨</span>
+                                    画像を生成
+                                </button>
+                                <button class="btn btn-secondary" id="skip-images-btn" style="display: none;">
+                                    画像生成をスキップ
+                                </button>
+                            </div>
+
+                            <!-- 生成進捗 -->
+                            <div class="image-generation-progress" id="image-generation-progress" style="display: none;">
+                                <div class="progress-header">
+                                    <h4>画像生成中...</h4>
+                                    <span id="image-progress-status">準備中</span>
+                                </div>
+                                <div class="progress-bar">
+                                    <div class="progress-fill" id="image-progress-fill"></div>
+                                </div>
+                                <div class="progress-details">
+                                    <p id="image-progress-text">画像生成中... (0/10)</p>
+                                    <p id="image-current-article"></p>
+                                    <p class="progress-cost">コスト: <span id="image-current-cost">$0.00</span></p>
+                                </div>
+                            </div>
+
+                            <!-- 画像プレビュー -->
+                            <div class="generated-images-preview" id="generated-images-preview" style="display: none;">
+                                <div class="preview-header">
+                                    <h4>生成された画像</h4>
+                                    <button class="btn btn-small btn-secondary" id="toggle-images-preview">
+                                        <span class="btn-icon">👁️</span>
+                                        すべて表示
+                                    </button>
+                                </div>
+                                <div class="images-grid" id="images-grid">
+                                    <!-- 画像カードがここに動的に追加される -->
+                                </div>
+                            </div>
+                        </div>
+
                         <!-- 最終アクション -->
                         <div class="final-actions-card">
                             <div class="actions-header">
@@ -824,5 +930,8 @@
     <script src="supabase-integration.js"></script>
 
     <script src="app.js"></script>
+
+    <!-- 画像生成機能 -->
+    <script src="image-generation.js"></script>
 </body>
 </html>

@@ -311,6 +311,57 @@ Supabase未設定の場合、自動的にモックモードで動作します:
 
 ---
 
+## 🎨 画像生成機能の設定（オプション）
+
+### 必要なAPIキー
+
+画像生成機能を使用する場合、以下のいずれかのAPIキーが必要です：
+
+#### オプション1: OpenAI DALL-E 3（推奨 - 高品質）
+
+**取得手順:**
+1. https://platform.openai.com/ にアクセス
+2. API Keys で "Create new secret key" をクリック
+3. キーをコピー
+
+**料金:** 約$0.20/記事（ヒーロー画像1枚 + 説明画像3枚）
+
+**設定:**
+```env
+OPENAI_API_KEY=sk-proj-xxxxxxxxxxxxxxxxxxxx
+```
+
+#### オプション2: Stability AI（低コスト）
+
+**取得手順:**
+1. https://platform.stability.ai/ にアクセス
+2. アカウント作成・APIキー取得
+
+**料金:** 約$0.04/記事
+
+**設定:**
+```env
+STABILITY_API_KEY=sk-xxxxxxxxxxxxxxxxxxxx
+```
+
+### Supabase Storage設定
+
+```bash
+# Supabase Dashboard > Storage > New Bucket
+# Bucket Name: hubpilot-images
+# Public: Yes
+```
+
+### Edge Functions環境変数
+
+```bash
+supabase secrets set OPENAI_API_KEY=your-key
+# または
+supabase secrets set STABILITY_API_KEY=your-key
+```
+
+---
+
 ## 📞 サポート
 
 問題が解決しない場合:

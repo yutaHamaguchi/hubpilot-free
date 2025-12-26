@@ -418,6 +418,213 @@ class SupabaseIntegration {
     }
   }
 
+  // ===========================================
+  // 画像生成機能
+  // ===========================================
+
+  /**
+   * 記事の画像生成
+   */
+  async generateImages(articleId, title, content, options = {}) {
+    const {
+      generateHero = true,
+      generateIllustrations = true,
+      illustrationCount = 3,
+      provider = 'auto'
+    } = options
+
+    if (!this.isInitialized) {
+      console.log('📝 モックモード: 画像生成をシミュレート')
+      return this.mockGenerateImages(title, illustrationCount)
+    }
+
+    try {
+      const { data, error } = await this.supabase.functions.invoke('generate-images', {
+        body: {
+          articleId,
+          title,
+          content,
+          generateHero,
+          generateIllustrations,
+          illustrationCount,
+          provider
+        }
+      })
+
+      if (error) throw error
+
+      return {
+        success: true,
+        images: data.images,
+        totalCost: data.totalCost,
+        provider: data.provider
+      }
+
+    } catch (error) {
+      console.error('画像生成エラー:', error)
+      throw error
+    }
+  }
+
+  /**
+   * 記事に画像を挿入
+   */
+  insertImagesToArticle(content, images) {
+    let updatedContent = content
+
+    // ヒーロー画像を先頭に挿入
+    const heroImage = images.find(img => img.type === 'hero')
+    if (heroImage) {
+      const heroMarkdown = `![${heroImage.altText}](${heroImage.url})\n\n`
+      updatedContent = heroMarkdown + updatedContent
+    }
+
+    // 説明画像をセクション間に挿入
+    const illustrations = images.filter(img => img.type === 'illustration').sort((a, b) => a.position - b.position)
+    const sections = updatedContent.split(/^(##[^#].*?)$/gm)
+
+    illustrations.forEach((img, index) => {
+      // セクションの後に画像を挿入
+      const targetSectionIndex = (index + 1) * 2 + 1 // H2セクションの後
+      if (sections[targetSectionIndex]) {
+        const imageMarkdown = `\n\n![${img.altText}](${img.url})\n\n`
+        sections[targetSectionIndex] = sections[targetSectionIndex] + imageMarkdown
+      }
+    })
+
+    return sections.join('')
+  }
+
+  /**
+   * プロジェクトの全記事に画像を生成
+   */
+  async generateImagesForProject(articles, options = {}) {
+    const results = []
+    let totalCost = 0
+
+    for (let i = 0; i < articles.length; i++) {
+      const article = articles[i]
+
+      try {
+        console.log(`画像生成中: ${i + 1}/${articles.length} - ${article.title}`)
+
+        const result = await this.generateImages(
+          article.id,
+          article.title,
+          article.content,
+          options
+        )
+
+        results.push({
+          articleId: article.id,
+          title: article.title,
+          ...result
+        })
+
+        totalCost += result.totalCost
+
+        // 進捗イベント発火
+        window.dispatchEvent(new CustomEvent('image-generation-progress', {
+          detail: {
+            current: i + 1,
+            total: articles.length,
+            percentage: ((i + 1) / articles.length) * 100,
+            currentArticle: article.title,
+            totalCost
+          }
+        }))
+
+        // レート制限対策（2秒待機）
+        await new Promise(resolve => setTimeout(resolve, 2000))
+
+      } catch (error) {
+        console.error(`画像生成失敗: ${article.title}`, error)
+        results.push({
+          articleId: article.id,
+          title: article.title,
+          success: false,
+          error: error.message
+        })
+      }
+    }
+
+    return {
+      success: true,
+      results,
+      totalCost
+    }
+  }
+
+  /**
+   * 月間画像生成コスト取得
+   */
+  async getMonthlyImageCost() {
+    if (!this.isInitialized) {
+      return { success: true, cost: 0 }
+    }
+
+    try {
+      const { data, error } = await this.supabase.rpc('get_monthly_image_cost')
+
+      if (error) throw error
+
+      return { success: true, cost: parseFloat(data || 0) }
+
+    } catch (error) {
+      console.error('コスト取得エラー:', error)
+      return { success: false, cost: 0 }
+    }
+  }
+
+  // ===========================================
+  // モックモード用メソッド（画像生成）
+  // ===========================================
+
+  mockGenerateImages(title, illustrationCount) {
+    const images = []
+
+    // ヒーロー画像（モック）
+    images.push({
+      type: 'hero',
+      url: 'https://via.placeholder.com/1024x1792/ff7a59/ffffff?text=Hero+Image',
+      prompt: `Hero image for "${title}"`,
+      provider: 'mock',
+      cost: 0,
+      width: 1024,
+      height: 1792,
+      altText: `${title}のヒーロー画像`
+    })
+
+    // 説明画像（モック）
+    for (let i = 0; i < illustrationCount; i++) {
+      images.push({
+        type: 'illustration',
+        url: `https://via.placeholder.com/1024x1024/33475b/ffffff?text=Illustration+${i + 1}`,
+        prompt: `Illustration ${i + 1}`,
+        provider: 'mock',
+        cost: 0,
+        width: 1024,
+        height: 1024,
+        altText: `説明画像 ${i + 1}`,
+        position: i + 1
+      })
+    }
+
+    // 進捗をシミュレート
+    setTimeout(() => {
+      window.dispatchEvent(new CustomEvent('image-generation-complete', {
+        detail: { images, totalCost: 0 }
+      }))
+    }, 2000)
+
+    return {
+      success: true,
+      images,
+      totalCost: 0,
+      provider: 'mock'
+    }
+  }
+
   /**
    * クリーンアップ
    */
