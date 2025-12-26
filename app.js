@@ -2405,6 +2405,15 @@ ${title}を効果的に活用することで、ビジネスの成長を加速さ
     
     // ステップ離脱確認
     confirmStepExit() {
+        // 開発中はステップ離脱確認を無効化
+        const isDevelopment = window.location.hostname === 'localhost' || 
+                             window.location.hostname === '127.0.0.1' ||
+                             window.location.protocol === 'file:';
+        
+        if (isDevelopment) {
+            return true; // 開発中は常に許可
+        }
+        
         // 現在のステップで未保存の変更がある場合の確認
         if (this.hasUnsavedChanges()) {
             return confirm('未保存の変更があります。このステップを離れますか？');
@@ -2762,13 +2771,22 @@ ${title}を効果的に活用することで、ビジネスの成長を加速さ
             }
         }, 30000);
         
-        // ページを離れる前に保存
+        // ページを離れる前に保存（アプリ内ナビゲーション時は警告を無効化）
         window.addEventListener('beforeunload', (e) => {
             this.saveData();
             
             // アプリ内でのナビゲーション中は警告を表示しない
             if (this.isInternalNavigation) {
                 return;
+            }
+            
+            // 開発中は警告を無効化（本番環境では有効化）
+            const isDevelopment = window.location.hostname === 'localhost' || 
+                                 window.location.hostname === '127.0.0.1' ||
+                                 window.location.protocol === 'file:';
+            
+            if (isDevelopment) {
+                return; // 開発中は警告を表示しない
             }
             
             if (this.hasUnsavedChanges()) {
