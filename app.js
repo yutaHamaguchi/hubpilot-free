@@ -17,6 +17,7 @@ class HubPilotApp {
         // 変更追跡用
         this.lastSavedData = null;
         this.unsavedChanges = false;
+        this.isInternalNavigation = false;
         
         this.init();
         this.setupAutoSave();
@@ -2297,14 +2298,19 @@ ${title}を効果的に活用することで、ビジネスの成長を加速さ
     goToStep(step) {
         if (step < 1 || step > this.totalSteps) return;
         
+        // 内部ナビゲーションフラグを設定
+        this.isInternalNavigation = true;
+        
         // ステップ移動の検証
         if (!this.canNavigateToStep(step)) {
             this.showNavigationWarning(step);
+            this.isInternalNavigation = false;
             return;
         }
         
         // 現在のステップからの離脱確認
         if (!this.confirmStepExit()) {
+            this.isInternalNavigation = false;
             return;
         }
         
@@ -2317,6 +2323,11 @@ ${title}を効果的に活用することで、ビジネスの成長を加速さ
         this.updateUI();
         this.updateURL(); // URL更新を追加
         this.saveData();
+        
+        // 内部ナビゲーションフラグをリセット
+        setTimeout(() => {
+            this.isInternalNavigation = false;
+        }, 100);
         
         // ステップ変更イベントを発火
         this.onStepChanged(previousStep, step);
@@ -2754,6 +2765,11 @@ ${title}を効果的に活用することで、ビジネスの成長を加速さ
         // ページを離れる前に保存
         window.addEventListener('beforeunload', (e) => {
             this.saveData();
+            
+            // アプリ内でのナビゲーション中は警告を表示しない
+            if (this.isInternalNavigation) {
+                return;
+            }
             
             if (this.hasUnsavedChanges()) {
                 e.preventDefault();
