@@ -104,9 +104,14 @@ class SupabaseIntegration {
     }
 
     try {
+      // 認証済みユーザーのIDを取得（認証機能追加）
+      const { data: { user } } = await this.supabase.auth.getUser()
+      const userId = user?.id || null
+
       const { data, error } = await this.supabase
         .from('projects')
         .insert({
+          user_id: userId, // 認証済みならuser_id設定、ゲストならnull
           theme: projectData.theme,
           pillar_page: projectData.pillarPage,
           cluster_pages: projectData.clusterPages,
@@ -125,6 +130,7 @@ class SupabaseIntegration {
         .from('generation_logs')
         .insert({
           project_id: data.id,
+          user_id: userId, // 認証機能追加
           status: 'started',
           total_articles: projectData.clusterPages?.length || 0,
           current_article: 0
