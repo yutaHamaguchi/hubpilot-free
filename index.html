@@ -1020,10 +1020,10 @@
                                                 <path d="M12 2l3.09 6.26L22 9.27l-5 4.87 1.18 6.88L12 17.77l-6.18 3.25L7 14.14 2 9.27l6.91-1.01L12 2z"></path>
                                             </svg>
                                         </span>
-                                        WordPressへ投稿
+                                        WordPressへ下書き保存
                                     </button>
                                     <div class="action-description">
-                                        <p>生成した記事をWordPressに直接投稿</p>
+                                        <p>生成した記事をWordPressの下書きとして保存</p>
                                     </div>
                                 </div>
                             </div>
@@ -1066,11 +1066,11 @@
         <div class="loading-text">処理中...</div>
     </div>
 
-    <!-- WordPress投稿モーダル -->
+    <!-- WordPress下書き保存モーダル -->
     <div id="wordpress-modal" class="wordpress-modal hidden">
         <div class="wordpress-modal-content">
             <div class="wordpress-modal-header">
-                <h3><span class="wordpress-icon">📝</span> WordPressへ投稿</h3>
+                <h3><span class="wordpress-icon">📝</span> WordPressへ下書き保存</h3>
                 <button class="wordpress-close-btn" onclick="closeWordPressModal()">×</button>
             </div>
 
@@ -1137,7 +1137,7 @@
                 <div class="wordpress-option-group">
                     <label for="wp-post-status">ステータス</label>
                     <select id="wp-post-status" class="wordpress-form-group">
-                        <option value="draft">下書き</option>
+                        <option value="draft" selected>下書き</option>
                         <option value="publish">公開</option>
                         <option value="pending">レビュー待ち</option>
                     </select>
@@ -1157,7 +1157,7 @@
 
                 <div class="wordpress-btn-group">
                     <button type="button" class="wordpress-btn wordpress-btn-primary" onclick="publishToWordPress()">
-                        WordPressへ投稿開始
+                        下書き保存開始
                     </button>
                 </div>
             </div>
@@ -1168,7 +1168,7 @@
                     <div class="wordpress-progress-fill" id="wordpress-progress-fill"></div>
                 </div>
                 <div class="wordpress-progress-text" id="wordpress-progress-text">
-                    投稿中... 0/0
+                    保存中... 0/0
                 </div>
             </div>
 
@@ -1480,10 +1480,10 @@
             }
         }
 
-        // WordPressへ投稿
+        // WordPressへ下書き保存
         async function publishToWordPress() {
             if (!window.app || !window.app.data || !window.app.data.articles || window.app.data.articles.length === 0) {
-                alert('投稿する記事がありません。先に記事を生成してください。')
+                alert('保存する記事がありません。先に記事を生成してください。')
                 return
             }
 
@@ -1493,7 +1493,7 @@
             }
 
             const confirmed = confirm(
-                `${window.app.data.articles.length}件の記事をWordPressへ投稿しますか？\n\n` +
+                `${window.app.data.articles.length}件の記事をWordPressへ保存しますか？\n\n` +
                 `ステータス: ${document.getElementById('wp-post-status').selectedOptions[0].text}`
             )
 
@@ -1535,7 +1535,7 @@
 
             document.getElementById('wordpress-progress-fill').style.width = `${percentage}%`
             document.getElementById('wordpress-progress-text').textContent =
-                `投稿中... ${current}/${total} - ${currentArticle}`
+                `保存中... ${current}/${total} - ${currentArticle}`
         }
 
         // 結果を表示
@@ -1567,7 +1567,7 @@
             // 進捗バーを完了状態に
             document.getElementById('wordpress-progress-fill').style.width = '100%'
             document.getElementById('wordpress-progress-text').textContent =
-                `完了: ${result.summary.success}/${result.summary.total}件の記事を投稿しました`
+                `完了: ${result.summary.success}/${result.summary.total}件の記事を下書き保存しました`
         }
     </script>
 </body>
