@@ -18,7 +18,7 @@
     "db:reset": "supabase db reset",
     "functions:deploy": "supabase functions deploy --no-verify-jwt",
     "functions:logs": "supabase functions logs",
-    "test": "echo 'No tests specified yet'",
+    "test": "node scripts/test.js",
     "lint": "echo 'Linting JavaScript files...'",
     "format": "echo 'Formatting code...'",
     "clean": "rm -rf .supabase/logs/*"
