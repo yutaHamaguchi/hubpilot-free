@@ -64,6 +64,9 @@
       },
       "check-quality": {
         "verify_jwt": false
+      },
+      "generate-images": {
+        "verify_jwt": false
       }
     }
   },

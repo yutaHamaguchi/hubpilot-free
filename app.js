@@ -41,7 +41,6 @@ class HubPilotApp {
             this.hideLoading();
 
             // 初期化完了の通知
-            console.log('HubPilot Free が正常に初期化されました');
             this.showNotification('アプリケーションが準備完了しました', 'success', 3000);
 
         } catch (error) {
@@ -86,8 +85,6 @@ class HubPilotApp {
                 this.showNotification('記事生成に失敗しました', 'error');
             }
         });
-
-        console.log('✅ Supabase統合がセットアップされました');
     }
 
     // エラーハンドリングの設定
@@ -509,7 +506,6 @@ class HubPilotApp {
     // 入力ヘルプの表示
     showInputHelp() {
         // 将来的にツールチップやヘルプテキストを表示
-        console.log('Input help shown');
     }
 
     // テーマ例の選択
@@ -2232,7 +2228,6 @@ ${title}を効果的に活用することで、ビジネスの成長を加速さ
         };
 
         // 実際のCMS投稿はフェーズ2で実装
-        console.log(`Publishing to ${cmsType}:`, publishData);
 
         // モック投稿プロセス
         await this.delay(3000);
@@ -2544,7 +2539,6 @@ ${title}を効果的に活用することで、ビジネスの成長を加速さ
     // ステップ変更イベント
     onStepChanged(fromStep, toStep) {
         // ステップ変更時の追加処理
-        console.log(`Step changed: ${fromStep} → ${toStep}`);
 
         // 特定のステップに入った時の処理
         switch (toStep) {
@@ -2626,7 +2620,6 @@ ${title}を効果的に活用することで、ビジネスの成長を加速さ
                     this.migrateData(parsed);
                 }
 
-                console.log('データを正常に読み込みました');
             }
         } catch (error) {
             console.error('データの読み込みに失敗しました:', error);
@@ -2671,8 +2664,6 @@ ${title}を効果的に活用することで、ビジネスの成長を加速さ
 
     // データマイグレーション
     migrateData(oldData) {
-        console.log('データをマイグレーション中...', oldData.version, '→', this.dataVersion);
-
         // 将来のバージョンアップ時にデータ構造の変更に対応
         if (!oldData.version || oldData.version < '1.0.0') {
             // 旧バージョンからの移行処理
@@ -2843,7 +2834,6 @@ ${title}を効果的に活用することで、ビジネスの成長を加速さ
         setInterval(() => {
             if (this.hasUnsavedChanges()) {
                 this.saveData();
-                console.log('自動保存を実行しました');
             }
         }, 30000);
 
@@ -3180,7 +3170,6 @@ ${title}を効果的に活用することで、ビジネスの成長を加速さ
                 const loadingOverlay = document.getElementById('loading-overlay');
                 if (loadingOverlay && loadingOverlay.classList.contains('active')) {
                     // 将来的にキャンセル機能を実装
-                    console.log('Loading cancellation requested');
                 }
             }
         });
