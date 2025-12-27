@@ -6,14 +6,159 @@
     <title>HubPilot Free - SEO記事作成エージェント</title>
     <link rel="stylesheet" href="styles.css">
     <link rel="stylesheet" href="image-generation-styles.css">
+    <link rel="stylesheet" href="auth-styles.css">
+    <link rel="stylesheet" href="wordpress-styles.css">
 </head>
 <body>
-    <!-- 全体プログレスバー -->
-    <div class="overall-progress-container">
-        <div class="overall-progress"></div>
+    <!-- 認証オーバーレイ -->
+    <div id="auth-overlay" class="auth-overlay hidden">
+        <div class="auth-card">
+            <!-- ヘッダー -->
+            <div class="auth-header">
+                <div class="auth-logo">🚀</div>
+                <h2>HubPilot Free</h2>
+                <p class="auth-subtitle">AI記事作成エージェント</p>
+            </div>
+
+            <!-- 通知メッセージ -->
+            <div id="auth-message" class="auth-message"></div>
+
+            <!-- タブ切替 -->
+            <div class="auth-tabs">
+                <button class="active" data-tab="signin" onclick="switchAuthTab('signin')">
+                    ログイン
+                </button>
+                <button data-tab="signup" onclick="switchAuthTab('signup')">
+                    新規登録
+                </button>
+            </div>
+
+            <!-- ログインフォーム -->
+            <form id="signin-form" class="auth-form active" onsubmit="handleSignIn(event)">
+                <div class="form-group">
+                    <label for="signin-email">メールアドレス</label>
+                    <input
+                        type="email"
+                        id="signin-email"
+                        placeholder="your@email.com"
+                        required
+                        autocomplete="email"
+                    >
+                </div>
+
+                <div class="form-group">
+                    <label for="signin-password">パスワード</label>
+                    <input
+                        type="password"
+                        id="signin-password"
+                        placeholder="••••••••"
+                        required
+                        autocomplete="current-password"
+                    >
+                    <div class="password-reset-link">
+                        <button type="button" onclick="showPasswordReset()">
+                            パスワードを忘れた方
+                        </button>
+                    </div>
+                </div>
+
+                <button type="submit" class="auth-button" id="signin-button">
+                    ログイン
+                </button>
+            </form>
+
+            <!-- 新規登録フォーム -->
+            <form id="signup-form" class="auth-form" onsubmit="handleSignUp(event)">
+                <div class="form-group">
+                    <label for="signup-name">表示名（オプション）</label>
+                    <input
+                        type="text"
+                        id="signup-name"
+                        placeholder="山田太郎"
+                        autocomplete="name"
+                    >
+                </div>
+
+                <div class="form-group">
+                    <label for="signup-email">メールアドレス</label>
+                    <input
+                        type="email"
+                        id="signup-email"
+                        placeholder="your@email.com"
+                        required
+                        autocomplete="email"
+                    >
+                </div>
+
+                <div class="form-group">
+                    <label for="signup-password">パスワード（8文字以上）</label>
+                    <input
+                        type="password"
+                        id="signup-password"
+                        placeholder="••••••••"
+                        required
+                        minlength="8"
+                        autocomplete="new-password"
+                    >
+                </div>
+
+                <div class="form-group">
+                    <label for="signup-password-confirm">パスワード確認</label>
+                    <input
+                        type="password"
+                        id="signup-password-confirm"
+                        placeholder="••••••••"
+                        required
+                        minlength="8"
+                        autocomplete="new-password"
+                    >
+                    <div id="password-error" class="form-error"></div>
+                </div>
+
+                <button type="submit" class="auth-button" id="signup-button">
+                    新規登録
+                </button>
+            </form>
+
+            <!-- ソーシャルログイン -->
+            <div class="social-login">
+                <div class="social-login-title">または</div>
+
+                <button class="social-button" onclick="handleSocialLogin('google')">
+                    <svg width="20" height="20" viewBox="0 0 24 24">
+                        <path fill="#4285F4" d="M22.56 12.25c0-.78-.07-1.53-.2-2.25H12v4.26h5.92c-.26 1.37-1.04 2.53-2.21 3.31v2.77h3.57c2.08-1.92 3.28-4.74 3.28-8.09z"/>
+                        <path fill="#34A853" d="M12 23c2.97 0 5.46-.98 7.28-2.66l-3.57-2.77c-.98.66-2.23 1.06-3.71 1.06-2.86 0-5.29-1.93-6.16-4.53H2.18v2.84C3.99 20.53 7.7 23 12 23z"/>
+                        <path fill="#FBBC05" d="M5.84 14.09c-.22-.66-.35-1.36-.35-2.09s.13-1.43.35-2.09V7.07H2.18C1.43 8.55 1 10.22 1 12s.43 3.45 1.18 4.93l2.85-2.22.81-.62z"/>
+                        <path fill="#EA4335" d="M12 5.38c1.62 0 3.06.56 4.21 1.64l3.15-3.15C17.45 2.09 14.97 1 12 1 7.7 1 3.99 3.47 2.18 7.07l3.66 2.84c.87-2.6 3.3-4.53 6.16-4.53z"/>
+                    </svg>
+                    Googleでログイン
+                </button>
+
+                <button class="social-button" onclick="handleSocialLogin('github')">
+                    <svg width="20" height="20" viewBox="0 0 24 24" fill="#333">
+                        <path d="M12 0c-6.626 0-12 5.373-12 12 0 5.302 3.438 9.8 8.207 11.387.599.111.793-.261.793-.577v-2.234c-3.338.726-4.033-1.416-4.033-1.416-.546-1.387-1.333-1.756-1.333-1.756-1.089-.745.083-.729.083-.729 1.205.084 1.839 1.237 1.839 1.237 1.07 1.834 2.807 1.304 3.492.997.107-.775.418-1.305.762-1.604-2.665-.305-5.467-1.334-5.467-5.931 0-1.311.469-2.381 1.236-3.221-.124-.303-.535-1.524.117-3.176 0 0 1.008-.322 3.301 1.23.957-.266 1.983-.399 3.003-.404 1.02.005 2.047.138 3.006.404 2.291-1.552 3.297-1.23 3.297-1.23.653 1.653.242 2.874.118 3.176.77.84 1.235 1.911 1.235 3.221 0 4.609-2.807 5.624-5.479 5.921.43.372.823 1.102.823 2.222v3.293c0 .319.192.694.801.576 4.765-1.589 8.199-6.086 8.199-11.386 0-6.627-5.373-12-12-12z"/>
+                    </svg>
+                    GitHubでログイン
+                </button>
+            </div>
+
+            <!-- ゲストログイン -->
+            <div class="guest-login">
+                <button class="link-button" onclick="handleGuestLogin()">
+                    ゲストとして続ける（データはローカルのみ保存）
+                </button>
+            </div>
+        </div>
     </div>
 
-    <div class="app-container">
+    <!-- メインアプリケーション -->
+    <div id="main-app" class="hidden">
+        <!-- 全体プログレスバー -->
+        <div class="overall-progress-container">
+            <div class="overall-progress"></div>
+        </div>
+
+        <div class="app-container">
         <!-- サイドバー（ステップインジケーター） -->
         <aside class="sidebar">
             <div class="logo">
@@ -869,16 +1014,16 @@
                                 </div>
 
                                 <div class="action-group">
-                                    <button class="btn btn-primary btn-large" id="publish-cms-btn">
+                                    <button class="btn btn-primary btn-large" id="publish-cms-btn" onclick="openWordPressModal()">
                                         <span class="btn-icon">
                                             <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
                                                 <path d="M12 2l3.09 6.26L22 9.27l-5 4.87 1.18 6.88L12 17.77l-6.18 3.25L7 14.14 2 9.27l6.91-1.01L12 2z"></path>
                                             </svg>
                                         </span>
-                                        CMSへ投稿
+                                        WordPressへ下書き保存
                                     </button>
                                     <div class="action-description">
-                                        <p>WordPress、HubSpot、またはその他のCMSに直接投稿</p>
+                                        <p>生成した記事をWordPressの下書きとして保存</p>
                                     </div>
                                 </div>
                             </div>
@@ -913,11 +1058,139 @@
             </div>
         </main>
     </div>
+    </div><!-- /main-app -->
 
     <!-- ローディングオーバーレイ -->
     <div class="loading-overlay" id="loading-overlay">
         <div class="loading-spinner"></div>
         <div class="loading-text">処理中...</div>
+    </div>
+
+    <!-- WordPress下書き保存モーダル -->
+    <div id="wordpress-modal" class="wordpress-modal hidden">
+        <div class="wordpress-modal-content">
+            <div class="wordpress-modal-header">
+                <h3><span class="wordpress-icon">📝</span> WordPressへ下書き保存</h3>
+                <button class="wordpress-close-btn" onclick="closeWordPressModal()">×</button>
+            </div>
+
+            <!-- 接続ステータス -->
+            <div id="wp-connection-status" class="wordpress-connection-status disconnected">
+                <span>⚠️</span>
+                <span>WordPress未接続</span>
+            </div>
+
+            <!-- WordPress設定フォーム -->
+            <form id="wordpress-config-form" onsubmit="saveWordPressConfig(event)">
+                <div class="wordpress-form-group">
+                    <label for="wp-site-url">サイトURL</label>
+                    <input
+                        type="url"
+                        id="wp-site-url"
+                        placeholder="https://example.com"
+                        required
+                    >
+                    <div class="wordpress-form-help">
+                        WordPressサイトのURL（例: https://example.com）
+                    </div>
+                </div>
+
+                <div class="wordpress-form-group">
+                    <label for="wp-username">ユーザー名</label>
+                    <input
+                        type="text"
+                        id="wp-username"
+                        placeholder="admin"
+                        required
+                    >
+                </div>
+
+                <div class="wordpress-form-group">
+                    <label for="wp-app-password">アプリケーションパスワード</label>
+                    <input
+                        type="password"
+                        id="wp-app-password"
+                        placeholder="xxxx xxxx xxxx xxxx xxxx xxxx"
+                        required
+                    >
+                    <div class="wordpress-form-help">
+                        <a href="https://wordpress.org/support/article/application-passwords/" target="_blank">
+                            アプリケーションパスワードの作成方法 →
+                        </a>
+                    </div>
+                </div>
+
+                <div class="wordpress-btn-group">
+                    <button type="button" class="wordpress-btn wordpress-btn-secondary" onclick="testWordPressConnection()">
+                        接続テスト
+                    </button>
+                    <button type="submit" class="wordpress-btn wordpress-btn-primary">
+                        設定を保存
+                    </button>
+                </div>
+            </form>
+
+            <!-- 投稿オプション -->
+            <div class="wordpress-publish-options" id="wordpress-publish-options" style="display: none;">
+                <h4>投稿オプション</h4>
+
+                <div class="wordpress-option-group">
+                    <label for="wp-post-status">ステータス</label>
+                    <select id="wp-post-status" class="wordpress-form-group">
+                        <option value="draft" selected>下書き</option>
+                        <option value="publish">公開</option>
+                        <option value="pending">レビュー待ち</option>
+                    </select>
+                </div>
+
+                <div class="wordpress-option-group">
+                    <label for="wp-category">カテゴリー（オプション）</label>
+                    <select id="wp-category">
+                        <option value="">選択しない</option>
+                    </select>
+                </div>
+
+                <div class="wordpress-option-group wordpress-checkbox-group">
+                    <input type="checkbox" id="wp-upload-images" checked>
+                    <label for="wp-upload-images">画像もWordPressにアップロード</label>
+                </div>
+
+                <div class="wordpress-btn-group">
+                    <button type="button" class="wordpress-btn wordpress-btn-primary" onclick="publishToWordPress()">
+                        下書き保存開始
+                    </button>
+                </div>
+            </div>
+
+            <!-- 進捗表示 -->
+            <div class="wordpress-progress" id="wordpress-progress">
+                <div class="wordpress-progress-bar">
+                    <div class="wordpress-progress-fill" id="wordpress-progress-fill"></div>
+                </div>
+                <div class="wordpress-progress-text" id="wordpress-progress-text">
+                    保存中... 0/0
+                </div>
+            </div>
+
+            <!-- 結果表示 -->
+            <div class="wordpress-results" id="wordpress-results"></div>
+
+            <!-- サマリー -->
+            <div class="wordpress-summary" id="wordpress-summary" style="display: none;">
+                <div class="wordpress-summary-item">
+                    <div class="wordpress-summary-value" id="wp-summary-total">0</div>
+                    <div class="wordpress-summary-label">合計</div>
+                </div>
+                <div class="wordpress-summary-item">
+                    <div class="wordpress-summary-value" id="wp-summary-success" style="color: #28a745;">0</div>
+                    <div class="wordpress-summary-label">成功</div>
+                </div>
+                <div class="wordpress-summary-item">
+                    <div class="wordpress-summary-value" id="wp-summary-failure" style="color: #dc3545;">0</div>
+                    <div class="wordpress-summary-label">失敗</div>
+                </div>
+            </div>
+        </div>
     </div>
 
     <!-- Supabase SDK -->
@@ -929,9 +1202,373 @@
     <!-- Supabase統合レイヤー -->
     <script src="supabase-integration.js"></script>
 
+    <!-- 認証マネージャー -->
+    <script src="auth-manager.js"></script>
+
+    <!-- WordPress統合 -->
+    <script src="wordpress-integration.js"></script>
+
+    <!-- 認証UI JavaScript -->
+    <script>
+        // タブ切替
+        function switchAuthTab(tab) {
+            document.querySelectorAll('.auth-tabs button').forEach(btn => {
+                btn.classList.remove('active')
+            })
+            document.querySelector(`[data-tab="${tab}"]`).classList.add('active')
+
+            document.querySelectorAll('.auth-form').forEach(form => {
+                form.classList.remove('active')
+            })
+            document.getElementById(`${tab}-form`).classList.add('active')
+
+            hideAuthMessage()
+        }
+
+        // ログイン処理
+        async function handleSignIn(event) {
+            event.preventDefault()
+            const email = document.getElementById('signin-email').value
+            const password = document.getElementById('signin-password').value
+            const button = document.getElementById('signin-button')
+
+            button.disabled = true
+            button.classList.add('loading')
+
+            try {
+                await window.authManager.signIn(email, password)
+                showAuthMessage('ログインしました', 'success')
+            } catch (error) {
+                console.error('ログインエラー:', error)
+                showAuthMessage(
+                    error.message || 'ログインに失敗しました。メールアドレスとパスワードを確認してください。',
+                    'error'
+                )
+            } finally {
+                button.disabled = false
+                button.classList.remove('loading')
+            }
+        }
+
+        // 新規登録処理
+        async function handleSignUp(event) {
+            event.preventDefault()
+            const name = document.getElementById('signup-name').value
+            const email = document.getElementById('signup-email').value
+            const password = document.getElementById('signup-password').value
+            const confirmPassword = document.getElementById('signup-password-confirm').value
+            const button = document.getElementById('signup-button')
+
+            if (password !== confirmPassword) {
+                document.getElementById('password-error').textContent = 'パスワードが一致しません'
+                document.getElementById('password-error').classList.add('visible')
+                return
+            } else {
+                document.getElementById('password-error').classList.remove('visible')
+            }
+
+            button.disabled = true
+            button.classList.add('loading')
+
+            try {
+                const result = await window.authManager.signUp(email, password, name)
+
+                if (result.requiresEmailConfirmation) {
+                    showAuthMessage('確認メールを送信しました。メールをご確認ください。', 'info')
+                    setTimeout(() => switchAuthTab('signin'), 3000)
+                } else {
+                    showAuthMessage('アカウントを作成しました', 'success')
+                }
+            } catch (error) {
+                console.error('登録エラー:', error)
+                showAuthMessage(
+                    error.message || '登録に失敗しました。別のメールアドレスをお試しください。',
+                    'error'
+                )
+            } finally {
+                button.disabled = false
+                button.classList.remove('loading')
+            }
+        }
+
+        // ソーシャルログイン
+        async function handleSocialLogin(provider) {
+            try {
+                await window.authManager.signInWithProvider(provider)
+            } catch (error) {
+                console.error('ソーシャルログインエラー:', error)
+                showAuthMessage(`${provider}でのログインに失敗しました`, 'error')
+            }
+        }
+
+        // ゲストログイン
+        function handleGuestLogin() {
+            window.authManager.continueAsGuest()
+        }
+
+        // パスワードリセット
+        async function showPasswordReset() {
+            const email = document.getElementById('signin-email').value
+
+            if (!email) {
+                showAuthMessage('メールアドレスを入力してください', 'error')
+                return
+            }
+
+            const confirmed = confirm(`${email} にパスワードリセットメールを送信しますか？`)
+
+            if (!confirmed) return
+
+            try {
+                await window.authManager.sendPasswordResetEmail(email)
+                showAuthMessage('パスワードリセットメールを送信しました', 'success')
+            } catch (error) {
+                console.error('パスワードリセットエラー:', error)
+                showAuthMessage('メール送信に失敗しました', 'error')
+            }
+        }
+
+        // メッセージ表示
+        function showAuthMessage(message, type) {
+            const messageEl = document.getElementById('auth-message')
+            messageEl.textContent = message
+            messageEl.className = `auth-message visible ${type}`
+        }
+
+        // メッセージ非表示
+        function hideAuthMessage() {
+            const messageEl = document.getElementById('auth-message')
+            messageEl.classList.remove('visible')
+        }
+    </script>
+
     <script src="app.js"></script>
 
     <!-- 画像生成機能 -->
     <script src="image-generation.js"></script>
+
+    <!-- WordPress統合UI JavaScript -->
+    <script>
+        // WordPressモーダルを開く
+        function openWordPressModal() {
+            const modal = document.getElementById('wordpress-modal')
+            modal.classList.remove('hidden')
+
+            // 既存の設定を読み込み
+            loadWordPressSettings()
+
+            // 接続状態を確認
+            if (window.wordpressIntegration.isConfigured()) {
+                document.getElementById('wp-connection-status').className = 'wordpress-connection-status connected'
+                document.getElementById('wp-connection-status').innerHTML = '<span>✅</span><span>WordPress接続済み</span>'
+                document.getElementById('wordpress-publish-options').style.display = 'block'
+
+                // カテゴリーを読み込み
+                loadWordPressCategories()
+            }
+        }
+
+        // WordPressモーダルを閉じる
+        function closeWordPressModal() {
+            const modal = document.getElementById('wordpress-modal')
+            modal.classList.add('hidden')
+
+            // 進捗をリセット
+            document.getElementById('wordpress-progress').classList.remove('visible')
+            document.getElementById('wordpress-results').innerHTML = ''
+            document.getElementById('wordpress-summary').style.display = 'none'
+        }
+
+        // WordPress設定を読み込み
+        function loadWordPressSettings() {
+            const config = window.wordpressIntegration.config
+
+            if (config.siteUrl) {
+                document.getElementById('wp-site-url').value = config.siteUrl
+            }
+            if (config.username) {
+                document.getElementById('wp-username').value = config.username
+            }
+            if (config.applicationPassword) {
+                document.getElementById('wp-app-password').value = config.applicationPassword
+            }
+            if (config.defaultStatus) {
+                document.getElementById('wp-post-status').value = config.defaultStatus
+            }
+        }
+
+        // WordPress接続テスト
+        async function testWordPressConnection() {
+            const siteUrl = document.getElementById('wp-site-url').value
+            const username = document.getElementById('wp-username').value
+            const appPassword = document.getElementById('wp-app-password').value
+
+            if (!siteUrl || !username || !appPassword) {
+                alert('すべての項目を入力してください')
+                return
+            }
+
+            const statusEl = document.getElementById('wp-connection-status')
+            statusEl.className = 'wordpress-connection-status testing'
+            statusEl.innerHTML = '<span>🔄</span><span>接続テスト中...</span>'
+
+            try {
+                const result = await window.wordpressIntegration.testConnection(
+                    siteUrl,
+                    username,
+                    appPassword
+                )
+
+                if (result.success) {
+                    statusEl.className = 'wordpress-connection-status connected'
+                    statusEl.innerHTML = `<span>✅</span><span>${result.message}</span>`
+
+                    // 投稿オプションを表示
+                    document.getElementById('wordpress-publish-options').style.display = 'block'
+
+                    // カテゴリーを読み込み
+                    await loadWordPressCategories()
+                } else {
+                    statusEl.className = 'wordpress-connection-status disconnected'
+                    statusEl.innerHTML = `<span>❌</span><span>${result.message}</span>`
+                }
+
+            } catch (error) {
+                statusEl.className = 'wordpress-connection-status disconnected'
+                statusEl.innerHTML = `<span>❌</span><span>接続失敗: ${error.message}</span>`
+            }
+        }
+
+        // WordPress設定を保存
+        function saveWordPressConfig(event) {
+            event.preventDefault()
+
+            const config = {
+                siteUrl: document.getElementById('wp-site-url').value,
+                username: document.getElementById('wp-username').value,
+                applicationPassword: document.getElementById('wp-app-password').value,
+                defaultStatus: document.getElementById('wp-post-status').value
+            }
+
+            const success = window.wordpressIntegration.saveConfig(config)
+
+            if (success) {
+                alert('設定を保存しました')
+            } else {
+                alert('設定の保存に失敗しました')
+            }
+        }
+
+        // カテゴリーを読み込み
+        async function loadWordPressCategories() {
+            try {
+                const result = await window.wordpressIntegration.getCategories()
+
+                if (result.success) {
+                    const select = document.getElementById('wp-category')
+                    select.innerHTML = '<option value="">選択しない</option>'
+
+                    result.categories.forEach(cat => {
+                        const option = document.createElement('option')
+                        option.value = cat.id
+                        option.textContent = `${cat.name} (${cat.count})`
+                        select.appendChild(option)
+                    })
+                }
+            } catch (error) {
+                console.error('カテゴリー読み込みエラー:', error)
+            }
+        }
+
+        // WordPressへ下書き保存
+        async function publishToWordPress() {
+            if (!window.app || !window.app.data || !window.app.data.articles || window.app.data.articles.length === 0) {
+                alert('保存する記事がありません。先に記事を生成してください。')
+                return
+            }
+
+            if (!window.wordpressIntegration.isConfigured()) {
+                alert('WordPress設定が完了していません')
+                return
+            }
+
+            const confirmed = confirm(
+                `${window.app.data.articles.length}件の記事をWordPressへ保存しますか？\n\n` +
+                `ステータス: ${document.getElementById('wp-post-status').selectedOptions[0].text}`
+            )
+
+            if (!confirmed) return
+
+            // UI準備
+            document.getElementById('wordpress-progress').classList.add('visible')
+            document.getElementById('wordpress-results').innerHTML = ''
+            document.getElementById('wordpress-summary').style.display = 'none'
+
+            const options = {
+                status: document.getElementById('wp-post-status').value,
+                categories: document.getElementById('wp-category').value ? [parseInt(document.getElementById('wp-category').value)] : []
+            }
+
+            // 進捗イベントリスナー
+            window.addEventListener('wordpress-publish-progress', handleWordPressProgress)
+
+            try {
+                const result = await window.wordpressIntegration.publishBatch(
+                    window.app.data.articles,
+                    options
+                )
+
+                // 結果を表示
+                displayWordPressResults(result)
+
+            } catch (error) {
+                console.error('WordPress投稿エラー:', error)
+                alert(`投稿エラー: ${error.message}`)
+            } finally {
+                window.removeEventListener('wordpress-publish-progress', handleWordPressProgress)
+            }
+        }
+
+        // 進捗ハンドラー
+        function handleWordPressProgress(event) {
+            const { current, total, percentage, currentArticle } = event.detail
+
+            document.getElementById('wordpress-progress-fill').style.width = `${percentage}%`
+            document.getElementById('wordpress-progress-text').textContent =
+                `保存中... ${current}/${total} - ${currentArticle}`
+        }
+
+        // 結果を表示
+        function displayWordPressResults(result) {
+            const resultsEl = document.getElementById('wordpress-results')
+            const summaryEl = document.getElementById('wordpress-summary')
+
+            resultsEl.innerHTML = ''
+
+            result.results.forEach(item => {
+                const resultItem = document.createElement('div')
+                resultItem.className = `wordpress-result-item ${item.success ? 'success' : 'error'}`
+
+                resultItem.innerHTML = `
+                    <span class="wordpress-result-icon">${item.success ? '✅' : '❌'}</span>
+                    <span class="wordpress-result-title">${item.articleTitle}</span>
+                    ${item.success && item.post ? `<a href="${item.post.link}" target="_blank" class="wordpress-result-link">表示 →</a>` : ''}
+                `
+
+                resultsEl.appendChild(resultItem)
+            })
+
+            // サマリーを表示
+            document.getElementById('wp-summary-total').textContent = result.summary.total
+            document.getElementById('wp-summary-success').textContent = result.summary.success
+            document.getElementById('wp-summary-failure').textContent = result.summary.failure
+            summaryEl.style.display = 'grid'
+
+            // 進捗バーを完了状態に
+            document.getElementById('wordpress-progress-fill').style.width = '100%'
+            document.getElementById('wordpress-progress-text').textContent =
+                `完了: ${result.summary.success}/${result.summary.total}件の記事を下書き保存しました`
+        }
+    </script>
 </body>
 </html>

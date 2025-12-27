@@ -1,0 +1,433 @@
+/* ===========================================
+   HubPilot Free - WordPress Integration Styles
+   =========================================== */
+
+/* WordPress設定モーダル */
+.wordpress-modal {
+  position: fixed;
+  top: 0;
+  left: 0;
+  width: 100vw;
+  height: 100vh;
+  background: rgba(0, 0, 0, 0.6);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  z-index: 10000;
+  padding: 20px;
+  box-sizing: border-box;
+  overflow-y: auto;
+}
+
+.wordpress-modal.hidden {
+  display: none;
+}
+
+.wordpress-modal-content {
+  background: white;
+  border-radius: 12px;
+  padding: 30px;
+  width: 100%;
+  max-width: 600px;
+  max-height: 90vh;
+  overflow-y: auto;
+  box-shadow: 0 20px 60px rgba(0, 0, 0, 0.3);
+  animation: modalSlideIn 0.3s ease-out;
+}
+
+@keyframes modalSlideIn {
+  from {
+    opacity: 0;
+    transform: translateY(-30px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+.wordpress-modal-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 25px;
+  padding-bottom: 15px;
+  border-bottom: 2px solid #e9ecef;
+}
+
+.wordpress-modal-header h3 {
+  color: #33475b;
+  font-size: 24px;
+  font-weight: 700;
+  margin: 0;
+  display: flex;
+  align-items: center;
+  gap: 10px;
+}
+
+.wordpress-icon {
+  font-size: 28px;
+}
+
+.wordpress-close-btn {
+  background: none;
+  border: none;
+  font-size: 28px;
+  color: #6c757d;
+  cursor: pointer;
+  padding: 0;
+  width: 32px;
+  height: 32px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  border-radius: 50%;
+  transition: all 0.2s;
+}
+
+.wordpress-close-btn:hover {
+  background: #f8f9fa;
+  color: #33475b;
+}
+
+/* フォーム */
+.wordpress-form-group {
+  margin-bottom: 20px;
+}
+
+.wordpress-form-group label {
+  display: block;
+  color: #33475b;
+  font-size: 14px;
+  font-weight: 600;
+  margin-bottom: 8px;
+}
+
+.wordpress-form-group input,
+.wordpress-form-group select {
+  width: 100%;
+  padding: 12px 16px;
+  border: 2px solid #e9ecef;
+  border-radius: 8px;
+  font-size: 15px;
+  transition: border-color 0.3s;
+  box-sizing: border-box;
+}
+
+.wordpress-form-group input:focus,
+.wordpress-form-group select:focus {
+  outline: none;
+  border-color: #ff7a59;
+}
+
+.wordpress-form-help {
+  font-size: 13px;
+  color: #6c757d;
+  margin-top: 5px;
+}
+
+.wordpress-form-help a {
+  color: #ff7a59;
+  text-decoration: none;
+}
+
+.wordpress-form-help a:hover {
+  text-decoration: underline;
+}
+
+/* 接続ステータス */
+.wordpress-connection-status {
+  padding: 12px 16px;
+  border-radius: 8px;
+  margin-bottom: 20px;
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  font-size: 14px;
+}
+
+.wordpress-connection-status.connected {
+  background: #d4edda;
+  color: #155724;
+  border: 1px solid #c3e6cb;
+}
+
+.wordpress-connection-status.disconnected {
+  background: #f8d7da;
+  color: #721c24;
+  border: 1px solid #f5c6cb;
+}
+
+.wordpress-connection-status.testing {
+  background: #d1ecf1;
+  color: #0c5460;
+  border: 1px solid #bee5eb;
+}
+
+/* ボタン */
+.wordpress-btn {
+  padding: 12px 24px;
+  border: none;
+  border-radius: 8px;
+  font-size: 15px;
+  font-weight: 600;
+  cursor: pointer;
+  transition: all 0.3s;
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+}
+
+.wordpress-btn-primary {
+  background: #ff7a59;
+  color: white;
+}
+
+.wordpress-btn-primary:hover {
+  background: #ff6644;
+  transform: translateY(-2px);
+  box-shadow: 0 4px 12px rgba(255, 122, 89, 0.4);
+}
+
+.wordpress-btn-secondary {
+  background: white;
+  color: #33475b;
+  border: 2px solid #e9ecef;
+}
+
+.wordpress-btn-secondary:hover {
+  border-color: #ff7a59;
+  color: #ff7a59;
+}
+
+.wordpress-btn:disabled {
+  opacity: 0.5;
+  cursor: not-allowed;
+  transform: none !important;
+}
+
+.wordpress-btn.loading {
+  position: relative;
+  color: transparent;
+}
+
+.wordpress-btn.loading::after {
+  content: '';
+  position: absolute;
+  top: 50%;
+  left: 50%;
+  width: 16px;
+  height: 16px;
+  margin: -8px 0 0 -8px;
+  border: 2px solid rgba(255, 255, 255, 0.3);
+  border-top-color: white;
+  border-radius: 50%;
+  animation: spin 0.6s linear infinite;
+}
+
+/* ボタングループ */
+.wordpress-btn-group {
+  display: flex;
+  gap: 10px;
+  margin-top: 20px;
+}
+
+.wordpress-btn-group .wordpress-btn {
+  flex: 1;
+}
+
+/* 投稿オプション */
+.wordpress-publish-options {
+  background: #f8f9fa;
+  border-radius: 8px;
+  padding: 20px;
+  margin: 20px 0;
+}
+
+.wordpress-publish-options h4 {
+  color: #33475b;
+  font-size: 16px;
+  font-weight: 600;
+  margin: 0 0 15px 0;
+}
+
+.wordpress-option-group {
+  margin-bottom: 15px;
+}
+
+.wordpress-option-group:last-child {
+  margin-bottom: 0;
+}
+
+.wordpress-checkbox-group {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+}
+
+.wordpress-checkbox-group input[type="checkbox"] {
+  width: 18px;
+  height: 18px;
+  cursor: pointer;
+}
+
+.wordpress-checkbox-group label {
+  margin: 0;
+  cursor: pointer;
+  font-weight: normal;
+}
+
+/* 進捗表示 */
+.wordpress-progress {
+  margin: 20px 0;
+  display: none;
+}
+
+.wordpress-progress.visible {
+  display: block;
+}
+
+.wordpress-progress-bar {
+  width: 100%;
+  height: 8px;
+  background: #e9ecef;
+  border-radius: 4px;
+  overflow: hidden;
+  margin-bottom: 10px;
+}
+
+.wordpress-progress-fill {
+  height: 100%;
+  background: linear-gradient(90deg, #ff7a59 0%, #ff6644 100%);
+  transition: width 0.3s ease;
+  width: 0%;
+}
+
+.wordpress-progress-text {
+  color: #6c757d;
+  font-size: 14px;
+  text-align: center;
+}
+
+/* 結果リスト */
+.wordpress-results {
+  margin-top: 20px;
+  max-height: 300px;
+  overflow-y: auto;
+}
+
+.wordpress-result-item {
+  padding: 12px;
+  border-radius: 6px;
+  margin-bottom: 8px;
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  font-size: 14px;
+}
+
+.wordpress-result-item.success {
+  background: #d4edda;
+  color: #155724;
+}
+
+.wordpress-result-item.error {
+  background: #f8d7da;
+  color: #721c24;
+}
+
+.wordpress-result-icon {
+  font-size: 18px;
+}
+
+.wordpress-result-title {
+  flex: 1;
+  font-weight: 500;
+}
+
+.wordpress-result-link {
+  color: #ff7a59;
+  text-decoration: none;
+  font-size: 13px;
+}
+
+.wordpress-result-link:hover {
+  text-decoration: underline;
+}
+
+/* サマリー */
+.wordpress-summary {
+  background: #f8f9fa;
+  border-radius: 8px;
+  padding: 15px;
+  margin-top: 15px;
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+  gap: 15px;
+}
+
+.wordpress-summary-item {
+  text-align: center;
+}
+
+.wordpress-summary-value {
+  font-size: 24px;
+  font-weight: 700;
+  color: #33475b;
+}
+
+.wordpress-summary-label {
+  font-size: 13px;
+  color: #6c757d;
+  margin-top: 5px;
+}
+
+/* レスポンシブ対応 */
+@media (max-width: 768px) {
+  .wordpress-modal-content {
+    padding: 20px;
+  }
+
+  .wordpress-modal-header h3 {
+    font-size: 20px;
+  }
+
+  .wordpress-btn-group {
+    flex-direction: column;
+  }
+
+  .wordpress-summary {
+    grid-template-columns: 1fr;
+    gap: 10px;
+  }
+}
+
+/* ダークモード対応 */
+@media (prefers-color-scheme: dark) {
+  .wordpress-modal-content {
+    background: #2d3748;
+  }
+
+  .wordpress-modal-header h3 {
+    color: white;
+  }
+
+  .wordpress-form-group label {
+    color: #e2e8f0;
+  }
+
+  .wordpress-form-group input,
+  .wordpress-form-group select {
+    background: #1a202c;
+    border-color: #4a5568;
+    color: white;
+  }
+
+  .wordpress-publish-options {
+    background: #1a202c;
+  }
+
+  .wordpress-publish-options h4 {
+    color: #e2e8f0;
+  }
+}
