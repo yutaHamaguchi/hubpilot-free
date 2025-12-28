@@ -2,7 +2,7 @@
   // ===========================================
   // HubPilot Free - VSCode プロジェクト設定
   // ===========================================
-  
+
   // MCP Supabase設定
   "servers": {
     "supabase": {
@@ -14,14 +14,14 @@
   // ===========================================
   // エディター設定
   // ===========================================
-  
+
   // ファイル設定
   "files.autoSave": "afterDelay",
   "files.autoSaveDelay": 1000,
   "files.trimTrailingWhitespace": true,
   "files.insertFinalNewline": true,
   "files.trimFinalNewlines": true,
-  
+
   // エディター基本設定
   "editor.tabSize": 2,
   "editor.insertSpaces": true,
@@ -32,7 +32,7 @@
     "source.fixAll": "explicit",
     "source.organizeImports": "explicit"
   },
-  
+
   // 表示設定
   "editor.minimap.enabled": true,
   "editor.wordWrap": "on",
@@ -43,7 +43,7 @@
   // ===========================================
   // 言語別設定
   // ===========================================
-  
+
   // JavaScript/TypeScript
   "[javascript]": {
     "editor.defaultFormatter": "esbenp.prettier-vscode",
@@ -61,7 +61,7 @@
     "editor.defaultFormatter": "esbenp.prettier-vscode",
     "editor.tabSize": 2
   },
-  
+
   // HTML/CSS
   "[html]": {
     "editor.defaultFormatter": "esbenp.prettier-vscode",
@@ -71,13 +71,13 @@
     "editor.defaultFormatter": "esbenp.prettier-vscode",
     "editor.tabSize": 2
   },
-  
+
   // SQL
   "[sql]": {
     "editor.defaultFormatter": "bradymholt.pgformatter",
     "editor.tabSize": 2
   },
-  
+
   // Markdown
   "[markdown]": {
     "editor.defaultFormatter": "esbenp.prettier-vscode",
@@ -92,13 +92,13 @@
   // ===========================================
   // Supabase開発設定
   // ===========================================
-  
+
   // Deno設定（Edge Functions用）
   "deno.enable": true,
   "deno.enablePaths": ["./supabase/functions"],
   "deno.lint": true,
   "deno.unstable": true,
-  
+
   // TypeScript設定
   "typescript.preferences.importModuleSpecifier": "relative",
   "typescript.suggest.autoImports": true,
@@ -107,7 +107,7 @@
   // ===========================================
   // ファイル関連付け
   // ===========================================
-  
+
   "files.associations": {
     "*.env*": "properties",
     "*.sql": "sql",
@@ -118,7 +118,7 @@
   // ===========================================
   // 検索・除外設定
   // ===========================================
-  
+
   "search.exclude": {
     "**/node_modules": true,
     "**/dist": true,
@@ -128,7 +128,7 @@
     "**/logs": true,
     "**/*.log": true
   },
-  
+
   "files.exclude": {
     "**/.git": true,
     "**/.DS_Store": true,
@@ -139,7 +139,7 @@
   // ===========================================
   // 拡張機能設定
   // ===========================================
-  
+
   // Prettier設定
   "prettier.configPath": "./.prettierrc",
   "prettier.requireConfig": false,
@@ -147,7 +147,7 @@
   "prettier.semi": true,
   "prettier.singleQuote": true,
   "prettier.trailingComma": "es5",
-  
+
   // ESLint設定
   "eslint.workingDirectories": ["./"],
   "eslint.validate": [
@@ -155,7 +155,7 @@
     "typescript",
     "html"
   ],
-  
+
   // Live Server設定
   "liveServer.settings.port": 8000,
   "liveServer.settings.root": "/",
@@ -165,7 +165,7 @@
   // ===========================================
   // Git設定
   // ===========================================
-  
+
   "git.autofetch": true,
   "git.confirmSync": false,
   "git.enableSmartCommit": true,
@@ -174,7 +174,7 @@
   // ===========================================
   // ターミナル設定
   // ===========================================
-  
+
   "terminal.integrated.defaultProfile.windows": "PowerShell",
   "terminal.integrated.fontSize": 14,
   "terminal.integrated.cursorBlinking": true,
@@ -182,19 +182,19 @@
   // ===========================================
   // デバッグ設定
   // ===========================================
-  
+
   "debug.console.fontSize": 14,
   "debug.inlineValues": "auto",
 
   // ===========================================
   // プロジェクト固有設定
   // ===========================================
-  
+
   // HubPilot固有の設定
   "emmet.includeLanguages": {
     "javascript": "javascriptreact"
   },
-  
+
   // コメント設定
   "better-comments.tags": [
     {

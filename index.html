@@ -1210,6 +1210,12 @@
 
     <!-- UI層 -->
     <script src="src/ui/TemplateEngine.js"></script>
+    <script src="src/ui/UIRenderer.js"></script>
+
+    <!-- 新しいコア層 -->
+    <script src="src/core/WizardController.js"></script>
+    <script src="src/core/ContentGenerator.js"></script>
+    <script src="src/core/HubPilotApp.js"></script>
 
     <!-- Supabase設定 -->
     <script src="supabase-config.js"></script>
@@ -1357,7 +1363,34 @@
         }
     </script>
 
-    <script src="app.js"></script>
+    <!-- アプリケーション初期化 -->
+    <script>
+        // 新しいリファクタリングされたアプリケーションを初期化
+        let app;
+
+        document.addEventListener('DOMContentLoaded', () => {
+            try {
+                // 新しいHubPilotAppクラスでアプリケーションを初期化
+                app = new HubPilotApp();
+
+                // グローバルアクセス用（既存コードとの互換性）
+                window.app = app;
+
+                console.log('✅ HubPilot Free - リファクタリング版が正常に初期化されました');
+
+            } catch (error) {
+                console.error('❌ アプリケーションの初期化に失敗しました:', error);
+
+                // フォールバック: 既存のapp.jsを読み込み
+                const fallbackScript = document.createElement('script');
+                fallbackScript.src = 'app.js';
+                fallbackScript.onload = () => {
+                    console.log('🔄 フォールバック: 既存のapp.jsを読み込みました');
+                };
+                document.head.appendChild(fallbackScript);
+            }
+        });
+    </script>
 
     <!-- 画像生成機能 -->
     <script src="image-generation.js"></script>
