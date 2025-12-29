@@ -3,7 +3,7 @@
  */
 class ContentGenerator {
     constructor() {
-        this.isGing = false;
+        this.isGenerating = false;
         this.generationState = null;
         this.supabaseIntegration = null;
         this.notificationService = null;

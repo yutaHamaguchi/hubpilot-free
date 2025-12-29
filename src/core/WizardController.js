@@ -3,7 +3,7 @@
  */
 class WizardController {
     constructor() {
-        this.curre= 1;
+        this.currentStep = 1;
         this.totalSteps = 6;
         this.data = {
             theme: '',
@@ -172,7 +172,7 @@ class WizardController {
         const progressBar = document.querySelector('.progress-fill');
         if (progressBar) {
             const progress = ((this.currentStep - 1) / (this.totalSteps - 1)) * 100;
-sBar.style.width = `${progress}%`;
+            progressBar.style.width = `${progress}%`;
         }
     }
 

@@ -14,8 +14,8 @@ class HubPilotApp {
     /**
      * 依存関係を初期化
      */
-    initializeDependencies()
-  // ユーティリティサービス
+    initializeDependencies() {
+        // ユーティリティサービス
         this.storageService = new StorageService();
         this.notificationService = new NotificationService();
         this.errorHandler = new ErrorHandler();

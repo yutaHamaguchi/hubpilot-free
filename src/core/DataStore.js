@@ -1,251 +1,175 @@
 /**
- * DataStore - アプリケーションデータの管理を担当するクラス
+ * DataStore - データの永続化を管理するクラス
  */
 class DataStore {
-    constructor(storageService) {
+    constructor() {
+        this.storageService = null;
+        this.notificationService = null;
+        this.storageKey = 'hubpilot_app_data';
+    }
+
+    /**
+     * 依存関係を設定
+     */
+    setDependencies(storageService, notificationService) {
         this.storageService = storageService;
-        this.storageKey = 'hubpilot-data';
-        this.backupKey = 'hubpilot-backups';
-        this.maxBackups = 5;
-
-        // デフォルトのデータ構造
-        this.defaultData = {
-            currentStep: 1,
-            theme: '',
-            clusterPages: [],
-            headings: [],
-            articles: [],
-            seoAnalysis: [],
-            qualityChecks: [],
-            images: []
-        };
-
-        this.data = { ...this.defaultData };
-        this.unsavedChanges = false;
-    }
-
-    /**
-     * データを初期化
-     */
-    initialize() {
-        this.data = { ...this.defaultData };
-        this.unsavedChanges = false;
-    }
-
-    /**
-     * データをロード
-     * @returns {Object} - ロードされたデータ
-     */
-    load() {
-        try {
-            const saved = this.storageService.getJSON(this.storageKey);
-
-            if (saved) {
-                this.data = { ...this.defaultData, ...saved };
-                this.unsavedChanges = false;
-                return this.data;
-            }
-
-            return this.data;
-        } catch (error) {
-            console.error('データのロードに失敗しました:', error);
-            return this.data;
-        }
+        this.notificationService = notificationService;
     }
 
     /**
      * データを保存
+     * @param {Object} data - 保存するデータ
      * @returns {boolean} - 成功した場合true
      */
-    save() {
+    save(data) {
         try {
-            const success = this.storageService.setJSON(this.storageKey, this.data);
+            if (!this.storageService) {
+                console.warn('StorageService is not available');
+                return false;
+            }
+
+            const success = this.storageService.setJSON(this.storageKey, {
+                ...data,
+                lastSaved: new Date().toISOString()
+            });
 
             if (success) {
-                this.unsavedChanges = false;
-                this.createBackup();
+                console.log('Data saved successfully');
+            } else {
+                console.error('Failed to save data');
             }
 
             return success;
         } catch (error) {
-            console.error('データの保存に失敗しました:', error);
+            console.error('Error saving data:', error);
             return false;
         }
     }
 
     /**
-     * データを取得
-     * @returns {Object} - 現在のデータ
+     * データを読み込み
+     * @returns {Object|null} - 読み込んだデータ
      */
-    getData() {
-        return { ...this.data };
+    load() {
+        try {
+            if (!this.storageService) {
+                console.warn('StorageService is not available');
+                return null;
+            }
+
+            const data = this.storageService.getJSON(this.storageKey);
+
+            if (data) {
+                console.log('Data loaded successfully');
+                return data;
+            } else {
+                console.log('No saved data found');
+                return null;
+            }
+        } catch (error) {
+            console.error('Error loading data:', error);
+            return null;
+        }
     }
 
     /**
-     * データを更新
-     * @param {Object} updates - 更新するデータ
+     * データをクリア
+     * @returns {boolean} - 成功した場合true
      */
-    updateData(updates) {
-        this.data = { ...this.data, ...updates };
-        this.unsavedChanges = true;
+    clear() {
+        try {
+            if (!this.storageService) {
+                console.warn('StorageService is not available');
+                return false;
+            }
+
+            const success = this.storageService.remove(this.storageKey);
+
+            if (success) {
+                console.log('Data cleared successfully');
+            } else {
+                console.error('Failed to clear data');
+            }
+
+            return success;
+        } catch (error) {
+            console.error('Error clearing data:', error);
+            return false;
+        }
     }
 
     /**
-     * 特定のフィールドを更新
-     * @param {string} field - フィールド名
-     * @param {*} value - 新しい値
+     * データが存在するかチェック
+     * @returns {boolean} - データが存在する場合true
      */
-    setField(field, value) {
-        this.data[field] = value;
-        this.unsavedChanges = true;
+    exists() {
+        try {
+            if (!this.storageService) {
+                return false;
+            }
+
+            return this.storageService.has(this.storageKey);
+        } catch (error) {
+            console.error('Error checking data existence:', error);
+            return false;
+        }
     }
 
     /**
-     * 特定のフィールドを取得
-     * @param {string} field - フィールド名
-     * @returns {*} - フィールドの値
+     * データのサイズを取得
+     * @returns {number} - データサイズ（バイト）
      */
-    getField(field) {
-        return this.data[field];
+    getSize() {
+        try {
+            if (!this.storageService) {
+                return 0;
+            }
+
+            const data = this.storageService.get(this.storageKey);
+            return data ? new Blob([data]).size : 0;
+        } catch (error) {
+            console.error('Error getting data size:', error);
+            return 0;
+        }
     }
 
     /**
      * バックアップを作成
+     * @returns {string|null} - バックアップデータ（JSON文字列）
      */
     createBackup() {
         try {
-            const backups = this.storageService.getJSON(this.backupKey, []);
-
-            const newBackup = {
-                timestamp: new Date().toISOString(),
-                data: { ...this.data }
-            };
-
-            backups.unshift(newBackup);
-
-            // 最大数を超えたら古いバックアップを削除
-            if (backups.length > this.maxBackups) {
-                backups.splice(this.maxBackups);
+            const data = this.load();
+            if (data) {
+                return JSON.stringify({
+                    ...data,
+                    backupCreated: new Date().toISOString()
+                }, null, 2);
             }
-
-            this.storageService.setJSON(this.backupKey, backups);
+            return null;
         } catch (error) {
-            console.error('バックアップの作成に失敗しました:', error);
+            console.error('Error creating backup:', error);
+            return null;
         }
-    }
-
-    /**
-     * バックアップ一覧を取得
-     * @returns {Array} - バックアップの配列
-     */
-    getBackups() {
-        return this.storageService.getJSON(this.backupKey, []);
     }
 
     /**
      * バックアップから復元
-     * @param {number} index - バックアップのインデックス
+     * @param {string} backupData - バックアップデータ（JSON文字列）
      * @returns {boolean} - 成功した場合true
      */
-    restoreFromBackup(index) {
+    restoreFromBackup(backupData) {
         try {
-            const backups = this.getBackups();
-
-            if (index >= 0 && index < backups.length) {
-                this.data = { ...this.defaultData, ...backups[index].data };
-                this.save();
-                return true;
-            }
-
-            return false;
+            const data = JSON.parse(backupData);
+            return this.save(data);
         } catch (error) {
-            console.error('バックアップからの復元に失敗しました:', error);
+            console.error('Error restoring from backup:', error);
             return false;
         }
-    }
-
-    /**
-     * バックアップを削除
-     * @param {number} index - 削除するバックアップのインデックス
-     * @returns {boolean} - 成功した場合true
-     */
-    deleteBackup(index) {
-        try {
-            const backups = this.getBackups();
-
-            if (index >= 0 && index < backups.length) {
-                backups.splice(index, 1);
-                this.storageService.setJSON(this.backupKey, backups);
-                return true;
-            }
-
-            return false;
-        } catch (error) {
-            console.error('バックアップの削除に失敗しました:', error);
-            return false;
-        }
-    }
-
-    /**
-     * すべてのバックアップを削除
-     * @returns {boolean} - 成功した場合true
-     */
-    clearAllBackups() {
-        return this.storageService.setJSON(this.backupKey, []);
-    }
-
-    /**
-     * データをエクスポート（JSON文字列として）
-     * @returns {string} - JSON文字列
-     */
-    exportData() {
-        return JSON.stringify(this.data, null, 2);
-    }
-
-    /**
-     * データをインポート
-     * @param {string} jsonString - インポートするJSON文字列
-     * @returns {boolean} - 成功した場合true
-     */
-    importData(jsonString) {
-        try {
-            const importedData = JSON.parse(jsonString);
-            this.data = { ...this.defaultData, ...importedData };
-            this.save();
-            return true;
-        } catch (error) {
-            console.error('データのインポートに失敗しました:', error);
-            return false;
-        }
-    }
-
-    /**
-     * すべてのデータをクリア
-     */
-    clearAll() {
-        this.data = { ...this.defaultData };
-        this.save();
-        this.clearAllBackups();
-    }
-
-    /**
-     * 未保存の変更があるかチェック
-     * @returns {boolean} - 未保存の変更がある場合true
-     */
-    hasUnsavedChanges() {
-        return this.unsavedChanges;
-    }
-
-    /**
-     * ストレージ使用状況を取得
-     * @returns {Object} - 使用状況の情報
-     */
-    getStorageInfo() {
-        return this.storageService.getStorageUsage();
     }
 }
 
-// グローバルインスタンスをエクスポート
+// グローバルに公開
 if (typeof window !== 'undefined') {
     window.DataStore = DataStore;
 }

@@ -1,73 +1,231 @@
 /**
- * TemplateEngine - HTMLテンプレートの生成を統一管理するクラス
+ * TemplateEngine - HTMLテンプレートの生成を担当するクラス
  */
 class TemplateEngine {
-    /**
-     * HTMLをエスケープ
-     * @param {string} text - エスケープするテキスト
-     * @returns {string} - エスケープされたテキスト
-     */
-    static escapeHtml(text) {
-        const div = document.createElement('div');
-        div.textContent = text;
-        return div.innerHTML;
+    constructor() {
+        this.templates = {};
     }
 
     /**
-     * 日付をフォーマット
-     * @param {string|Date} date - フォーマットする日付
-     * @returns {string} - フォーマットされた日付
+     * 記事モーダルを作成
+     * @param {Object} article - 記事データ
+     * @returns {HTMLElement} - モーダル要素
      */
-    static formatDate(date) {
-        const d = new Date(date);
-        return d.toLocaleString('ja-JP', {
-            year: 'numeric',
-            month: '2-digit',
-            day: '2-digit',
-            hour: '2-digit',
-            minute: '2-digit'
-        });
-    }
+    createArticleModal(article) {
+        const modal = document.createElement('div');
+        modal.className = 'article-modal';
+        modal.style.cssText = `
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: rgba(0,0,0,0.8);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            z-index: 10000;
+        `;
 
-    /**
-     * バックアップモーダルのテンプレート
-     * @param {Array} backups - バックアップの配列
-     * @returns {string} - HTMLテンプレート
-     */
-    static createBackupModal(backups) {
-        const backupItems = backups.map((backup, index) => `
-            <div class="backup-item" data-index="${index}">
-                <div class="backup-info">
-                    <div class="backup-date">${this.formatDate(backup.timestamp)}</div>
-                    <div class="backup-size">${this.getBackupSize(backup)}</div>
+        modal.innerHTML = `
+            <div class="article-modal-content" style="
+                background: white;
+                border-radius: 8px;
+                max-width: 800px;
+                max-height: 80vh;
+                overflow-y: auto;
+                padding: 20px;
+                margin: 20px;
+            ">
+                <div class="article-modal-header" style="
+                    display: flex;
+                    justify-content: space-between;
+                    align-items: center;
+                    margin-bottom: 20px;
+                    border-bottom: 1px solid #eee;
+                    padding-bottom: 15px;
+                ">
+                    <h2 style="margin: 0; color: #333;">${this.escapeHtml(article.title)}</h2>
+                    <button class="close-modal" style="
+                        background: none;
+                        border: none;
+                        font-size: 24px;
+                        cursor: pointer;
+                        color: #666;
+                    ">×</button>
                 </div>
-                <div class="backup-actions">
-                    <button class="btn-restore" data-index="${index}">復元</button>
-                    <button class="btn-delete" data-index="${index}">削除</button>
+                <div class="article-modal-body">
+                    <div class="article-meta" style="
+                        display: flex;
+                        gap: 20px;
+                        margin-bottom: 20px;
+                        padding: 10px;
+                        background: #f8f9fa;
+                        border-radius: 4px;
+                        font-size: 14px;
+                        color: #666;
+                    ">
+                        <span>文字数: ${article.wordCount || 0}</span>
+                        <span>品質: ${article.qualityStatus || '未チェック'}</span>
+                        <span>生成日時: ${article.generatedAt ? new Date(article.generatedAt).toLocaleString() : '不明'}</span>
+                    </div>
+                    <div class="article-content" style="
+                        line-height: 1.6;
+                        color: #333;
+                        white-space: pre-wrap;
+                    ">${this.escapeHtml(article.content || 'コンテンツがありません')}</div>
+                </div>
+            </div>
+        `;
+
+        // 閉じるボタンのイベント
+        const closeBtn = modal.querySelector('.close-modal');
+        closeBtn.addEventListener('click', () => {
+            modal.remove();
+        });
+
+        // モーダル背景クリックで閉じる
+        modal.addEventListener('click', (e) => {
+            if (e.target === modal) {
+                modal.remove();
+            }
+        });
+
+        return modal;
+    }
+
+    /**
+     * クラスターページカードを作成
+     * @param {Object} page - ページデータ
+     * @param {number} index - インデックス
+     * @returns {string} - HTML文字列
+     */
+    createClusterPageCard(page, index) {
+        return `
+            <div class="cluster-page-card" data-page-id="${page.id}">
+                <div class="cluster-page-header">
+                    <div class="cluster-page-number">${index + 1}</div>
+                    <div class="cluster-page-actions">
+                        <button class="btn btn-small btn-secondary" onclick="editPage('${page.id}')">
+                            <span class="btn-icon">✏️</span>
+                            編集
+                        </button>
+                        <button class="btn btn-small btn-danger" onclick="removePage('${page.id}')">
+                            <span class="btn-icon">🗑️</span>
+                            削除
+                        </button>
+                    </div>
+                </div>
+                <div class="cluster-page-content">
+                    <h4 class="cluster-page-title">${this.escapeHtml(page.title)}</h4>
+                    <p class="cluster-page-summary">${this.escapeHtml(page.summary)}</p>
+                    <div class="cluster-page-meta">
+                        <span class="meta-item">
+                            <span class="meta-icon">📝</span>
+                            <span>${page.wordCount || 0}文字</span>
+                        </span>
+                        <span class="meta-item">
+                            <span class="meta-icon">✅</span>
+                            <span>${page.qualityStatus || '未生成'}</span>
+                        </span>
+                    </div>
+                </div>
+            </div>
+        `;
+    }
+
+    /**
+     * 見出しアコーディオンアイテムを作成
+     * @param {Object} page - ページデータ
+     * @param {Array} headings - 見出しデータ
+     * @param {number} index - インデックス
+     * @returns {string} - HTML文字列
+     */
+    createHeadingAccordionItem(page, headings, index) {
+        const headingsList = headings.map(heading => `
+            <div class="heading-item" data-heading-id="${heading.id}">
+                <div class="heading-content">
+                    <span class="heading-level">H${heading.level}</span>
+                    <span class="heading-text">${this.escapeHtml(heading.text)}</span>
+                </div>
+                <div class="heading-actions">
+                    <button class="btn btn-small btn-secondary" onclick="editHeading('${page.id}', '${heading.id}')">
+                        <span class="btn-icon">✏️</span>
+                    </button>
+                    <button class="btn btn-small btn-danger" onclick="removeHeading('${page.id}', '${heading.id}')">
+                        <span class="btn-icon">🗑️</span>
+                    </button>
                 </div>
             </div>
         `).join('');
 
         return `
-            <div class="backup-modal-content">
-                <div class="backup-modal-header">
-                    <h3>🔄 バックアップ管理</h3>
-                    <button class="modal-close">×</button>
+            <div class="accordion-item">
+                <div class="accordion-header" onclick="toggleAccordion(this)">
+                    <div class="accordion-title">
+                        <span class="accordion-number">${index + 1}</span>
+                        <span class="accordion-text">${this.escapeHtml(page.title)}</span>
+                    </div>
+                    <div class="accordion-meta">
+                        <span class="meta-count">${headings.length}見出し</span>
+                        <span class="accordion-icon">▼</span>
+                    </div>
                 </div>
-                <div class="backup-modal-body">
-                    ${backups.length > 0 ? `
-                        <div class="backup-list">
-                            ${backupItems}
-                        </div>
-                    ` : `
-                        <div class="empty-state">
-                            <p>バックアップがありません</p>
-                        </div>
-                    `}
+                <div class="accordion-content">
+                    <div class="headings-list">
+                        ${headingsList}
+                    </div>
+                    <div class="accordion-actions">
+                        <button class="btn btn-small btn-secondary" onclick="addHeading('${page.id}')">
+                            <span class="btn-icon">➕</span>
+                            見出しを追加
+                        </button>
+                    </div>
                 </div>
-                <div class="backup-modal-footer">
-                    <button class="btn-clear-all ${backups.length === 0 ? 'disabled' : ''}">
-                        すべて削除
+            </div>
+        `;
+    }
+
+    /**
+     * 記事生成カードを作成
+     * @param {Object} article - 記事データ
+     * @param {number} index - インデックス
+     * @returns {string} - HTML文字列
+     */
+    createArticleCard(article, index) {
+        const statusClass = this.getStatusClass(article.qualityStatus);
+        const statusIcon = this.getStatusIcon(article.qualityStatus);
+
+        return `
+            <div class="article-card ${statusClass}" data-article-id="${article.id}">
+                <div class="article-card-header">
+                    <div class="article-number">${index + 1}</div>
+                    <div class="article-status">
+                        <span class="status-icon">${statusIcon}</span>
+                        <span class="status-text">${article.qualityStatus || '生成中'}</span>
+                    </div>
+                </div>
+                <div class="article-card-content">
+                    <h4 class="article-title">${this.escapeHtml(article.title)}</h4>
+                    <div class="article-meta">
+                        <span class="meta-item">
+                            <span class="meta-icon">📝</span>
+                            <span>${article.wordCount || 0}文字</span>
+                        </span>
+                        <span class="meta-item">
+                            <span class="meta-icon">⏱️</span>
+                            <span>${article.generatedAt ? this.formatDate(article.generatedAt) : '生成中'}</span>
+                        </span>
+                    </div>
+                </div>
+                <div class="article-card-actions">
+                    <button class="btn btn-small btn-secondary" onclick="viewArticle('${article.id}')" ${!article.content ? 'disabled' : ''}>
+                        <span class="btn-icon">👁️</span>
+                        プレビュー
+                    </button>
+                    <button class="btn btn-small btn-secondary" onclick="editArticle('${article.id}')" ${!article.content ? 'disabled' : ''}>
+                        <span class="btn-icon">✏️</span>
+                        編集
                     </button>
                 </div>
             </div>
@@ -75,246 +233,118 @@ class TemplateEngine {
     }
 
     /**
-     * ストレージ情報モーダルのテンプレート
-     * @param {Object} usage - ストレージ使用状況
-     * @returns {string} - HTMLテンプレート
+     * 品質チェック結果アイテムを作成
+     * @param {Object} qualityCheck - 品質チェック結果
+     * @returns {string} - HTML文字列
      */
-    static createStorageModal(usage) {
-        const itemsList = Object.entries(usage.items || {})
-            .sort((a, b) => b[1] - a[1])
-            .map(([key, size]) => `
-                <div class="storage-item">
-                    <span class="storage-key">${this.escapeHtml(key)}</span>
-                    <span class="storage-size">${this.formatBytes(size)}</span>
-                </div>
-            `).join('');
+    createQualityCheckItem(qualityCheck) {
+        const statusClass = qualityCheck.status === '良好' ? 'success' :
+                           qualityCheck.status === '要注意' ? 'warning' : 'error';
 
-        return `
-            <div class="backup-modal-content">
-                <div class="backup-modal-header">
-                    <h3>💾 ストレージ情報</h3>
-                    <button class="modal-close">×</button>
-                </div>
-                <div class="backup-modal-body">
-                    <div class="storage-summary">
-                        <div class="storage-stat">
-                            <div class="stat-label">合計使用量</div>
-                            <div class="stat-value">${usage.formattedSize || '0 B'}</div>
-                        </div>
-                        <div class="storage-stat">
-                            <div class="stat-label">アイテム数</div>
-                            <div class="stat-value">${usage.itemCount || 0}</div>
-                        </div>
-                    </div>
-                    ${itemsList ? `
-                        <div class="storage-details">
-                            <h4>詳細</h4>
-                            <div class="storage-list">
-                                ${itemsList}
-                            </div>
-                        </div>
-                    ` : ''}
-                </div>
+        const checksHtml = qualityCheck.checks.map(check => `
+            <div class="quality-check-detail">
+                <span class="check-name">${check.name}</span>
+                <span class="check-status ${check.status === 'OK' ? 'success' : 'warning'}">${check.status}</span>
+                <span class="check-value">${check.value}</span>
             </div>
-        `;
-    }
+        `).join('');
 
-    /**
-     * エラーモーダルのテンプレート
-     * @param {string} title - タイトル
-     * @param {string} message - メッセージ
-     * @param {string} details - 詳細情報
-     * @returns {string} - HTMLテンプレート
-     */
-    static createErrorModal(title, message, details = null) {
         return `
-            <div class="backup-modal-content error-modal">
-                <div class="backup-modal-header">
-                    <h3>❌ ${this.escapeHtml(title)}</h3>
-                    <button class="modal-close">×</button>
-                </div>
-                <div class="backup-modal-body">
-                    <p class="error-message">${this.escapeHtml(message)}</p>
-                    ${details ? `
-                        <details class="error-details">
-                            <summary>詳細情報</summary>
-                            <pre>${this.escapeHtml(details)}</pre>
-                        </details>
-                    ` : ''}
-                </div>
-                <div class="backup-modal-footer">
-                    <button class="modal-close btn-primary">閉じる</button>
-                </div>
-            </div>
-        `;
-    }
-
-    /**
-     * 確認モーダルのテンプレート
-     * @param {string} title - タイトル
-     * @param {string} message - メッセージ
-     * @param {string} confirmText - 確認ボタンのテキスト
-     * @param {string} cancelText - キャンセルボタンのテキスト
-     * @returns {string} - HTMLテンプレート
-     */
-    static createConfirmModal(title, message, confirmText = 'OK', cancelText = 'キャンセル') {
-        return `
-            <div class="backup-modal-content confirm-modal">
-                <div class="backup-modal-header">
-                    <h3>${this.escapeHtml(title)}</h3>
-                    <button class="modal-close">×</button>
-                </div>
-                <div class="backup-modal-body">
-                    <p>${this.escapeHtml(message)}</p>
-                </div>
-                <div class="backup-modal-footer">
-                    <button class="btn-cancel">${this.escapeHtml(cancelText)}</button>
-                    <button class="btn-confirm">${this.escapeHtml(confirmText)}</button>
-                </div>
-            </div>
-        `;
-    }
-
-    /**
-     * 記事カードのテンプレート
-     * @param {Object} article - 記事データ
-     * @param {number} index - インデックス
-     * @returns {string} - HTMLテンプレート
-     */
-    static createArticleCard(article, index) {
-        return `
-            <div class="article-card" data-index="${index}">
-                <div class="article-header">
-                    <h3>${this.escapeHtml(article.title || 'タイトルなし')}</h3>
-                    <div class="article-actions">
-                        <button class="btn-edit" data-index="${index}">編集</button>
-                        <button class="btn-delete" data-index="${index}">削除</button>
+            <div class="quality-result-item ${statusClass}">
+                <div class="quality-result-header">
+                    <h4 class="quality-result-title">${this.escapeHtml(qualityCheck.title)}</h4>
+                    <div class="quality-result-score">
+                        <span class="score-value">${qualityCheck.score || 0}</span>
+                        <span class="score-label">点</span>
                     </div>
                 </div>
-                <div class="article-content">
-                    ${article.content ? this.truncateHtml(article.content, 200) : '<p class="empty">内容がありません</p>'}
+                <div class="quality-result-status">
+                    <span class="status-badge ${statusClass}">${qualityCheck.status}</span>
+                    <span class="check-date">${this.formatDate(qualityCheck.checkedAt)}</span>
                 </div>
-                <div class="article-footer">
-                    <span class="article-date">${article.createdAt ? this.formatDate(article.createdAt) : ''}</span>
-                    <span class="article-status ${article.status || 'draft'}">${this.getStatusLabel(article.status)}</span>
+                <div class="quality-checks">
+                    ${checksHtml}
                 </div>
-            </div>
-        `;
-    }
-
-    /**
-     * 品質チェック項目のテンプレート
-     * @param {Object} check - チェック項目
-     * @returns {string} - HTMLテンプレート
-     */
-    static createQualityCheckItem(check) {
-        const levelClass = check.qualityLevel || 'warning';
-        const icon = this.getQualityIcon(levelClass);
-
-        return `
-            <div class="quality-item quality-${levelClass}">
-                <div class="quality-header">
-                    <span class="quality-icon">${icon}</span>
-                    <h4>${this.escapeHtml(check.title || '')}</h4>
-                    <span class="quality-badge badge-${levelClass}">${this.getQualityLabel(levelClass)}</span>
-                </div>
-                <div class="quality-body">
-                    <p>${this.escapeHtml(check.description || '')}</p>
-                    ${check.suggestion ? `
-                        <div class="quality-suggestion">
-                            <strong>改善案:</strong>
-                            <p>${this.escapeHtml(check.suggestion)}</p>
-                        </div>
-                    ` : ''}
+                <div class="quality-actions">
+                    <button class="btn btn-small btn-secondary" onclick="recheckArticle('${qualityCheck.articleId}')">
+                        <span class="btn-icon">🔄</span>
+                        再チェック
+                    </button>
+                    <button class="btn btn-small btn-secondary" onclick="viewArticle('${qualityCheck.articleId}')">
+                        <span class="btn-icon">👁️</span>
+                        記事を表示
+                    </button>
                 </div>
             </div>
         `;
     }
 
     /**
-     * ローディングスピナーのテンプレート
-     * @param {string} message - メッセージ
-     * @returns {string} - HTMLテンプレート
+     * ステータスに応じたCSSクラスを取得
+     * @param {string} status - ステータス
+     * @returns {string} - CSSクラス
      */
-    static createLoadingSpinner(message = '読み込み中...') {
-        return `
-            <div class="loading-container">
-                <div class="spinner"></div>
-                <p class="loading-message">${this.escapeHtml(message)}</p>
-            </div>
-        `;
+    getStatusClass(status) {
+        const statusMap = {
+            '生成完了': 'success',
+            'AI生成完了': 'success',
+            'モック生成完了': 'success',
+            '生成中': 'pending',
+            '未生成': 'pending',
+            'エラー': 'error'
+        };
+        return statusMap[status] || 'pending';
     }
 
     /**
-     * ヘルパー関数: バックアップサイズを取得
+     * ステータスに応じたアイコンを取得
+     * @param {string} status - ステータス
+     * @returns {string} - アイコン
      */
-    static getBackupSize(backup) {
+    getStatusIcon(status) {
+        const iconMap = {
+            '生成完了': '✅',
+            'AI生成完了': '✅',
+            'モック生成完了': '✅',
+            '生成中': '⏳',
+            '未生成': '⏳',
+            'エラー': '❌'
+        };
+        return iconMap[status] || '⏳';
+    }
+
+    /**
+     * 日付をフォーマット
+     * @param {string} dateString - 日付文字列
+     * @returns {string} - フォーマットされた日付
+     */
+    formatDate(dateString) {
         try {
-            const size = new Blob([JSON.stringify(backup.data)]).size;
-            return this.formatBytes(size);
-        } catch {
+            const date = new Date(dateString);
+            return date.toLocaleString('ja-JP', {
+                month: 'short',
+                day: 'numeric',
+                hour: '2-digit',
+                minute: '2-digit'
+            });
+        } catch (error) {
             return '不明';
         }
     }
 
     /**
-     * ヘルパー関数: バイトサイズをフォーマット
+     * HTMLエスケープ
+     * @param {string} text - エスケープするテキスト
+     * @returns {string} - エスケープされたテキスト
      */
-    static formatBytes(bytes) {
-        if (bytes === 0) return '0 B';
-        const k = 1024;
-        const sizes = ['B', 'KB', 'MB', 'GB'];
-        const i = Math.floor(Math.log(bytes) / Math.log(k));
-        return Math.round(bytes / Math.pow(k, i) * 100) / 100 + ' ' + sizes[i];
-    }
-
-    /**
-     * ヘルパー関数: HTMLを切り詰め
-     */
-    static truncateHtml(html, maxLength) {
-        const text = html.replace(/<[^>]*>/g, '');
-        if (text.length <= maxLength) return html;
-        return this.escapeHtml(text.substring(0, maxLength) + '...');
-    }
-
-    /**
-     * ヘルパー関数: ステータスラベルを取得
-     */
-    static getStatusLabel(status) {
-        const labels = {
-            'draft': '下書き',
-            'published': '公開済み',
-            'archived': 'アーカイブ'
-        };
-        return labels[status] || '下書き';
-    }
-
-    /**
-     * ヘルパー関数: 品質レベルのアイコンを取得
-     */
-    static getQualityIcon(level) {
-        const icons = {
-            'passed': '✓',
-            'warning': '⚠',
-            'failed': '✕'
-        };
-        return icons[level] || '?';
-    }
-
-    /**
-     * ヘルパー関数: 品質レベルのラベルを取得
-     */
-    static getQualityLabel(level) {
-        const labels = {
-            'passed': '合格',
-            'warning': '要注意',
-            'failed': '要修正'
-        };
-        return labels[level] || '不明';
+    escapeHtml(text) {
+        const div = document.createElement('div');
+        div.textContent = text || '';
+        return div.innerHTML;
     }
 }
 
-// グローバルインスタンスをエクスポート
+// グローバルに公開
 if (typeof window !== 'undefined') {
     window.TemplateEngine = TemplateEngine;
 }
