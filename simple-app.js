@@ -47,7 +47,7 @@ class SimpleApp {
     }
 
     showMainApp() {
-        const authOverlay = document.getElementByIerlay');
+        const authOverlay = document.getElementById('auth-overlay');
         const mainApp = document.getElementById('main-app');
 
         if (authOverlay) {
@@ -170,13 +170,22 @@ class SimpleApp {
         const generateBtn = document.getElementById('generate-structure-btn');
 
         try {
+            console.log('🎯 Starting structure generation for theme:', theme);
+
             // ボタンを無効化
             generateBtn.disabled = true;
             generateBtn.innerHTML = '<span class="btn-icon">⏳</span> 生成中...';
 
+            // テーマの検証
+            if (!theme || theme.trim().length === 0) {
+                throw new Error('テーマが入力されていません');
+            }
+
+            console.log('⏳ Simulating generation process...');
             // 2秒待機（生成をシミュレート）
             await new Promise(resolve => setTimeout(resolve, 2000));
 
+            console.log('📝 Creating mock data...');
             // モックデータを生成
             this.data.pillarPage = {
                 title: `${theme}の完全ガイド - 初心者から上級者まで`,
@@ -196,19 +205,37 @@ class SimpleApp {
                 { id: 'cluster-10', title: `${theme}のQ&A - よくある質問と回答`, summary: 'Q&Aについて' }
             ];
 
-            console.log('✅ Structure generated:', this.data);
+            console.log('✅ Structure generated successfully:', this.data);
 
             // Step 2に移動
+            console.log('🔄 Moving to step 2...');
             this.nextStep();
 
             // Step 2のコンテンツを更新
+            console.log('🎨 Updating step 2 content...');
             this.updateStep2Content();
 
+            console.log('🎉 Generation completed successfully!');
             alert('構成案を生成しました！');
 
         } catch (error) {
             console.error('❌ Structure generation failed:', error);
-            alert('構成案の生成に失敗しました: ' + error.message);
+            console.error('❌ Error stack:', error.stack);
+            console.error('❌ Error details:', {
+                message: error.message,
+                name: error.name,
+                theme: theme,
+                timestamp: new Date().toISOString()
+            });
+
+            // より詳細なエラーメッセージを表示
+            let errorMessage = '構成案の生成に失敗しました。';
+            if (error.message) {
+                errorMessage += '\n詳細: ' + error.message;
+            }
+            errorMessage += '\n\nページを再読み込みして再試行してください。';
+
+            alert(errorMessage);
         } finally {
             // ボタンを元に戻す
             generateBtn.disabled = false;

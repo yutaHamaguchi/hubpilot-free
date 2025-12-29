@@ -1457,6 +1457,17 @@
                             console.error('❌ HubPilotAppSimple初期化失敗:', error);
                             throw error;
                         }
+                    } else if (typeof SimpleApp !== 'undefined') {
+                        console.log('📱 SimpleAppクラスを使用（最終フォールバック）');
+                        try {
+                            app = new SimpleApp();
+                            window.app = app;
+                            window.simpleApp = app;
+                            console.log('✅ SimpleApp初期化成功');
+                        } catch (error) {
+                            console.error('❌ SimpleApp初期化失敗:', error);
+                            throw error;
+                        }
                     } else {
                         throw new Error('HubPilotAppクラスが読み込まれていません');
                     }
@@ -1508,6 +1519,18 @@
 
                         if (authOverlay) authOverlay.style.display = 'none';
                         if (mainApp) mainApp.classList.remove('hidden');
+
+                        // Simple Appを初期化
+                        if (typeof SimpleApp !== 'undefined' && !window.simpleApp) {
+                            console.log('🔄 Initializing SimpleApp as last resort...');
+                            try {
+                                window.simpleApp = new SimpleApp();
+                                window.app = window.simpleApp;
+                                console.log('✅ SimpleApp initialized as last resort');
+                            } catch (simpleAppError) {
+                                console.error('❌ SimpleApp initialization failed:', simpleAppError);
+                            }
+                        }
 
                         // ボタン修復を実行
                         if (typeof window.fixCreateNewConfigButton === 'function') {

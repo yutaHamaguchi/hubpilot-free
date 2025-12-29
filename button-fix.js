@@ -66,6 +66,9 @@ function fixCreateNewConfigButton() {
             if (window.app && window.app.wizardController) {
                 console.log('📱 Using existing app.wizardController');
                 await window.app.wizardController.generateStructure();
+            } else if (window.simpleApp && typeof window.simpleApp.generateStructure === 'function') {
+                console.log('📱 Using simpleApp.generateStructure');
+                await window.simpleApp.generateStructure(theme);
             } else {
                 console.log('🔄 App not found, using fallback');
                 await fallbackGenerateStructure(theme);
@@ -102,14 +105,25 @@ function fixCreateNewConfigButton() {
 async function fallbackGenerateStructure(theme) {
     console.log('🔄 Fallback structure generation for:', theme);
 
-    // 2秒待機（生成をシミュレート）
-    await new Promise(resolve => setTimeout(resolve, 2000));
+    try {
+        // テーマの検証
+        if (!theme || theme.trim().length === 0) {
+            throw new Error('テーマが入力されていません');
+        }
 
-    // Step 2に移動
-    const step1 = document.getElementById('step-1');
-    const step2 = document.getElementById('step-2');
+        console.log('⏳ Simulating generation process...');
+        // 2秒待機（生成をシミュレート）
+        await new Promise(resolve => setTimeout(resolve, 2000));
 
-    if (step1 && step2) {
+        console.log('🔄 Moving to step 2...');
+        // Step 2に移動
+        const step1 = document.getElementById('step-1');
+        const step2 = document.getElementById('step-2');
+
+        if (!step1 || !step2) {
+            throw new Error('ステップ要素が見つかりません');
+        }
+
         step1.classList.remove('active');
         step2.classList.add('active');
 
@@ -118,6 +132,18 @@ async function fallbackGenerateStructure(theme) {
         if (stepItems.length >= 2) {
             stepItems[0].classList.remove('active');
             stepItems[0].classList.add('completed');
+            stepItems[1].classList.add('active');
+        }
+
+        // モックデータを表示
+        console.log('🎨 Displaying mock structure...');
+        displayMockStructure(theme);
+
+        console.log('✅ Fallback generation completed successfully');
+    } catch (error) {
+        console.error('❌ Fallback generation failed:', error);
+        throw error; // エラーを再スローして上位でキャッチされるようにする
+    }
             stepItems[1].classList.add('active');
         }
 
@@ -137,41 +163,73 @@ async function fallbackGenerateStructure(theme) {
 
 // モック構成案を表示
 function displayMockStructure(theme) {
-    // ピラーページタイトルを設定
-    const pillarTitle = document.getElementById('pillar-page-title');
-    if (pillarTitle) {
-        pillarTitle.textContent = `${theme}の完全ガイド - 初心者から上級者まで`;
-    }
+    try {
+        console.log('🎨 Displaying mock structure for theme:', theme);
 
-    // クラスターページリストを設定
-    const clusterList = document.getElementById('cluster-pages-list');
-    if (clusterList) {
-        const mockPages = [
-            `${theme}とは？基本概念と重要性`,
-            `${theme}の始め方 - 初心者向けステップバイステップガイド`,
-            `${theme}の基本戦略と効果的なアプローチ`,
-            `${theme}のツールと必要なリソース`,
-            `${theme}の成功事例とケーススタディ`,
-            `${theme}でよくある間違いと対処法`,
-            `${theme}の最新トレンドと将来性`,
-            `${theme}の測定方法と分析指標`,
-            `${theme}の応用テクニックと上級者向けTips`,
-            `${theme}のQ&A - よくある質問と回答`
-        ];
+        // ピラーページタイトルを設定
+        const pillarTitle = document.getElementById('pillar-page-title');
+        if (pillarTitle) {
+            pillarTitle.textContent = `${theme}の完全ガイド - 初心者から上級者まで`;
+            console.log('✅ Pillar title set');
+        } else {
+            console.warn('⚠️ Pillar title element not found');
+        }
 
-        let html = '';
-        mockPages.forEach((title, index) => {
-            html += `
-                <div class="cluster-page-item">
-                    <div class="cluster-page-number">${index + 1}</div>
-                    <div class="cluster-page-content">
-                        <div class="cluster-page-title">${title}</div>
-                        <div class="cluster-page-meta">
-                            <span class="word-count">約2,000文字</span>
-                            <span class="status">生成待ち</span>
+        // クラスターページリストを設定
+        const clusterList = document.getElementById('cluster-pages-list');
+        if (clusterList) {
+            const mockPages = [
+                `${theme}とは？基本概念と重要性`,
+                `${theme}の始め方 - 初心者向けステップバイステップガイド`,
+                `${theme}の基本戦略と効果的なアプローチ`,
+                `${theme}のツールと必要なリソース`,
+                `${theme}の成功事例とケーススタディ`,
+                `${theme}でよくある間違いと対処法`,
+                `${theme}の最新トレンドと将来性`,
+                `${theme}の測定方法と分析指標`,
+                `${theme}の応用テクニックと上級者向けTips`,
+                `${theme}のQ&A - よくある質問と回答`
+            ];
+
+            let html = '';
+            mockPages.forEach((title, index) => {
+                html += `
+                    <div class="cluster-page-item">
+                        <div class="cluster-page-number">${index + 1}</div>
+                        <div class="cluster-page-content">
+                            <div class="cluster-page-title">${title}</div>
+                            <div class="cluster-page-meta">
+                                <span class="word-count">約2,000文字</span>
+                                <span class="status">生成待ち</span>
+                            </div>
+                        </div>
+                        <div class="cluster-page-actions">
+                            <button class="btn btn-small btn-secondary">編集</button>
                         </div>
                     </div>
-                    <div class="cluster-page-actions">
+                `;
+            });
+
+            clusterList.innerHTML = html;
+            console.log('✅ Cluster pages list updated');
+        } else {
+            console.warn('⚠️ Cluster pages list element not found');
+        }
+
+        // 統計を更新
+        const clusterCount = document.getElementById('cluster-count');
+        const summaryClusterCount = document.getElementById('summary-cluster-count');
+        const summaryTotalCount = document.getElementById('summary-total-count');
+
+        if (clusterCount) clusterCount.textContent = '10';
+        if (summaryClusterCount) summaryClusterCount.textContent = '10';
+        if (summaryTotalCount) summaryTotalCount.textContent = '11';
+
+        console.log('✅ Mock structure display completed');
+    } catch (error) {
+        console.error('❌ Error displaying mock structure:', error);
+        throw error;
+    }>
                         <button class="btn btn-small btn-secondary">編集</button>
                     </div>
                 </div>
