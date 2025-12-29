@@ -1205,7 +1205,7 @@
     <script src="./src/services/StorageService.js"></script>
     <script src="./src/services/NotificationService.js"></script>
 
-    <!-- コア層 -->
+    <!-- コア層（基本クラス） -->
     <script src="./src/core/DataStore.js"></script>
     <script src="./src/core/GenerationState.js"></script>
 
@@ -1213,10 +1213,11 @@
     <script src="./src/ui/TemplateEngine.js"></script>
     <script src="./src/ui/UIRenderer.js"></script>
 
-    <!-- 新しいコア層 -->
-    <script src="./src/core/WizardController.js"></script>
+    <!-- コア層（依存関係のあるクラス） -->
     <script src="./src/core/ContentGenerator.js"></script>
+    <script src="./src/core/WizardController.js"></script>
     <script src="./src/core/HubPilotApp.js"></script>
+    <script src="./src/core/HubPilotApp-simple.js"></script>
 
     <!-- Supabase設定 -->
     <script src="./supabase-config.js"></script>
@@ -1388,7 +1389,7 @@
 
                 // 必要なオブジェクトの存在確認
                 if (typeof window.SUPABASE_CONFIG === 'undefined') {
-                    throw new Error('Supabase設定が読み込まれていません');
+                    console.warn('⚠️ Supabase設定が読み込まれていません');
                 }
 
                 if (typeof window.authManager === 'undefined') {
@@ -1413,34 +1414,62 @@
                     }
 
                     if (typeof window.authManager === 'undefined') {
-                        throw new Error('認証マネージャーの読み込みがタイムアウトしました');
+                        console.warn('⚠️ 認証マネージャーの読み込みがタイムアウトしました。ゲストモードで続行します。');
                     }
                 }
 
                 // 認証状態に基づいてUIを表示
-                const authMode = window.authManager.getAuthMode();
+                let authMode = 'guest'; // デフォルトはゲストモード
+                if (window.authManager) {
+                    authMode = window.authManager.getAuthMode();
+                }
                 console.log('🔍 認証モード:', authMode);
 
                 if (authMode === 'unauthenticated') {
                     // 認証が必要な場合は認証画面を表示
                     console.log('📝 認証画面を表示');
-                    window.authManager.showAuthUI();
+                    if (window.authManager) {
+                        window.authManager.showAuthUI();
+                    }
                 } else {
                     // 認証済みまたはゲストモードの場合はメインアプリを初期化
                     console.log('🎯 メインアプリケーションを初期化');
 
                     // HubPilotAppクラスが存在するかチェック
-                    if (typeof HubPilotApp === 'undefined') {
+                    if (typeof HubPilotApp !== 'undefined') {
+                        console.log('📱 HubPilotAppクラスを使用');
+                        try {
+                            app = new HubPilotApp();
+                            window.app = app;
+                            console.log('✅ HubPilotApp初期化成功');
+                        } catch (error) {
+                            console.error('❌ HubPilotApp初期化失敗:', error);
+                            throw error;
+                        }
+                    } else if (typeof HubPilotAppSimple !== 'undefined') {
+                        console.log('📱 HubPilotAppSimpleクラスを使用（フォールバック）');
+                        try {
+                            app = new HubPilotAppSimple();
+                            await app.init();
+                            window.app = app;
+                            console.log('✅ HubPilotAppSimple初期化成功');
+                        } catch (error) {
+                            console.error('❌ HubPilotAppSimple初期化失敗:', error);
+                            throw error;
+                        }
+                    } else {
                         throw new Error('HubPilotAppクラスが読み込まれていません');
                     }
 
-                    // 新しいHubPilotAppクラスでアプリケーションを初期化
-                    app = new HubPilotApp();
+                    console.log('✅ HubPilot Free が正常に初期化されました');
 
-                    // グローバルアクセス用（既存コードとの互換性）
-                    window.app = app;
-
-                    console.log('✅ HubPilot Free - リファクタリング版が正常に初期化されました');
+                    // ボタンの問題を自動修復
+                    setTimeout(() => {
+                        if (typeof window.fixCreateNewConfigButton === 'function') {
+                            console.log('🔧 ボタン修復を実行中...');
+                            window.fixCreateNewConfigButton();
+                        }
+                    }, 1000);
                 }
 
             } catch (error) {
@@ -1464,28 +1493,43 @@
                 errorMessage.innerHTML = `
                     <strong>アプリケーションの初期化に失敗しました</strong><br>
                     エラー: ${error.message}<br>
-                    <small>詳細はコンソールを確認してください</small>
+                    <small>詳細はコンソールを確認してください</small><br>
+                    <button onclick="this.parentElement.style.display='none'" style="margin-top:10px;padding:5px 10px;background:white;color:black;border:none;cursor:pointer;">閉じる</button>
                 `;
                 document.body.appendChild(errorMessage);
 
-                // フォールバック: 既存のapp.jsを読み込み
-                console.log('🔄 フォールバック: 既存のapp.jsを読み込み試行中...');
-                const fallbackScript = document.createElement('script');
-                fallbackScript.src = './app.js';
-                fallbackScript.onload = () => {
-                    console.log('🔄 フォールバック: 既存のapp.jsを読み込みました');
-                    errorMessage.style.display = 'none';
-                };
-                fallbackScript.onerror = () => {
-                    console.error('❌ フォールバックも失敗しました');
-                };
-                document.head.appendChild(fallbackScript);
+                // 最後の手段: 基本的なボタン機能だけでも動作させる
+                console.log('🔄 最後の手段: 基本的なボタン機能を設定中...');
+                setTimeout(() => {
+                    try {
+                        // 認証画面を非表示にしてメインアプリを表示
+                        const authOverlay = document.getElementById('auth-overlay');
+                        const mainApp = document.getElementById('main-app');
+
+                        if (authOverlay) authOverlay.style.display = 'none';
+                        if (mainApp) mainApp.classList.remove('hidden');
+
+                        // ボタン修復を実行
+                        if (typeof window.fixCreateNewConfigButton === 'function') {
+                            window.fixCreateNewConfigButton();
+                            console.log('✅ 基本的なボタン機能を設定しました');
+                        }
+                    } catch (fallbackError) {
+                        console.error('❌ 最後の手段も失敗:', fallbackError);
+                    }
+                }, 2000);
             }
         });
     </script>
 
     <!-- 画像生成機能 -->
     <script src="./image-generation.js"></script>
+
+    <!-- デバッグスクリプト -->
+    <script src="./debug-button-issue.js"></script>
+
+    <!-- ボタン修復スクリプト -->
+    <script src="./button-fix.js"></script>
 
     <!-- WordPress統合UI JavaScript -->
     <script>

@@ -1,0 +1,154 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Simple Button Test</title>
+    <style>
+        body { font-family: Arial, sans-serif; padding: 20px; }
+        .test-section { margin: 20px 0; padding: 15px; border: 1px solid #ddd; }
+        .btn { padding: 10px 20px; margin: 5px; cursor: pointer; }
+        .btn-primary { background: #007bff; color: white; border: none; }
+        .btn:disabled { opacity: 0.5; cursor: not-allowed; }
+        .error { color: red; }
+        .success { color: green; }
+    </style>
+</head>
+<body>
+    <h1>Simple Button Test</h1>
+
+    <div class="test-section">
+        <h2>1. Basic DOM Test</h2>
+        <input type="text" id="theme-input" placeholder="テーマを入力" />
+        <button id="generate-structure-btn" class="btn btn-primary" disabled>構成案を作成</button>
+        <div id="dom-test-result"></div>
+    </div>
+
+    <div class="test-section">
+        <h2>2. Class Loading Test</h2>
+        <div id="class-test-result"></div>
+    </div>
+
+    <div class="test-section">
+        <h2>3. Button Functionality Test</h2>
+        <div id="button-test-result"></div>
+    </div>
+
+    <script>
+        // 1. Basic DOM Test
+        function testDOM() {
+            const themeInput = document.getElementById('theme-input');
+            const generateBtn = document.getElementById('generate-structure-btn');
+            const result = document.getElementById('dom-test-result');
+
+            if (themeInput && generateBtn) {
+                result.innerHTML = '<span class="success">✅ DOM elements found</span>';
+
+                // Add basic functionality
+                themeInput.addEventListener('input', (e) => {
+                    generateBtn.disabled = !e.target.value.trim();
+                });
+
+                generateBtn.addEventListener('click', () => {
+                    alert('Button clicked! Theme: ' + themeInput.value);
+                });
+
+            } else {
+                result.innerHTML = '<span class="error">❌ DOM elements not found</span>';
+            }
+        }
+
+        // 2. Test class loading (without loading the actual files)
+        function testClassLoading() {
+            const result = document.getElementById('class-test-result');
+            const classes = [
+                'Constants',
+                'ErrorHandler',
+                'StorageService',
+                'NotificationService',
+                'DataStore',
+                'GenerationState',
+                'TemplateEngine',
+                'UIRenderer',
+                'ContentGenerator',
+                'WizardController',
+                'HubPilotApp'
+            ];
+
+            let html = '<ul>';
+            classes.forEach(className => {
+                const exists = typeof window[className] !== 'undefined';
+                const status = exists ? '✅ Available' : '❌ Not loaded';
+                const color = exists ? 'success' : 'error';
+                html += `<li class="${color}">${className}: ${status}</li>`;
+            });
+            html += '</ul>';
+
+            result.innerHTML = html;
+        }
+
+        // 3. Test button functionality
+        function testButtonFunctionality() {
+            const result = document.getElementById('button-test-result');
+            const themeInput = document.getElementById('theme-input');
+            const generateBtn = document.getElementById('generate-structure-btn');
+
+            let tests = [];
+
+            // Test 1: Input enables button
+            themeInput.value = 'Test Theme';
+            themeInput.dispatchEvent(new Event('input'));
+            tests.push({
+                name: 'Input enables button',
+                passed: !generateBtn.disabled,
+                message: generateBtn.disabled ? 'Button still disabled' : 'Button enabled correctly'
+            });
+
+            // Test 2: Empty input disables button
+            themeInput.value = '';
+            themeInput.dispatchEvent(new Event('input'));
+            tests.push({
+                name: 'Empty input disables button',
+                passed: generateBtn.disabled,
+                message: generateBtn.disabled ? 'Button disabled correctly' : 'Button should be disabled'
+            });
+
+            // Test 3: Click event
+            let clickTriggered = false;
+            const originalHandler = generateBtn.onclick;
+            generateBtn.onclick = () => { clickTriggered = true; };
+
+            themeInput.value = 'Test Theme';
+            themeInput.dispatchEvent(new Event('input'));
+            generateBtn.click();
+
+            tests.push({
+                name: 'Click event triggers',
+                passed: clickTriggered,
+                message: clickTriggered ? 'Click event works' : 'Click event not triggered'
+            });
+
+            // Restore original handler
+            generateBtn.onclick = originalHandler;
+
+            // Display results
+            let html = '<ul>';
+            tests.forEach(test => {
+                const color = test.passed ? 'success' : 'error';
+                const icon = test.passed ? '✅' : '❌';
+                html += `<li class="${color}">${icon} ${test.name}: ${test.message}</li>`;
+            });
+            html += '</ul>';
+
+            result.innerHTML = html;
+        }
+
+        // Run tests when page loads
+        document.addEventListener('DOMContentLoaded', () => {
+            testDOM();
+            testClassLoading();
+            setTimeout(testButtonFunctionality, 100);
+        });
+    </script>
+</body>
+</html>
