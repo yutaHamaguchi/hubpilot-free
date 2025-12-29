@@ -11,6 +11,7 @@ document.addEventListener('DOMContentLoaded', () => {
     // 少し待ってから修復を実行（他のスクリプトの読み込みを待つ）
     setTimeout(() => {
         fixCreateNewConfigButton();
+        fixNavigationButtons();
     }, 500);
 });
 
@@ -181,8 +182,163 @@ function displayMockStructure(theme) {
     }
 }
 
+// ナビゲーションボタンの修復機能
+function fixNavigationButtons() {
+    console.log('🔧 Attempting to fix navigation buttons...');
+
+    const prevBtn = document.getElementById('prev-btn');
+    const nextBtn = document.getElementById('next-btn');
+
+    console.log('📍 Previous button:', prevBtn);
+    console.log('📍 Next button:', nextBtn);
+
+    if (!prevBtn || !nextBtn) {
+        console.error('❌ Navigation buttons not found');
+        return false;
+    }
+
+    // 既存のイベントリスナーをクリア（重複を避けるため）
+    const newPrevBtn = prevBtn.cloneNode(true);
+    const newNextBtn = nextBtn.cloneNode(true);
+
+    prevBtn.parentNode.replaceChild(newPrevBtn, prevBtn);
+    nextBtn.parentNode.replaceChild(newNextBtn, nextBtn);
+
+    // 戻るボタンのイベントリスナーを設定
+    newPrevBtn.addEventListener('click', (e) => {
+        e.preventDefault();
+        console.log('🔙 Previous button clicked!');
+
+        try {
+            // アプリケーションが存在する場合は既存の機能を使用
+            if (window.app && window.app.wizardController && typeof window.app.wizardController.previousStep === 'function') {
+                console.log('📱 Using existing app.wizardController.previousStep');
+                window.app.wizardController.previousStep();
+            } else {
+                console.log('🔄 App not found, using fallback navigation');
+                fallbackPreviousStep();
+            }
+        } catch (error) {
+            console.error('❌ Previous step navigation failed:', error);
+            fallbackPreviousStep();
+        }
+    });
+
+    // 次へボタンのイベントリスナーを設定
+    newNextBtn.addEventListener('click', (e) => {
+        e.preventDefault();
+        console.log('🔜 Next button clicked!');
+
+        try {
+            // アプリケーションが存在する場合は既存の機能を使用
+            if (window.app && window.app.wizardController && typeof window.app.wizardController.nextStep === 'function') {
+                console.log('📱 Using existing app.wizardController.nextStep');
+                window.app.wizardController.nextStep();
+            } else {
+                console.log('🔄 App not found, using fallback navigation');
+                fallbackNextStep();
+            }
+        } catch (error) {
+            console.error('❌ Next step navigation failed:', error);
+            fallbackNextStep();
+        }
+    });
+
+    console.log('✅ Navigation buttons fix completed successfully');
+    return true;
+}
+
+// フォールバック用の前のステップ移動
+function fallbackPreviousStep() {
+    console.log('🔄 Fallback previous step navigation');
+
+    // 現在アクティブなステップを取得
+    const activeStep = document.querySelector('.step-content.active');
+    const activeStepItem = document.querySelector('.step-item.active');
+
+    if (!activeStep || !activeStepItem) {
+        console.log('❌ No active step found');
+        return;
+    }
+
+    // 現在のステップ番号を取得
+    const currentStepNumber = parseInt(activeStepItem.dataset.step);
+    console.log('📍 Current step:', currentStepNumber);
+
+    if (currentStepNumber <= 1) {
+        console.log('⚠️ Already at first step');
+        return;
+    }
+
+    // 前のステップに移動
+    const previousStepNumber = currentStepNumber - 1;
+    const previousStep = document.getElementById(`step-${previousStepNumber}`);
+    const previousStepItem = document.querySelector(`.step-item[data-step="${previousStepNumber}"]`);
+
+    if (previousStep && previousStepItem) {
+        // 現在のステップを非アクティブに
+        activeStep.classList.remove('active');
+        activeStepItem.classList.remove('active');
+        activeStepItem.classList.remove('completed');
+
+        // 前のステップをアクティブに
+        previousStep.classList.add('active');
+        previousStepItem.classList.add('active');
+
+        console.log(`✅ Moved to step ${previousStepNumber}`);
+    } else {
+        console.error('❌ Previous step elements not found');
+    }
+}
+
+// フォールバック用の次のステップ移動
+function fallbackNextStep() {
+    console.log('🔄 Fallback next step navigation');
+
+    // 現在アクティブなステップを取得
+    const activeStep = document.querySelector('.step-content.active');
+    const activeStepItem = document.querySelector('.step-item.active');
+
+    if (!activeStep || !activeStepItem) {
+        console.log('❌ No active step found');
+        return;
+    }
+
+    // 現在のステップ番号を取得
+    const currentStepNumber = parseInt(activeStepItem.dataset.step);
+    console.log('📍 Current step:', currentStepNumber);
+
+    if (currentStepNumber >= 6) {
+        console.log('⚠️ Already at last step');
+        return;
+    }
+
+    // 次のステップに移動
+    const nextStepNumber = currentStepNumber + 1;
+    const nextStep = document.getElementById(`step-${nextStepNumber}`);
+    const nextStepItem = document.querySelector(`.step-item[data-step="${nextStepNumber}"]`);
+
+    if (nextStep && nextStepItem) {
+        // 現在のステップを完了状態に
+        activeStep.classList.remove('active');
+        activeStepItem.classList.remove('active');
+        activeStepItem.classList.add('completed');
+
+        // 次のステップをアクティブに
+        nextStep.classList.add('active');
+        nextStepItem.classList.add('active');
+
+        console.log(`✅ Moved to step ${nextStepNumber}`);
+    } else {
+        console.error('❌ Next step elements not found');
+    }
+}
+
 // グローバルに公開
 window.fixCreateNewConfigButton = fixCreateNewConfigButton;
+window.fixNavigationButtons = fixNavigationButtons;
 window.fallbackGenerateStructure = fallbackGenerateStructure;
+window.fallbackPreviousStep = fallbackPreviousStep;
+window.fallbackNextStep = fallbackNextStep;
 
 console.log('🔧 Button Fix Script ready');

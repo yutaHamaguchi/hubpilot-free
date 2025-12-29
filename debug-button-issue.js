@@ -9,9 +9,13 @@ function debugButtonIssue() {
     // 1. DOM要素の存在確認
     const themeInput = document.getElementById('theme-input');
     const generateBtn = document.getElementById('generate-structure-btn');
+    const prevBtn = document.getElementById('prev-btn');
+    const nextBtn = document.getElementById('next-btn');
 
     console.log('テーマ入力フィールド:', themeInput);
     console.log('生成ボタン:', generateBtn);
+    console.log('戻るボタン:', prevBtn);
+    console.log('次へボタン:', nextBtn);
 
     if (themeInput) {
         console.log('テーマ入力値:', themeInput.value);
@@ -21,7 +25,14 @@ function debugButtonIssue() {
     if (generateBtn) {
         console.log('ボタンのdisabled状態:', generateBtn.disabled);
         console.log('ボタンのクラス:', generateBtn.className);
-        console.log('ボタンのイベントリスナー数:', getEventListeners(generateBtn));
+    }
+
+    if (prevBtn) {
+        console.log('戻るボタンのクラス:', prevBtn.className);
+    }
+
+    if (nextBtn) {
+        console.log('次へボタンのクラス:', nextBtn.className);
     }
 
     // 2. アプリケーションの状態確認
@@ -37,6 +48,8 @@ function debugButtonIssue() {
     const errors = [];
     if (!themeInput) errors.push('テーマ入力フィールドが見つかりません');
     if (!generateBtn) errors.push('生成ボタンが見つかりません');
+    if (!prevBtn) errors.push('戻るボタンが見つかりません');
+    if (!nextBtn) errors.push('次へボタンが見つかりません');
     if (!window.app) errors.push('アプリケーションが初期化されていません');
 
     if (errors.length > 0) {
@@ -48,6 +61,8 @@ function debugButtonIssue() {
     return {
         themeInput,
         generateBtn,
+        prevBtn,
+        nextBtn,
         app: window.app,
         errors
     };
@@ -184,11 +199,49 @@ function fixButtonIssue() {
     return false;
 }
 
+// ナビゲーションボタンのテスト関数
+function testNavigationButtons() {
+    console.log('🧪 ナビゲーションボタンのテスト開始');
+
+    const prevBtn = document.getElementById('prev-btn');
+    const nextBtn = document.getElementById('next-btn');
+
+    if (!prevBtn || !nextBtn) {
+        console.error('❌ ナビゲーションボタンが見つかりません');
+        return false;
+    }
+
+    // 現在のステップを確認
+    const activeStep = document.querySelector('.step-content.active');
+    const activeStepItem = document.querySelector('.step-item.active');
+
+    if (activeStep && activeStepItem) {
+        const currentStep = parseInt(activeStepItem.dataset.step);
+        console.log('📍 現在のステップ:', currentStep);
+
+        // 戻るボタンのテスト
+        if (currentStep > 1) {
+            console.log('🔙 戻るボタンをテスト中...');
+            if (typeof window.fallbackPreviousStep === 'function') {
+                window.fallbackPreviousStep();
+                console.log('✅ 戻るボタンのテスト完了');
+            } else {
+                console.error('❌ fallbackPreviousStep関数が見つかりません');
+            }
+        } else {
+            console.log('⚠️ 最初のステップなので戻るボタンはテストできません');
+        }
+    }
+
+    return true;
+}
+
 // グローバルに公開
 window.debugButtonIssue = debugButtonIssue;
 window.enableButton = enableButton;
 window.addButtonEventListener = addButtonEventListener;
 window.fixButtonIssue = fixButtonIssue;
+window.testNavigationButtons = testNavigationButtons;
 
 console.log('🛠️ デバッグスクリプトが読み込まれました');
 console.log('使用可能な関数:');
@@ -196,3 +249,4 @@ console.log('- debugButtonIssue(): 現在の状態を確認');
 console.log('- enableButton(): ボタンを手動で有効化');
 console.log('- addButtonEventListener(): イベントリスナーを手動で追加');
 console.log('- fixButtonIssue(): 自動修復を試行');
+console.log('- testNavigationButtons(): ナビゲーションボタンをテスト');
