@@ -3,7 +3,6 @@
  */
 class HubPilotAppSimple {
     constructor() {
-        console.log('🚀 HubPilotAppSimple constructor 開始');
 
         try {
             // 基本的な初期化のみ
@@ -17,12 +16,10 @@ class HubPilotAppSimple {
                 qualityChecks: []
             };
 
-            console.log('✅ HubPilotAppSimple 基本プロパティ初期化完了');
 
             // 依存関係の初期化
             this.initializeDependencies();
 
-            console.log('✅ HubPilotAppSimple constructor 完了');
         } catch (error) {
             console.error('❌ HubPilotAppSimple constructor エラー:', error);
             throw error;
@@ -33,37 +30,29 @@ class HubPilotAppSimple {
      * 依存関係を初期化
      */
     initializeDependencies() {
-        console.log('🔧 依存関係の初期化開始');
 
         try {
             // StorageServiceのテスト
-            console.log('StorageService クラス:', typeof StorageService);
             if (typeof StorageService !== 'undefined') {
                 this.storageService = new StorageService();
-                console.log('✅ StorageService 初期化完了');
             } else {
                 console.error('❌ StorageService が見つかりません');
             }
 
             // NotificationServiceのテスト
-            console.log('NotificationService クラス:', typeof NotificationService);
             if (typeof NotificationService !== 'undefined') {
                 this.notificationService = new NotificationService();
-                console.log('✅ NotificationService 初期化完了');
             } else {
                 console.error('❌ NotificationService が見つかりません');
             }
 
             // ErrorHandlerのテスト
-            console.log('ErrorHandler クラス:', typeof ErrorHandler);
             if (typeof ErrorHandler !== 'undefined') {
                 this.errorHandler = new ErrorHandler();
-                console.log('✅ ErrorHandler 初期化完了');
             } else {
                 console.error('❌ ErrorHandler が見つかりません');
             }
 
-            console.log('✅ 依存関係の初期化完了');
             this.initialized = true;
 
         } catch (error) {
@@ -76,7 +65,6 @@ class HubPilotAppSimple {
      * アプリケーションを初期化
      */
     async init() {
-        console.log('🎯 アプリケーション初期化開始');
 
         try {
             if (!this.initialized) {
@@ -86,7 +74,6 @@ class HubPilotAppSimple {
             // 基本的なUI設定
             this.setupBasicUI();
 
-            console.log('✅ アプリケーション初期化完了');
 
             if (this.notificationService) {
                 this.notificationService.show('アプリケーションが準備完了しました', 'success', 3000);
@@ -102,7 +89,6 @@ class HubPilotAppSimple {
      * 基本的なUI設定
      */
     setupBasicUI() {
-        console.log('🎨 基本UI設定開始');
 
         try {
             // メインアプリを表示
@@ -134,7 +120,6 @@ class HubPilotAppSimple {
                 });
             }
 
-            console.log('✅ 基本UI設定完了');
 
         } catch (error) {
             console.error('❌ 基本UI設定エラー:', error);
@@ -145,7 +130,6 @@ class HubPilotAppSimple {
      * 構造生成を処理
      */
     async handleGenerateStructure(theme) {
-        console.log('🏗️ 構造生成開始:', theme);
 
         try {
             if (this.notificationService) {
@@ -173,7 +157,6 @@ class HubPilotAppSimple {
                 this.notificationService.show('構成案の生成が完了しました', 'success');
             }
 
-            console.log('✅ 構造生成完了:', mockStructure);
 
         } catch (error) {
             console.error('❌ 構造生成エラー:', error);

@@ -598,7 +598,6 @@ class HubPilotApp {
             window.addEventListener('load', () => {
                 setTimeout(() => {
                     const perfData = performance.getEntriesByType('navigation')[0];
-                    console.log('Page Load Time:', perfData.loadEventEnd - perfData.loadEventStart, 'ms');
                 }, 0);
             });
         }
@@ -788,9 +787,7 @@ class HubPilotApp {
         const passed = results.filter(r => r.passed).length;
         const total = results.length;
 
-        console.log(`テスト結果: ${passed}/${total} 通過`);
         results.forEach(result => {
-            console.log(`${result.passed ? '✅' : '❌'} ${result.name}: ${result.message}`);
         });
 
         return { passed, total, results };
@@ -869,7 +866,6 @@ class HubPilotApp {
      */
     runQualityCheck() {
         // 既存の品質チェック機能を使用
-        console.log('品質チェックを実行中...');
         return this.getHealthCheck();
     }
 

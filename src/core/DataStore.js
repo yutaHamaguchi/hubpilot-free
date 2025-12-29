@@ -34,7 +34,6 @@ class DataStore {
             });
 
             if (success) {
-                console.log('Data saved successfully');
             } else {
                 console.error('Failed to save data');
             }
@@ -60,10 +59,8 @@ class DataStore {
             const data = this.storageService.getJSON(this.storageKey);
 
             if (data) {
-                console.log('Data loaded successfully');
                 return data;
             } else {
-                console.log('No saved data found');
                 return null;
             }
         } catch (error) {
@@ -86,7 +83,6 @@ class DataStore {
             const success = this.storageService.remove(this.storageKey);
 
             if (success) {
-                console.log('Data cleared successfully');
             } else {
                 console.error('Failed to clear data');
             }

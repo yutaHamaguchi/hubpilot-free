@@ -55,7 +55,6 @@ class SupabaseIntegration {
       }
 
       this.isInitialized = true
-      console.log('✅ Supabase接続成功')
 
       // リアルタイム更新の設定
       this.setupRealtimeSubscription()
@@ -99,7 +98,6 @@ class SupabaseIntegration {
    */
   async createProject(projectData) {
     if (!this.isInitialized) {
-      console.log('📝 モックモード: プロジェクト作成をシミュレート')
       return this.mockCreateProject(projectData)
     }
 
@@ -149,7 +147,6 @@ class SupabaseIntegration {
    */
   async generateArticles(projectData) {
     if (!this.isInitialized) {
-      console.log('📝 モックモード: 記事生成をシミュレート')
       return this.mockGenerateArticles(projectData)
     }
 
@@ -207,7 +204,6 @@ class SupabaseIntegration {
    */
   async analyzeSEO(articleId, content, targetKeywords = []) {
     if (!this.isInitialized) {
-      console.log('📝 モックモード: SEO分析をシミュレート')
       return this.mockAnalyzeSEO(content)
     }
 
@@ -235,7 +231,6 @@ class SupabaseIntegration {
    */
   async checkQuality(articleId, content, title) {
     if (!this.isInitialized) {
-      console.log('📝 モックモード: 品質チェックをシミュレート')
       return this.mockCheckQuality(content, title)
     }
 
@@ -289,7 +284,6 @@ class SupabaseIntegration {
       )
       .subscribe()
 
-    console.log('🔔 リアルタイム更新を監視中...')
   }
 
   /**
@@ -310,10 +304,8 @@ class SupabaseIntegration {
       }
     }))
 
-    console.log(`📊 進捗: ${logData.current_article}/${logData.total_articles} (${Math.round(progressPercentage)}%)`)
 
     if (logData.status === 'completed') {
-      console.log('✅ すべての記事生成が完了しました')
     } else if (logData.status === 'failed') {
       console.error('❌ 記事生成が失敗しました:', logData.error_message)
     }
@@ -440,7 +432,6 @@ class SupabaseIntegration {
     } = options
 
     if (!this.isInitialized) {
-      console.log('📝 モックモード: 画像生成をシミュレート')
       return this.mockGenerateImages(title, illustrationCount)
     }
 
@@ -512,7 +503,6 @@ class SupabaseIntegration {
       const article = articles[i]
 
       try {
-        console.log(`画像生成中: ${i + 1}/${articles.length} - ${article.title}`)
 
         const result = await this.generateImages(
           article.id,
@@ -647,13 +637,10 @@ window.supabaseIntegration = new SupabaseIntegration()
 
 // ページロード時に初期化
 document.addEventListener('DOMContentLoaded', async () => {
-  console.log('🚀 Supabase統合を初期化中...')
   const success = await window.supabaseIntegration.initialize()
 
   if (success) {
-    console.log('✅ Supabase統合の準備が完了しました')
   } else {
-    console.log('⚠️ モックモードで動作します（Supabase未設定）')
   }
 })
 

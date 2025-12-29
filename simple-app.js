@@ -2,7 +2,6 @@
  * Simple App - 基本的なナビゲーション機能を提供するシンプルなアプリケーション
  */
 
-console.log('🚀 Simple App loading...');
 
 class SimpleApp {
     constructor() {
@@ -21,7 +20,6 @@ class SimpleApp {
     }
 
     init() {
-        console.log('🎯 Simple App initializing...');
 
         // DOM読み込み完了を待つ
         if (document.readyState === 'loading') {
@@ -32,7 +30,6 @@ class SimpleApp {
     }
 
     setup() {
-        console.log('🔧 Simple App setup starting...');
 
         // 認証画面を非表示にしてメインアプリを表示
         this.showMainApp();
@@ -43,7 +40,6 @@ class SimpleApp {
         // 初期ステップを表示
         this.showStep(this.currentStep);
 
-        console.log('✅ Simple App setup completed');
     }
 
     showMainApp() {
@@ -58,11 +54,9 @@ class SimpleApp {
             mainApp.classList.remove('hidden');
         }
 
-        console.log('📱 Main app displayed');
     }
 
     bindEvents() {
-        console.log('🔗 Binding events...');
 
         // テーマ入力イベント
         this.bindThemeInputEvents();
@@ -76,7 +70,6 @@ class SimpleApp {
         // ステップインジケーターイベント
         this.bindStepIndicatorEvents();
 
-        console.log('✅ Events bound successfully');
     }
 
     bindThemeInputEvents() {
@@ -96,7 +89,6 @@ class SimpleApp {
 
                 // データ保存
                 this.data.theme = e.target.value;
-                console.log('📝 Theme updated:', e.target.value);
             });
 
             // 初期状態設定
@@ -110,7 +102,6 @@ class SimpleApp {
                 if (themeInput && theme) {
                     themeInput.value = theme;
                     themeInput.dispatchEvent(new Event('input'));
-                    console.log('📝 Theme example selected:', theme);
                 }
             });
         });
@@ -134,7 +125,6 @@ class SimpleApp {
             });
         }
 
-        console.log('🔗 Navigation events bound');
     }
 
     bindGenerateButtonEvents() {
@@ -151,7 +141,6 @@ class SimpleApp {
                     return;
                 }
 
-                console.log('🚀 Generate structure clicked for theme:', theme);
                 await this.generateStructure(theme);
             });
         }
@@ -170,7 +159,6 @@ class SimpleApp {
         const generateBtn = document.getElementById('generate-structure-btn');
 
         try {
-            console.log('🎯 Starting structure generation for theme:', theme);
 
             // ボタンを無効化
             generateBtn.disabled = true;
@@ -181,11 +169,9 @@ class SimpleApp {
                 throw new Error('テーマが入力されていません');
             }
 
-            console.log('⏳ Simulating generation process...');
             // 2秒待機（生成をシミュレート）
             await new Promise(resolve => setTimeout(resolve, 2000));
 
-            console.log('📝 Creating mock data...');
             // モックデータを生成
             this.data.pillarPage = {
                 title: `${theme}の完全ガイド - 初心者から上級者まで`,
@@ -205,17 +191,13 @@ class SimpleApp {
                 { id: 'cluster-10', title: `${theme}のQ&A - よくある質問と回答`, summary: 'Q&Aについて' }
             ];
 
-            console.log('✅ Structure generated successfully:', this.data);
 
             // Step 2に移動
-            console.log('🔄 Moving to step 2...');
             this.nextStep();
 
             // Step 2のコンテンツを更新
-            console.log('🎨 Updating step 2 content...');
             this.updateStep2Content();
 
-            console.log('🎉 Generation completed successfully!');
             alert('構成案を生成しました！');
 
         } catch (error) {
@@ -295,7 +277,6 @@ class SimpleApp {
             this.currentStep++;
             this.showStep(this.currentStep);
             this.updateStepIndicator();
-            console.log('➡️ Moved to step:', this.currentStep);
         }
     }
 
@@ -304,7 +285,6 @@ class SimpleApp {
             this.currentStep--;
             this.showStep(this.currentStep);
             this.updateStepIndicator();
-            console.log('⬅️ Moved to step:', this.currentStep);
         }
     }
 
@@ -313,7 +293,6 @@ class SimpleApp {
             this.currentStep = stepNumber;
             this.showStep(this.currentStep);
             this.updateStepIndicator();
-            console.log('🎯 Jumped to step:', this.currentStep);
         }
     }
 
@@ -329,7 +308,6 @@ class SimpleApp {
             stepEl.classList.add('active');
         }
 
-        console.log('👁️ Showing step:', stepNumber);
     }
 
     updateStepIndicator() {
@@ -344,7 +322,6 @@ class SimpleApp {
             }
         });
 
-        console.log('📊 Step indicator updated for step:', this.currentStep);
     }
 
     updateElement(id, content) {
@@ -366,13 +343,11 @@ class SimpleApp {
 
 // DOM読み込み完了後に初期化
 document.addEventListener('DOMContentLoaded', () => {
-    console.log('🚀 Initializing Simple App...');
 
     // 少し待ってから初期化（他のスクリプトとの競合を避けるため）
     setTimeout(() => {
         try {
             window.simpleApp = new SimpleApp();
-            console.log('✅ Simple App initialized successfully');
         } catch (error) {
             console.error('❌ Simple App initialization failed:', error);
         }
@@ -382,4 +357,3 @@ document.addEventListener('DOMContentLoaded', () => {
 // グローバルに公開
 window.SimpleApp = SimpleApp;
 
-console.log('📦 Simple App script loaded');

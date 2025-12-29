@@ -46,7 +46,6 @@ const SRC_FILES = [
 
 async function uploadFile(localPath, remotePath, contentType) {
   try {
-    console.log(`📤 アップロード中: ${localPath} → ${remotePath}`);
 
     const fileBuffer = fs.readFileSync(localPath);
 
@@ -62,7 +61,6 @@ async function uploadFile(localPath, remotePath, contentType) {
       return false;
     }
 
-    console.log(`✅ アップロード完了: ${remotePath}`);
     return true;
   } catch (err) {
     console.error(`❌ ファイル読み込みエラー: ${localPath}`, err);
@@ -71,7 +69,6 @@ async function uploadFile(localPath, remotePath, contentType) {
 }
 
 async function deployApp() {
-  console.log('🚀 HubPilot Free デプロイ開始...\n');
 
   let successCount = 0;
   let totalFiles = FILES_TO_UPLOAD.length + SRC_FILES.length;
@@ -88,19 +85,9 @@ async function deployApp() {
     if (success) successCount++;
   }
 
-  console.log(`\n📊 デプロイ結果: ${successCount}/${totalFiles} ファイル成功`);
 
   if (successCount === totalFiles) {
-    console.log('\n🎉 デプロイ完了！');
-    console.log('\n📱 アプリケーションURL:');
-    console.log(`   ${SUPABASE_URL}/storage/v1/object/public/hubpilot-static/index.html`);
-    console.log('\n🔧 Edge Functions:');
-    console.log(`   記事生成: ${SUPABASE_URL}/functions/v1/generate-article`);
-    console.log(`   SEO分析: ${SUPABASE_URL}/functions/v1/analyze-seo`);
-    console.log(`   品質チェック: ${SUPABASE_URL}/functions/v1/check-quality`);
-    console.log(`   画像生成: ${SUPABASE_URL}/functions/v1/generate-images`);
   } else {
-    console.log('\n⚠️  一部のファイルのアップロードに失敗しました');
     process.exit(1);
   }
 }

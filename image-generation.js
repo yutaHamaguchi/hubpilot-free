@@ -164,11 +164,9 @@ class ImageGenerationManager {
         provider
       }
 
-      console.log('🎨 画像生成開始:', articles.length, '記事')
 
       const result = await window.supabaseIntegration.generateImagesForProject(articles, options)
 
-      console.log('✅ 画像生成完了:', result)
 
       // 生成された画像を記事に挿入
       this.insertImagesToArticles(result.results)
@@ -259,7 +257,6 @@ class ImageGenerationManager {
    * 生成完了ハンドラ
    */
   handleGenerationComplete(detail) {
-    console.log('🎉 画像生成完了イベント受信:', detail)
 
     const progressStatus = document.getElementById('image-progress-status')
     if (progressStatus) {
@@ -411,7 +408,6 @@ document.addEventListener('DOMContentLoaded', () => {
   setTimeout(() => {
     if (window.app) {
       window.imageGenerationManager = new ImageGenerationManager(window.app)
-      console.log('✅ 画像生成マネージャー初期化完了')
     }
   }, 500) // app.jsの初期化後に実行
 })
