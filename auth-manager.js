@@ -133,13 +133,17 @@ class AuthManager {
     }
 
     try {
+      // 環境に応じたリダイレクトURLを設定
+      const redirectTo = this.getRedirectUrl()
+
       const { data, error } = await this.supabase.auth.signUp({
         email,
         password,
         options: {
           data: {
             display_name: displayName || email.split('@')[0]
-          }
+          },
+          emailRedirectTo: redirectTo
         }
       })
 
@@ -203,10 +207,13 @@ class AuthManager {
     }
 
     try {
+      // 環境に応じたリダイレクトURLを設定
+      const redirectTo = this.getRedirectUrl()
+
       const { data, error } = await this.supabase.auth.signInWithOAuth({
         provider: provider, // 'google', 'github', 'azure', etc.
         options: {
-          redirectTo: `${window.location.origin}/`
+          redirectTo: redirectTo
         }
       })
 
@@ -250,8 +257,11 @@ class AuthManager {
     }
 
     try {
+      // 環境に応じたリダイレクトURLを設定
+      const redirectTo = this.getRedirectUrl('reset-password')
+
       const { error } = await this.supabase.auth.resetPasswordForEmail(email, {
-        redirectTo: `${window.location.origin}/reset-password`
+        redirectTo: redirectTo
       })
 
       if (error) throw error
@@ -460,6 +470,32 @@ class AuthManager {
         )
       }
     }
+  }
+
+  /**
+   * 環境に応じた適切なリダイレクトURLを取得
+   */
+  getRedirectUrl(path = '') {
+    const hostname = window.location.hostname
+    const protocol = window.location.protocol
+
+    let baseUrl
+
+    if (hostname === 'localhost' || hostname === '127.0.0.1') {
+      // 開発環境
+      baseUrl = `${protocol}//${hostname}:${window.location.port || '3000'}`
+    } else if (hostname.includes('github.io')) {
+      // GitHub Pages環境
+      baseUrl = `${protocol}//yutahamaguchi.github.io/hubpilot-free`
+    } else {
+      // その他の本番環境
+      baseUrl = `${protocol}//${hostname}`
+    }
+
+    const fullUrl = path ? `${baseUrl}/${path}` : baseUrl
+
+    console.log('🔗 リダイレクトURL:', fullUrl)
+    return fullUrl
   }
 
   /**
