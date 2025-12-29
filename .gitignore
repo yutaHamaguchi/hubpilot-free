@@ -219,3 +219,4 @@ known_hosts
 # 3. Supabaseプロジェクト設定は .env で管理
 # 4. 生成された記事は必要に応じて除外
 # 5. 本番デプロイ時は別途 .gitignore を確認
+.vercel
