@@ -53,6 +53,7 @@ class AuthManager {
         await this.ensureUserProfile()
       } else {
         this.authMode = 'unauthenticated'
+        console.log('📝 認証が必要です - 認証画面を表示')
         this.showAuthUI()
       }
 
@@ -272,16 +273,19 @@ class AuthManager {
   continueAsGuest() {
     this.isGuest = true
     this.authMode = 'guest'
+    console.log('👤 ゲストモードで続行')
     this.showMainApp()
 
     // 通知表示
-    if (window.app) {
-      window.app.showNotification(
-        'ゲストモードで起動しました。データはブラウザのみに保存されます。',
-        'info',
-        5000
-      )
-    }
+    setTimeout(() => {
+      if (window.app && window.app.notificationService) {
+        window.app.notificationService.show(
+          'ゲストモードで起動しました。データはブラウザのみに保存されます。',
+          'info',
+          5000
+        )
+      }
+    }, 1000)
   }
 
   /**
@@ -304,6 +308,17 @@ class AuthManager {
 
     if (authOverlay) authOverlay.classList.add('hidden')
     if (mainApp) mainApp.classList.remove('hidden')
+
+    // メインアプリがまだ初期化されていない場合は初期化
+    if (!window.app) {
+      console.log('🎯 メインアプリケーションを初期化中...');
+      try {
+        window.app = new HubPilotApp();
+        console.log('✅ メインアプリケーションの初期化完了');
+      } catch (error) {
+        console.error('❌ メインアプリケーションの初期化に失敗:', error);
+      }
+    }
   }
 
   /**

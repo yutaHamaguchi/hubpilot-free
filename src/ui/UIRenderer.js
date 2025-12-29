@@ -12,9 +12,10 @@ class UIRenderer {
     /**
      * 依存関係を設定
      */
-    setDependencies(templateEngine, notificationService) {
+    setDependencies(templateEngine, notificationService, wizardController) {
         this.templateEngine = templateEngine;
         this.notificationService = notificationService;
+        this.wizardController = wizardController;
     }
 
     /**
@@ -472,12 +473,73 @@ class UIRenderer {
      */
     setupThemeInputEvents() {
         const themeInput = document.getElementById('theme-input');
+        const generateBtn = document.getElementById('generate-structure-btn');
+        const charCountEl = document.getElementById('char-count');
+
         if (themeInput) {
+            // 入力イベント
             themeInput.addEventListener('input', (e) => {
-                // リアルタイムでデータを更新
-                this.updateData({ theme: e.target.value });
+                const value = e.target.value.trim();
+
+                // データを更新
+                this.updateData({ theme: value });
+
+                // ボタンの有効/無効を切り替え
+                if (generateBtn) {
+                    generateBtn.disabled = !value;
+                }
+
+                // 文字数カウントを更新
+                if (charCountEl) {
+                    charCountEl.textContent = e.target.value.length;
+                }
             });
         }
+
+        // 構成案生成ボタン
+        if (generateBtn) {
+            generateBtn.addEventListener('click', async () => {
+                try {
+                    const theme = themeInput ? themeInput.value.trim() : '';
+                    if (!theme) {
+                        if (this.notificationService) {
+                            this.notificationService.show('テーマを入力してください', 'error');
+                        }
+                        return;
+                    }
+
+                    if (this.wizardController) {
+                        await this.wizardController.generateStructure();
+                    }
+                } catch (error) {
+                    console.error('構造生成エラー:', error);
+                    if (this.notificationService) {
+                        this.notificationService.show('構造の生成に失敗しました', 'error');
+                    }
+                }
+            });
+        }
+
+        // テーマ例選択ボタン
+        document.querySelectorAll('.example-btn').forEach(btn => {
+            btn.addEventListener('click', (e) => {
+                const theme = e.currentTarget.dataset.theme;
+                if (themeInput && theme) {
+                    themeInput.value = theme;
+                    this.updateData({ theme });
+
+                    // ボタンを有効化
+                    if (generateBtn) {
+                        generateBtn.disabled = false;
+                    }
+
+                    // 文字数カウントを更新
+                    if (charCountEl) {
+                        charCountEl.textContent = theme.length;
+                    }
+                }
+            });
+        });
     }
 
     /**
@@ -536,9 +598,10 @@ class UIRenderer {
      */
     updateData(updates) {
         Object.assign(this.data, updates);
-        // 外部のデータ更新コールバックを呼び出し
-        if (window.hubpilot && window.hubpilot.updateData) {
-            window.hubpilot.updateData(updates);
+
+        // WizardControllerにデータを保存
+        if (this.wizardController) {
+            this.wizardController.saveData(updates);
         }
     }
 

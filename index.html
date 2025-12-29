@@ -5,14 +5,14 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
     <title>HubPilot Free - SEO記事作成エージェント</title>
-    <link rel="stylesheet" href="styles.css">
-    <link rel="stylesheet" href="image-generation-styles.css">
-    <link rel="stylesheet" href="auth-styles.css">
-    <link rel="stylesheet" href="wordpress-styles.css">
+    <link rel="stylesheet" href="./styles.css">
+    <link rel="stylesheet" href="./image-generation-styles.css">
+    <link rel="stylesheet" href="./auth-styles.css">
+    <link rel="stylesheet" href="./wordpress-styles.css">
 </head>
 <body>
     <!-- 認証オーバーレイ -->
-    <div id="auth-overlay" class="auth-overlay hidden">
+    <div id="auth-overlay" class="auth-overlay">
         <div class="auth-card">
             <!-- ヘッダー -->
             <div class="auth-header">
@@ -1198,37 +1198,37 @@
     <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
 
     <!-- 共通ユーティリティ -->
-    <script src="src/utils/Constants.js"></script>
-    <script src="src/utils/ErrorHandler.js"></script>
+    <script src="./src/utils/Constants.js"></script>
+    <script src="./src/utils/ErrorHandler.js"></script>
 
     <!-- サービス層 -->
-    <script src="src/services/StorageService.js"></script>
-    <script src="src/services/NotificationService.js"></script>
+    <script src="./src/services/StorageService.js"></script>
+    <script src="./src/services/NotificationService.js"></script>
 
     <!-- コア層 -->
-    <script src="src/core/DataStore.js"></script>
-    <script src="src/core/GenerationState.js"></script>
+    <script src="./src/core/DataStore.js"></script>
+    <script src="./src/core/GenerationState.js"></script>
 
     <!-- UI層 -->
-    <script src="src/ui/TemplateEngine.js"></script>
-    <script src="src/ui/UIRenderer.js"></script>
+    <script src="./src/ui/TemplateEngine.js"></script>
+    <script src="./src/ui/UIRenderer.js"></script>
 
     <!-- 新しいコア層 -->
-    <script src="src/core/WizardController.js"></script>
-    <script src="src/core/ContentGenerator.js"></script>
-    <script src="src/core/HubPilotApp.js"></script>
+    <script src="./src/core/WizardController.js"></script>
+    <script src="./src/core/ContentGenerator.js"></script>
+    <script src="./src/core/HubPilotApp.js"></script>
 
     <!-- Supabase設定 -->
-    <script src="supabase-config.js"></script>
+    <script src="./supabase-config.js"></script>
 
     <!-- Supabase統合レイヤー -->
-    <script src="supabase-integration.js"></script>
+    <script src="./supabase-integration.js"></script>
 
     <!-- 認証マネージャー -->
-    <script src="auth-manager.js"></script>
+    <script src="./auth-manager.js"></script>
 
     <!-- WordPress統合 -->
-    <script src="wordpress-integration.js"></script>
+    <script src="./wordpress-integration.js"></script>
 
     <!-- 認証UI JavaScript -->
     <script>
@@ -1369,24 +1369,115 @@
         // 新しいリファクタリングされたアプリケーションを初期化
         let app;
 
-        document.addEventListener('DOMContentLoaded', () => {
+        // エラーハンドリングを追加
+        window.addEventListener('error', (event) => {
+            console.error('🚨 グローバルエラー:', event.error);
+            console.error('📍 ファイル:', event.filename);
+            console.error('📍 行:', event.lineno);
+        });
+
+        window.addEventListener('unhandledrejection', (event) => {
+            console.error('🚨 未処理のPromise拒否:', event.reason);
+        });
+
+        document.addEventListener('DOMContentLoaded', async () => {
             try {
-                // 新しいHubPilotAppクラスでアプリケーションを初期化
-                app = new HubPilotApp();
+                console.log('🚀 HubPilot Free を初期化中...');
+                console.log('📍 現在のURL:', window.location.href);
+                console.log('📍 ホスト名:', window.location.hostname);
 
-                // グローバルアクセス用（既存コードとの互換性）
-                window.app = app;
+                // 必要なオブジェクトの存在確認
+                if (typeof window.SUPABASE_CONFIG === 'undefined') {
+                    throw new Error('Supabase設定が読み込まれていません');
+                }
 
-                console.log('✅ HubPilot Free - リファクタリング版が正常に初期化されました');
+                if (typeof window.authManager === 'undefined') {
+                    console.warn('⚠️ 認証マネージャーが見つかりません。読み込みを待機中...');
+                }
+
+                // 認証マネージャーの準備完了を待つ
+                console.log('🔐 認証マネージャーの初期化を待機中...');
+
+                // waitForAuth関数が存在するかチェック
+                if (typeof window.waitForAuth === 'function') {
+                    await window.waitForAuth();
+                    console.log('✅ 認証マネージャーの初期化完了');
+                } else {
+                    console.warn('⚠️ waitForAuth関数が見つかりません。直接初期化を試行します。');
+
+                    // 認証マネージャーが読み込まれるまで待機
+                    let attempts = 0;
+                    while (typeof window.authManager === 'undefined' && attempts < 50) {
+                        await new Promise(resolve => setTimeout(resolve, 100));
+                        attempts++;
+                    }
+
+                    if (typeof window.authManager === 'undefined') {
+                        throw new Error('認証マネージャーの読み込みがタイムアウトしました');
+                    }
+                }
+
+                // 認証状態に基づいてUIを表示
+                const authMode = window.authManager.getAuthMode();
+                console.log('🔍 認証モード:', authMode);
+
+                if (authMode === 'unauthenticated') {
+                    // 認証が必要な場合は認証画面を表示
+                    console.log('📝 認証画面を表示');
+                    window.authManager.showAuthUI();
+                } else {
+                    // 認証済みまたはゲストモードの場合はメインアプリを初期化
+                    console.log('🎯 メインアプリケーションを初期化');
+
+                    // HubPilotAppクラスが存在するかチェック
+                    if (typeof HubPilotApp === 'undefined') {
+                        throw new Error('HubPilotAppクラスが読み込まれていません');
+                    }
+
+                    // 新しいHubPilotAppクラスでアプリケーションを初期化
+                    app = new HubPilotApp();
+
+                    // グローバルアクセス用（既存コードとの互換性）
+                    window.app = app;
+
+                    console.log('✅ HubPilot Free - リファクタリング版が正常に初期化されました');
+                }
 
             } catch (error) {
                 console.error('❌ アプリケーションの初期化に失敗しました:', error);
+                console.error('📍 エラー詳細:', error.stack);
+
+                // エラー情報をユーザーに表示
+                const errorMessage = document.createElement('div');
+                errorMessage.style.cssText = `
+                    position: fixed;
+                    top: 20px;
+                    left: 20px;
+                    right: 20px;
+                    background: #ff4444;
+                    color: white;
+                    padding: 15px;
+                    border-radius: 5px;
+                    z-index: 10000;
+                    font-family: monospace;
+                `;
+                errorMessage.innerHTML = `
+                    <strong>アプリケーションの初期化に失敗しました</strong><br>
+                    エラー: ${error.message}<br>
+                    <small>詳細はコンソールを確認してください</small>
+                `;
+                document.body.appendChild(errorMessage);
 
                 // フォールバック: 既存のapp.jsを読み込み
+                console.log('🔄 フォールバック: 既存のapp.jsを読み込み試行中...');
                 const fallbackScript = document.createElement('script');
-                fallbackScript.src = 'app.js';
+                fallbackScript.src = './app.js';
                 fallbackScript.onload = () => {
                     console.log('🔄 フォールバック: 既存のapp.jsを読み込みました');
+                    errorMessage.style.display = 'none';
+                };
+                fallbackScript.onerror = () => {
+                    console.error('❌ フォールバックも失敗しました');
                 };
                 document.head.appendChild(fallbackScript);
             }
@@ -1394,7 +1485,7 @@
     </script>
 
     <!-- 画像生成機能 -->
-    <script src="image-generation.js"></script>
+    <script src="./image-generation.js"></script>
 
     <!-- WordPress統合UI JavaScript -->
     <script>

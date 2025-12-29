@@ -50,7 +50,7 @@ class HubPilotApp {
         this.generationState.setDependencies(this.notificationService);
 
         // UIRendererの依存関係
-        this.uiRenderer.setDependencies(this.templateEngine, this.notificationService);
+        this.uiRenderer.setDependencies(this.templateEngine, this.notificationService, this.wizardController);
 
         // WizardControllerの依存関係
         this.wizardController.setDependencies(
@@ -190,14 +190,17 @@ class HubPilotApp {
      * イベントを設定
      */
     bindEvents() {
-        // ナビゲーションボタン
-        this.bindNavigationEvents();
+        // DOM要素が存在するまで待機
+        setTimeout(() => {
+            // ナビゲーションボタン
+            this.bindNavigationEvents();
 
-        // ステップ固有のイベント
-        this.bindStepEvents();
+            // ステップ固有のイベント
+            this.bindStepEvents();
 
-        // ブラウザイベント
-        this.bindBrowserEvents();
+            // ブラウザイベント
+            this.bindBrowserEvents();
+        }, 100);
     }
 
     /**
@@ -260,16 +263,65 @@ class HubPilotApp {
         if (themeInput) {
             themeInput.addEventListener('input', (e) => {
                 this.wizardController.saveData({ theme: e.target.value });
+
+                // ボタンの有効/無効を切り替え
+                const generateBtn = document.getElementById('generate-structure-btn');
+                if (generateBtn) {
+                    generateBtn.disabled = !e.target.value.trim();
+                }
+            });
+        }
+
+        // 構成案生成ボタン
+        const generateBtn = document.getElementById('generate-structure-btn');
+        if (generateBtn) {
+            generateBtn.addEventListener('click', async () => {
+                try {
+                    const theme = themeInput ? themeInput.value.trim() : '';
+                    if (!theme) {
+                        this.notificationService.show('テーマを入力してください', 'error');
+                        return;
+                    }
+
+                    await this.wizardController.generateStructure();
+                } catch (error) {
+                    this.errorHandler.handle(error, 'structure-generation', {
+                        customMessage: '構造の生成に失敗しました',
+                        notify: true
+                    });
+                }
             });
         }
 
         // テーマ例選択
-        window.selectThemeExample = (theme) => {
-            if (themeInput) {
-                themeInput.value = theme;
-                this.wizardController.saveData({ theme });
-            }
-        };
+        document.querySelectorAll('.example-btn').forEach(btn => {
+            btn.addEventListener('click', (e) => {
+                const theme = e.currentTarget.dataset.theme;
+                if (themeInput && theme) {
+                    themeInput.value = theme;
+                    this.wizardController.saveData({ theme });
+
+                    // ボタンを有効化
+                    const generateBtn = document.getElementById('generate-structure-btn');
+                    if (generateBtn) {
+                        generateBtn.disabled = false;
+                    }
+                }
+            });
+        });
+
+        // 文字数カウント
+        if (themeInput) {
+            const updateCharCount = () => {
+                const charCountEl = document.getElementById('char-count');
+                if (charCountEl) {
+                    charCountEl.textContent = themeInput.value.length;
+                }
+            };
+
+            themeInput.addEventListener('input', updateCharCount);
+            updateCharCount(); // 初期値設定
+        }
     }
 
     /**

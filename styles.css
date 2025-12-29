@@ -30,6 +30,20 @@ body {
     line-height: 1.6;
 }
 
+/* ユーティリティクラス */
+.hidden {
+    display: none !important;
+}
+
+.loading {
+    opacity: 0.6;
+    pointer-events: none;
+}
+
+.visible {
+    display: block !important;
+}
+
 /* アプリケーション全体のレイアウト */
 .app-container {
     display: flex;
