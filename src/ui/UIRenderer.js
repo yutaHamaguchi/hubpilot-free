@@ -147,6 +147,36 @@ class UIRenderer {
         if (stepEl) {
             stepEl.classList.add('active');
         }
+
+        // ナビゲーションボタンを更新
+        this.updateNavigationButtons(step);
+    }
+
+    /**
+     * ナビゲーションボタンの表示/非表示を更新
+     * @param {number} step - ステップ番号
+     */
+    updateNavigationButtons(step) {
+        const nextBtn = document.getElementById('next-btn');
+        const prevBtn = document.getElementById('prev-btn');
+
+        if (nextBtn) {
+            // ステップ1では「次へ」ボタンを非表示
+            if (step === 1) {
+                nextBtn.style.display = 'none';
+            } else {
+                nextBtn.style.display = '';
+            }
+        }
+
+        if (prevBtn) {
+            // ステップ1では「戻る」ボタンを非表示
+            if (step === 1) {
+                prevBtn.style.display = 'none';
+            } else {
+                prevBtn.style.display = '';
+            }
+        }
     }
 
     /**
