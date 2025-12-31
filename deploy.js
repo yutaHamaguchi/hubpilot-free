@@ -9,9 +9,17 @@ const fs = require('fs');
 const path = require('path');
 const { createClient } = require('@supabase/supabase-js');
 
-// 設定
-const SUPABASE_URL = 'https://wwstpjknjqcrpzblgslo.supabase.co';
-const SUPABASE_ANON_KEY = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6Ind3c3RwamtuanFjcnB6Ymxnc2xvIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NjY3NTIzMjIsImV4cCI6MjA4MjMyODMyMn0.JijH4a_vWMbATjDAtXyCxSpIZjiEFcHggm3BlJyi-0o';
+// 設定（環境変数から取得）
+const SUPABASE_URL = process.env.SUPABASE_URL || '';
+const SUPABASE_ANON_KEY = process.env.SUPABASE_ANON_KEY || '';
+
+// 環境変数のチェック
+if (!SUPABASE_URL || !SUPABASE_ANON_KEY) {
+  console.error('❌ エラー: SUPABASE_URLとSUPABASE_ANON_KEYの環境変数を設定してください');
+  console.log('\n使用方法:');
+  console.log('  SUPABASE_URL=your-url SUPABASE_ANON_KEY=your-key node deploy.js');
+  process.exit(1);
+}
 
 const supabase = createClient(SUPABASE_URL, SUPABASE_ANON_KEY);
 

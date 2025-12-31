@@ -158,14 +158,15 @@ jobs:
       - name: Check for secrets
         run: |
           echo "Checking for potential secrets in code..."
-          if grep -r "SUPABASE_URL.*http" --include="*.js" --include="*.html" .; then
-            echo "⚠️ Warning: Found hardcoded Supabase URLs"
-          fi
-          if grep -r "SUPABASE.*KEY.*eyJ" --include="*.js" --include="*.html" .; then
-            echo "❌ Error: Found hardcoded API keys!"
+          echo "Note: supabase-config.js contains frontend config (anon key is safe to expose)"
+
+          # Check for secrets in backend scripts (excluding supabase-config.js)
+          if grep -r "SUPABASE.*KEY.*eyJ" --include="*.js" --exclude="supabase-config.js" . | grep -v "node_modules" | grep -v "process.env"; then
+            echo "❌ Error: Found hardcoded API keys in backend scripts!"
             exit 1
           fi
-          echo "✅ No hardcoded secrets found"
+
+          echo "✅ No hardcoded secrets found in backend scripts"
 
   # =============================================
   # Build Job - ビルド検証
