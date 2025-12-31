@@ -17,6 +17,8 @@ concurrency:
 
 jobs:
   deploy:
+    # PRの時点ではデプロイをスキップ
+    if: github.event_name == 'push'
     environment:
       name: github-pages
       url: ${{ steps.deployment.outputs.page_url }}
