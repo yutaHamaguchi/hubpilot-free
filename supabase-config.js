@@ -93,7 +93,6 @@ if (window.location.hostname === 'localhost' || window.location.hostname === '12
   window.SUPABASE_CONFIG.cost.trackingEnabled = false;
 } else if (window.location.hostname.includes('github.io')) {
   // GitHub Pages環境
-  console.log('🌐 GitHub Pages環境を検出しました');
   // 本番のSupabase URLを使用（既に設定済み）
   window.SUPABASE_CONFIG.ai.timeout = 120000; // 2分（本番用）
   window.SUPABASE_CONFIG.cost.trackingEnabled = true;
@@ -102,7 +101,6 @@ if (window.location.hostname === 'localhost' || window.location.hostname === '12
   window.SUPABASE_CONFIG.url = 'https://wwstpjknjqcrpzblgslo.supabase.co';
 } else {
   // 本番環境（カスタムドメイン）
-  console.log('🌐 本番環境を検出しました');
   window.SUPABASE_CONFIG.ai.timeout = 120000; // 2分（本番用）
   window.SUPABASE_CONFIG.cost.trackingEnabled = true;
 }
@@ -111,10 +109,6 @@ if (window.location.hostname === 'localhost' || window.location.hostname === '12
 function validateSupabaseConfig() {
   const config = window.SUPABASE_CONFIG;
 
-  console.log('🔍 Supabase設定を検証中...');
-  console.log('📍 現在のホスト名:', window.location.hostname);
-  console.log('📍 現在のURL:', window.location.href);
-  console.log('📍 Supabase URL:', config.url);
 
   if (!config.url || config.url.includes('your-project-ref')) {
     console.warn('⚠️ Supabase URL が設定されていません');
@@ -126,8 +120,6 @@ function validateSupabaseConfig() {
     return false;
   }
 
-  console.log('✅ Supabase設定が正常です');
-  console.log('📍 Project URL:', config.url);
   return true;
 }
 
@@ -138,13 +130,11 @@ document.addEventListener('DOMContentLoaded', () => {
 
 // デバッグ用：設定情報を表示
 window.showSupabaseConfig = () => {
-  console.log('Supabase設定:', window.SUPABASE_CONFIG);
 };
 
 // ===========================================
 // 設定手順ガイド
 // ===========================================
-console.log(`
 🚀 HubPilot Free - Supabase設定ガイド
 
 1. Supabaseプロジェクト作成:

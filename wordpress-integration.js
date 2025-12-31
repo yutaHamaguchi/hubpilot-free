@@ -30,7 +30,6 @@ class WordPressIntegration {
       const saved = localStorage.getItem('wordpress_config')
       if (saved) {
         this.config = { ...this.config, ...JSON.parse(saved) }
-        console.log('✅ WordPress設定を読み込みました')
       }
     } catch (error) {
       console.error('WordPress設定の読み込みエラー:', error)
@@ -48,7 +47,6 @@ class WordPressIntegration {
       const toSave = { ...this.config }
       localStorage.setItem('wordpress_config', JSON.stringify(toSave))
 
-      console.log('✅ WordPress設定を保存しました')
       return true
     } catch (error) {
       console.error('WordPress設定の保存エラー:', error)
@@ -415,7 +413,6 @@ class WordPressIntegration {
       defaultTags: []
     }
     this.isConnected = false
-    console.log('✅ WordPress設定をクリアしました')
   }
 
   /**
@@ -429,4 +426,3 @@ class WordPressIntegration {
 // グローバルインスタンス作成
 window.wordpressIntegration = new WordPressIntegration()
 
-console.log('✅ WordPress統合モジュールを読み込みました')

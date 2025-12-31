@@ -46,14 +46,12 @@ class AuthManager {
         this.currentUser = session.user
         this.isAuthenticated = true
         this.authMode = 'authenticated'
-        console.log('✅ ユーザーセッション復元:', session.user.email)
         this.showMainApp()
 
         // ユーザープロファイルの確認・作成
         await this.ensureUserProfile()
       } else {
         this.authMode = 'unauthenticated'
-        console.log('📝 認証が必要です - 認証画面を表示')
         this.showAuthUI()
       }
 
@@ -93,7 +91,6 @@ class AuthManager {
     if (!this.supabase) return
 
     this.supabase.auth.onAuthStateChange(async (event, session) => {
-      console.log('🔐 認証状態変更:', event)
 
       switch (event) {
         case 'SIGNED_IN':
@@ -240,7 +237,6 @@ class AuthManager {
       const { error } = await this.supabase.auth.signOut()
       if (error) throw error
 
-      console.log('✅ ログアウト完了')
 
     } catch (error) {
       console.error('ログアウトエラー:', error)
@@ -283,7 +279,6 @@ class AuthManager {
   continueAsGuest() {
     this.isGuest = true
     this.authMode = 'guest'
-    console.log('👤 ゲストモードで続行')
     this.showMainApp()
 
     // 通知表示
@@ -321,10 +316,8 @@ class AuthManager {
 
     // メインアプリがまだ初期化されていない場合は初期化
     if (!window.app) {
-      console.log('🎯 メインアプリケーションを初期化中...');
       try {
         window.app = new HubPilotApp();
-        console.log('✅ メインアプリケーションの初期化完了');
       } catch (error) {
         console.error('❌ メインアプリケーションの初期化に失敗:', error);
       }
@@ -336,7 +329,6 @@ class AuthManager {
    */
   showPasswordReset() {
     // パスワードリセットフォームの表示ロジック
-    console.log('パスワードリセット画面を表示')
   }
 
   /**
@@ -355,11 +347,9 @@ class AuthManager {
 
       if (error && error.code === 'PGRST116') {
         // プロファイルが存在しない場合は作成（トリガーで自動作成されるはず）
-        console.log('ユーザープロファイルを作成中...')
       } else if (error) {
         console.error('プロファイル取得エラー:', error)
       } else {
-        console.log('✅ ユーザープロファイル:', data)
       }
 
     } catch (error) {
@@ -402,7 +392,6 @@ class AuthManager {
     if (!this.supabase || !this.currentUser) return
 
     try {
-      console.log('🔄 データ移行を開始...')
 
       // プロジェクトデータを作成
       const { data: project, error: projectError } = await this.supabase
@@ -420,7 +409,6 @@ class AuthManager {
 
       if (projectError) throw projectError
 
-      console.log('✅ プロジェクトを移行しました:', project.id)
 
       // 記事データがあれば移行
       if (data.articles && data.articles.length > 0) {
@@ -438,7 +426,6 @@ class AuthManager {
 
         if (articlesError) throw articlesError
 
-        console.log(`✅ ${articles.length}件の記事を移行しました`)
       }
 
       // 移行成功後、LocalStorageをクリア
@@ -494,7 +481,6 @@ class AuthManager {
 
     const fullUrl = path ? `${baseUrl}/${path}` : baseUrl
 
-    console.log('🔗 リダイレクトURL:', fullUrl)
     return fullUrl
   }
 
@@ -533,4 +519,3 @@ window.authManager = new AuthManager()
 // 認証マネージャーの準備完了を待つヘルパー
 window.waitForAuth = () => window.authManager.readyPromise
 
-console.log('🔐 認証マネージャーを初期化中...')

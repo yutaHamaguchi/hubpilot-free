@@ -39,7 +39,6 @@ class GenerationState {
         this.currentItem = null;
         this.errors = [];
 
-        console.log(`Generation started: ${totalItems} items`);
     }
 
     /**
@@ -54,10 +53,8 @@ class GenerationState {
         this.progress.percentage = total > 0 ? Math.round((current / total) * 100) : 0;
         this.currentItem = currentItem;
 
-        console.log(`Progress: ${current}/${total} (${this.progress.percentage}%)`);
 
         if (currentItem) {
-            console.log(`Current item: ${currentItem}`);
         }
     }
 
@@ -70,7 +67,6 @@ class GenerationState {
         this.progress.percentage = 100;
 
         const duration = this.getDuration();
-        console.log(`Generation completed in ${duration}ms`);
 
         if (this.notificationService) {
             this.notificationService.success('生成が完了しました');
@@ -83,7 +79,6 @@ class GenerationState {
     pause() {
         if (this.status === 'generating') {
             this.status = 'paused';
-            console.log('Generation paused');
 
             if (this.notificationService) {
                 this.notificationService.info('生成を一時停止しました');
@@ -97,7 +92,6 @@ class GenerationState {
     resume() {
         if (this.status === 'paused') {
             this.status = 'generating';
-            console.log('Generation resumed');
 
             if (this.notificationService) {
                 this.notificationService.info('生成を再開しました');
@@ -111,7 +105,6 @@ class GenerationState {
     cancel() {
         this.status = 'cancelled';
         this.endTime = new Date();
-        console.log('Generation cancelled');
 
         if (this.notificationService) {
             this.notificationService.warning('生成をキャンセルしました');
@@ -232,7 +225,6 @@ class GenerationState {
         this.currentItem = null;
         this.errors = [];
 
-        console.log('Generation state reset');
     }
 }
 
