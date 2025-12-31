@@ -130,27 +130,5 @@ document.addEventListener('DOMContentLoaded', () => {
 
 // デバッグ用：設定情報を表示
 window.showSupabaseConfig = () => {
+  console.log('Supabase Config:', SUPABASE_CONFIG);
 };
-
-// ===========================================
-// 設定手順ガイド
-// ===========================================
-🚀 HubPilot Free - Supabase設定ガイド
-
-1. Supabaseプロジェクト作成:
-   https://supabase.com/dashboard
-
-2. Project Settings > API から以下をコピー:
-   - Project URL → SUPABASE_CONFIG.url
-   - anon public → SUPABASE_CONFIG.anonKey
-
-3. このファイルの設定を更新:
-   - url: 'https://your-project-ref.supabase.co'
-   - anonKey: 'your-anon-key-here'
-
-4. 設定確認:
-   window.showSupabaseConfig()
-
-5. 接続テスト:
-   window.supabaseIntegration.testConnection()
-`);

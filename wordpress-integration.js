@@ -16,10 +16,10 @@ class WordPressIntegration {
       defaultStatus: 'draft', // 'draft', 'publish', 'pending'
       defaultCategory: null,
       defaultTags: []
-    }
+    };
 
-    this.isConnected = false
-    this.loadConfig()
+    this.isConnected = false;
+    this.loadConfig();
   }
 
   /**
@@ -27,12 +27,12 @@ class WordPressIntegration {
    */
   loadConfig() {
     try {
-      const saved = localStorage.getItem('wordpress_config')
+      const saved = localStorage.getItem('wordpress_config');
       if (saved) {
-        this.config = { ...this.config, ...JSON.parse(saved) }
+        this.config = { ...this.config, ...JSON.parse(saved) };
       }
     } catch (error) {
-      console.error('WordPress設定の読み込みエラー:', error)
+      console.error('WordPress設定の読み込みエラー:', error);
     }
   }
 
@@ -41,16 +41,16 @@ class WordPressIntegration {
    */
   saveConfig(config) {
     try {
-      this.config = { ...this.config, ...config }
+      this.config = { ...this.config, ...config };
 
       // パスワードは保存（Base64エンコード）
-      const toSave = { ...this.config }
-      localStorage.setItem('wordpress_config', JSON.stringify(toSave))
+      const toSave = { ...this.config };
+      localStorage.setItem('wordpress_config', JSON.stringify(toSave));
 
-      return true
+      return true;
     } catch (error) {
-      console.error('WordPress設定の保存エラー:', error)
-      return false
+      console.error('WordPress設定の保存エラー:', error);
+      return false;
     }
   }
 
@@ -59,8 +59,8 @@ class WordPressIntegration {
    */
   async testConnection(siteUrl, username, applicationPassword) {
     try {
-      const url = this.normalizeUrl(siteUrl)
-      const auth = btoa(`${username}:${applicationPassword}`)
+      const url = this.normalizeUrl(siteUrl);
+      const auth = btoa(`${username}:${applicationPassword}`);
 
       const response = await fetch(`${url}/wp-json/wp/v2/users/me`, {
         method: 'GET',
@@ -68,16 +68,16 @@ class WordPressIntegration {
           'Authorization': `Basic ${auth}`,
           'Content-Type': 'application/json'
         }
-      })
+      });
 
       if (!response.ok) {
-        const error = await response.json()
-        throw new Error(error.message || `接続エラー: ${response.status}`)
+        const error = await response.json();
+        throw new Error(error.message || `接続エラー: ${response.status}`);
       }
 
-      const user = await response.json()
+      const user = await response.json();
 
-      this.isConnected = true
+      this.isConnected = true;
 
       return {
         success: true,
@@ -88,16 +88,16 @@ class WordPressIntegration {
           roles: user.roles
         },
         message: `接続成功: ${user.name}さんとしてログイン`
-      }
+      };
 
     } catch (error) {
-      console.error('WordPress接続テストエラー:', error)
-      this.isConnected = false
+      console.error('WordPress接続テストエラー:', error);
+      this.isConnected = false;
 
       return {
         success: false,
         message: error.message || '接続に失敗しました'
-      }
+      };
     }
   }
 
@@ -107,11 +107,11 @@ class WordPressIntegration {
   normalizeUrl(url) {
     // httpsがない場合は追加
     if (!url.startsWith('http://') && !url.startsWith('https://')) {
-      url = 'https://' + url
+      url = 'https://' + url;
     }
 
     // 末尾のスラッシュを削除
-    return url.replace(/\/$/, '')
+    return url.replace(/\/$/, '');
   }
 
   /**
@@ -119,7 +119,7 @@ class WordPressIntegration {
    */
   async publishPost(article, options = {}) {
     if (!this.config.siteUrl || !this.config.username || !this.config.applicationPassword) {
-      throw new Error('WordPress設定が不完全です。設定を確認してください。')
+      throw new Error('WordPress設定が不完全です。設定を確認してください。');
     }
 
     const {
@@ -128,11 +128,11 @@ class WordPressIntegration {
       tags = this.config.defaultTags,
       featured_media = null,
       excerpt = ''
-    } = options
+    } = options;
 
     try {
-      const url = this.normalizeUrl(this.config.siteUrl)
-      const auth = btoa(`${this.config.username}:${this.config.applicationPassword}`)
+      const url = this.normalizeUrl(this.config.siteUrl);
+      const auth = btoa(`${this.config.username}:${this.config.applicationPassword}`);
 
       // WordPress REST API形式に変換
       const postData = {
@@ -143,10 +143,10 @@ class WordPressIntegration {
         excerpt: excerpt || this.generateExcerpt(article.content),
         categories: categories,
         tags: tags
-      }
+      };
 
       if (featured_media) {
-        postData.featured_media = featured_media
+        postData.featured_media = featured_media;
       }
 
       const response = await fetch(`${url}/wp-json/wp/v2/posts`, {
@@ -156,14 +156,14 @@ class WordPressIntegration {
           'Content-Type': 'application/json'
         },
         body: JSON.stringify(postData)
-      })
+      });
 
       if (!response.ok) {
-        const error = await response.json()
-        throw new Error(error.message || `投稿エラー: ${response.status}`)
+        const error = await response.json();
+        throw new Error(error.message || `投稿エラー: ${response.status}`);
       }
 
-      const post = await response.json()
+      const post = await response.json();
 
       return {
         success: true,
@@ -175,11 +175,11 @@ class WordPressIntegration {
           date: post.date
         },
         message: `投稿成功: ${post.title.rendered}`
-      }
+      };
 
     } catch (error) {
-      console.error('WordPress投稿エラー:', error)
-      throw error
+      console.error('WordPress投稿エラー:', error);
+      throw error;
     }
   }
 
@@ -188,17 +188,17 @@ class WordPressIntegration {
    */
   async uploadImage(imageUrl, filename, altText = '') {
     try {
-      const url = this.normalizeUrl(this.config.siteUrl)
-      const auth = btoa(`${this.config.username}:${this.config.applicationPassword}`)
+      const url = this.normalizeUrl(this.config.siteUrl);
+      const auth = btoa(`${this.config.username}:${this.config.applicationPassword}`);
 
       // 画像をダウンロード
-      const imageResponse = await fetch(imageUrl)
-      const imageBlob = await imageResponse.blob()
+      const imageResponse = await fetch(imageUrl);
+      const imageBlob = await imageResponse.blob();
 
       // FormDataで送信
-      const formData = new FormData()
-      formData.append('file', imageBlob, filename)
-      formData.append('alt_text', altText)
+      const formData = new FormData();
+      formData.append('file', imageBlob, filename);
+      formData.append('alt_text', altText);
 
       const response = await fetch(`${url}/wp-json/wp/v2/media`, {
         method: 'POST',
@@ -206,14 +206,14 @@ class WordPressIntegration {
           'Authorization': `Basic ${auth}`
         },
         body: formData
-      })
+      });
 
       if (!response.ok) {
-        const error = await response.json()
-        throw new Error(error.message || `画像アップロードエラー: ${response.status}`)
+        const error = await response.json();
+        throw new Error(error.message || `画像アップロードエラー: ${response.status}`);
       }
 
-      const media = await response.json()
+      const media = await response.json();
 
       return {
         success: true,
@@ -223,11 +223,11 @@ class WordPressIntegration {
           title: media.title.rendered,
           alt: media.alt_text
         }
-      }
+      };
 
     } catch (error) {
-      console.error('画像アップロードエラー:', error)
-      throw error
+      console.error('画像アップロードエラー:', error);
+      throw error;
     }
   }
 
@@ -235,12 +235,12 @@ class WordPressIntegration {
    * 複数記事を一括投稿
    */
   async publishBatch(articles, options = {}) {
-    const results = []
-    let successCount = 0
-    let failureCount = 0
+    const results = [];
+    let successCount = 0;
+    let failureCount = 0;
 
     for (let i = 0; i < articles.length; i++) {
-      const article = articles[i]
+      const article = articles[i];
 
       try {
         // 進捗イベント発火
@@ -251,31 +251,31 @@ class WordPressIntegration {
             percentage: ((i + 1) / articles.length) * 100,
             currentArticle: article.title
           }
-        }))
+        }));
 
         // 記事投稿
-        const result = await this.publishPost(article, options)
+        const result = await this.publishPost(article, options);
 
         results.push({
           articleTitle: article.title,
           ...result
-        })
+        });
 
-        successCount++
+        successCount++;
 
         // レート制限対策（1秒待機）
-        await new Promise(resolve => setTimeout(resolve, 1000))
+        await new Promise(resolve => setTimeout(resolve, 1000));
 
       } catch (error) {
-        console.error(`投稿失敗: ${article.title}`, error)
+        console.error(`投稿失敗: ${article.title}`, error);
 
         results.push({
           articleTitle: article.title,
           success: false,
           error: error.message
-        })
+        });
 
-        failureCount++
+        failureCount++;
       }
     }
 
@@ -287,7 +287,7 @@ class WordPressIntegration {
         success: successCount,
         failure: failureCount
       }
-    }
+    };
   }
 
   /**
@@ -295,8 +295,8 @@ class WordPressIntegration {
    */
   async getCategories() {
     try {
-      const url = this.normalizeUrl(this.config.siteUrl)
-      const auth = btoa(`${this.config.username}:${this.config.applicationPassword}`)
+      const url = this.normalizeUrl(this.config.siteUrl);
+      const auth = btoa(`${this.config.username}:${this.config.applicationPassword}`);
 
       const response = await fetch(`${url}/wp-json/wp/v2/categories?per_page=100`, {
         method: 'GET',
@@ -304,13 +304,13 @@ class WordPressIntegration {
           'Authorization': `Basic ${auth}`,
           'Content-Type': 'application/json'
         }
-      })
+      });
 
       if (!response.ok) {
-        throw new Error(`カテゴリー取得エラー: ${response.status}`)
+        throw new Error(`カテゴリー取得エラー: ${response.status}`);
       }
 
-      const categories = await response.json()
+      const categories = await response.json();
 
       return {
         success: true,
@@ -320,14 +320,14 @@ class WordPressIntegration {
           slug: cat.slug,
           count: cat.count
         }))
-      }
+      };
 
     } catch (error) {
-      console.error('カテゴリー取得エラー:', error)
+      console.error('カテゴリー取得エラー:', error);
       return {
         success: false,
         categories: []
-      }
+      };
     }
   }
 
@@ -336,8 +336,8 @@ class WordPressIntegration {
    */
   async getTags() {
     try {
-      const url = this.normalizeUrl(this.config.siteUrl)
-      const auth = btoa(`${this.config.username}:${this.config.applicationPassword}`)
+      const url = this.normalizeUrl(this.config.siteUrl);
+      const auth = btoa(`${this.config.username}:${this.config.applicationPassword}`);
 
       const response = await fetch(`${url}/wp-json/wp/v2/tags?per_page=100`, {
         method: 'GET',
@@ -345,13 +345,13 @@ class WordPressIntegration {
           'Authorization': `Basic ${auth}`,
           'Content-Type': 'application/json'
         }
-      })
+      });
 
       if (!response.ok) {
-        throw new Error(`タグ取得エラー: ${response.status}`)
+        throw new Error(`タグ取得エラー: ${response.status}`);
       }
 
-      const tags = await response.json()
+      const tags = await response.json();
 
       return {
         success: true,
@@ -361,14 +361,14 @@ class WordPressIntegration {
           slug: tag.slug,
           count: tag.count
         }))
-      }
+      };
 
     } catch (error) {
-      console.error('タグ取得エラー:', error)
+      console.error('タグ取得エラー:', error);
       return {
         success: false,
         tags: []
-      }
+      };
     }
   }
 
@@ -385,24 +385,24 @@ class WordPressIntegration {
       .replace(/!\[.+?\]\(.+?\)/g, '') // 画像
       .replace(/```[\s\S]*?```/g, '') // コードブロック
       .replace(/`(.+?)`/g, '$1') // インラインコード
-      .trim()
+      .trim();
 
     // 最初の段落を取得
-    const firstParagraph = text.split('\n\n')[0]
+    const firstParagraph = text.split('\n\n')[0];
 
     // 指定文字数で切り詰め
     if (firstParagraph.length > maxLength) {
-      return firstParagraph.substring(0, maxLength) + '...'
+      return firstParagraph.substring(0, maxLength) + '...';
     }
 
-    return firstParagraph
+    return firstParagraph;
   }
 
   /**
    * 設定をクリア
    */
   clearConfig() {
-    localStorage.removeItem('wordpress_config')
+    localStorage.removeItem('wordpress_config');
     this.config = {
       siteUrl: '',
       username: '',
@@ -411,18 +411,18 @@ class WordPressIntegration {
       defaultStatus: 'draft',
       defaultCategory: null,
       defaultTags: []
-    }
-    this.isConnected = false
+    };
+    this.isConnected = false;
   }
 
   /**
    * 設定状態を確認
    */
   isConfigured() {
-    return !!(this.config.siteUrl && this.config.username && this.config.applicationPassword)
+    return !!(this.config.siteUrl && this.config.username && this.config.applicationPassword);
   }
 }
 
 // グローバルインスタンス作成
-window.wordpressIntegration = new WordPressIntegration()
+window.wordpressIntegration = new WordPressIntegration();
 

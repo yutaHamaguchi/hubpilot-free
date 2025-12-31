@@ -31,7 +31,7 @@ let failedTests = 0;
 const failedMessages = [];
 
 console.log(`${colors.cyan}========================================`);
-console.log(`🧪 HubPilot Free - テストスイート`);
+console.log('🧪 HubPilot Free - テストスイート');
 console.log(`========================================${colors.reset}\n`);
 
 /**
@@ -69,7 +69,7 @@ function testJavaScriptSyntax() {
   console.log(`${colors.blue}📝 JavaScript構文チェック${colors.reset}\n`);
 
   const jsFiles = [
-    'app.js',
+    'simple-app.js',
     'wordpress-integration.js',
     'auth-manager.js',
     'supabase-integration.js',
@@ -329,7 +329,7 @@ function testSupabaseConfig() {
  */
 function printSummary() {
   console.log(`${colors.cyan}========================================`);
-  console.log(`📊 テスト結果サマリー`);
+  console.log('📊 テスト結果サマリー');
   console.log(`========================================${colors.reset}\n`);
 
   console.log(`総テスト数: ${totalTests}`);

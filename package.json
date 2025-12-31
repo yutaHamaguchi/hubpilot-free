@@ -19,8 +19,11 @@
     "functions:deploy": "supabase functions deploy --no-verify-jwt",
     "functions:logs": "supabase functions logs",
     "test": "node scripts/test.js",
-    "lint": "echo 'Linting JavaScript files...'",
+    "test:watch": "nodemon --exec 'npm test' --watch *.js --watch scripts/",
+    "lint": "eslint *.js scripts/*.js --max-warnings=10",
+    "lint:fix": "eslint *.js scripts/*.js --fix",
     "format": "echo 'Formatting code...'",
+    "ci": "npm run lint && npm run validate && npm test",
     "clean": "rm -rf .supabase/logs/*"
   },
   "repository": {
@@ -40,7 +43,9 @@
   "author": "Your Name",
   "license": "MIT",
   "devDependencies": {
-    "supabase": "^1.142.2"
+    "supabase": "^1.142.2",
+    "eslint": "^8.57.0",
+    "nodemon": "^3.0.2"
   },
   "dependencies": {
     "@supabase/supabase-js": "^2.39.0"

@@ -1,5 +1,8 @@
 # HubPilot Free - SEO記事作成エージェント
 
+[![CI Tests](https://github.com/yutaHamaguchi/hubpilot-free/actions/workflows/test.yml/badge.svg)](https://github.com/yutaHamaguchi/hubpilot-free/actions/workflows/test.yml)
+[![Deploy static content to Pages](https://github.com/yutaHamaguchi/hubpilot-free/actions/workflows/static.yml/badge.svg)](https://github.com/yutaHamaguchi/hubpilot-free/actions/workflows/static.yml)
+
 ## 🎉 Phase 1 完成！
 
 **HubPilot Free**は、HubSpot風のトピッククラスターモデルに基づくSEO記事作成エージェントです。Phase 1（インターフェース）が100%完成し、プロフェッショナルグレードのユーザーエクスペリエンスを提供します。

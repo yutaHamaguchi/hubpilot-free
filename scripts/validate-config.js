@@ -93,7 +93,7 @@ function validateFiles() {
 
   const requiredFiles = [
     'index.html',
-    'app.js',
+    'simple-app.js',
     'styles.css',
     'supabase-config.js',
     'supabase-integration.js',
@@ -157,7 +157,7 @@ function displayResults() {
 
   Object.entries(results).forEach(([category, result]) => {
     const icon = result.status === 'success' ? '✅' :
-                 result.status === 'warning' ? '⚠️' : '❌';
+      result.status === 'warning' ? '⚠️' : '❌';
     const categoryName = {
       supabase: 'Supabase設定',
       env: '環境変数',
