@@ -1,0 +1,7 @@
+node_modules/
+.supabase/
+dist/
+build/
+coverage/
+*.min.js
+supabase/functions/**/*.ts
