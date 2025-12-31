@@ -26,7 +26,7 @@ const FILES_TO_UPLOAD = [
   { local: 'image-generation.js', remote: 'image-generation.js', contentType: 'application/javascript' },
   { local: 'supabase-config.js', remote: 'supabase-config.js', contentType: 'application/javascript' },
   { local: 'supabase-integration.js', remote: 'supabase-integration.js', contentType: 'application/javascript' },
-  { local: 'wordpress-integration.js', remote: 'wordpress-integration.js', contentType: 'application/javascript' },
+  { local: 'wordpress-integration.js', remote: 'wordpress-integration.js', contentType: 'application/javascript' }
 ];
 
 // srcディレクトリのファイル
@@ -87,6 +87,7 @@ async function deployApp() {
 
 
   if (successCount === totalFiles) {
+    console.log('✅ All files deployed successfully');
   } else {
     process.exit(1);
   }

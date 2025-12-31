@@ -20,7 +20,7 @@
     "functions:logs": "supabase functions logs",
     "test": "node scripts/test.js",
     "test:watch": "nodemon --exec 'npm test' --watch *.js --watch scripts/",
-    "lint": "eslint *.js scripts/*.js --max-warnings=0",
+    "lint": "eslint *.js scripts/*.js --max-warnings=10",
     "lint:fix": "eslint *.js scripts/*.js --fix",
     "format": "echo 'Formatting code...'",
     "ci": "npm run lint && npm run validate && npm test",

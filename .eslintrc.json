@@ -33,7 +33,12 @@
     "ArticleGenerator": "readonly",
     "WordPressIntegration": "readonly",
     "AuthManager": "readonly",
-    "ImageGenerator": "readonly"
+    "ImageGenerator": "readonly",
+    "SUPABASE_CONFIG": "readonly",
+    "HubPilotApp": "readonly",
+    "document": "readonly",
+    "window": "readonly",
+    "console": "readonly"
   },
   "ignorePatterns": [
     "node_modules/",
