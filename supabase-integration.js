@@ -94,6 +94,14 @@ class SupabaseIntegration {
   }
 
   /**
+   * Supabase統合が設定済みかチェック
+   * ContentGeneratorから呼び出される
+   */
+  async isConfigured() {
+    return this.isInitialized
+  }
+
+  /**
    * プロジェクト作成
    */
   async createProject(projectData) {
@@ -200,6 +208,116 @@ class SupabaseIntegration {
   }
 
   /**
+   * 構造生成（ピラーページ＋クラスターページのタイトル生成）
+   * ContentGeneratorから呼び出される
+   */
+  async generateStructure(theme) {
+    if (!this.isInitialized) {
+      return this.mockGenerateStructure(theme)
+    }
+
+    try {
+      const { data, error } = await this.supabase.functions.invoke('generate-structure', {
+        body: { theme }
+      })
+
+      if (error) throw error
+
+      return {
+        pillarPage: data.pillarPage,
+        clusterPages: data.clusterPages
+      }
+
+    } catch (error) {
+      console.error('構造生成エラー:', error)
+      return this.mockGenerateStructure(theme)
+    }
+  }
+
+  /**
+   * 見出し生成
+   * ContentGeneratorから呼び出される
+   */
+  async generateHeadings(pageTitle) {
+    if (!this.isInitialized) {
+      return this.mockGenerateHeadings(pageTitle)
+    }
+
+    try {
+      const { data, error } = await this.supabase.functions.invoke('generate-headings', {
+        body: { pageTitle }
+      })
+
+      if (error) throw error
+
+      return { headings: data.headings }
+
+    } catch (error) {
+      console.error('見出し生成エラー:', error)
+      return this.mockGenerateHeadings(pageTitle)
+    }
+  }
+
+  /**
+   * 単一記事生成
+   * ContentGeneratorから呼び出される
+   */
+  async generateArticle({ title, headings, targetWordCount }) {
+    if (!this.isInitialized) {
+      return this.mockGenerateArticle(title, headings, targetWordCount)
+    }
+
+    try {
+      const { data, error } = await this.supabase.functions.invoke('generate-article', {
+        body: {
+          title,
+          headings,
+          targetWordCount: targetWordCount || 2000
+        }
+      })
+
+      if (error) throw error
+
+      return {
+        content: data.content,
+        wordCount: data.wordCount || data.content.length
+      }
+
+    } catch (error) {
+      console.error('記事生成エラー:', error)
+      return this.mockGenerateArticle(title, headings, targetWordCount)
+    }
+  }
+
+  /**
+   * ピラーページ生成
+   * ContentGeneratorから呼び出される
+   */
+  async generatePillarPage(clusterPages) {
+    if (!this.isInitialized) {
+      return this.mockGeneratePillarPage(clusterPages)
+    }
+
+    try {
+      const { data, error } = await this.supabase.functions.invoke('generate-pillar-page', {
+        body: { clusterPages }
+      })
+
+      if (error) throw error
+
+      return {
+        content: data.content,
+        internalLinks: data.internalLinks,
+        wordCount: data.wordCount || data.content.length
+      }
+
+    } catch (error) {
+      console.error('ピラーページ生成エラー:', error)
+      return this.mockGeneratePillarPage(clusterPages)
+    }
+  }
+
+  /**
    * SEO分析実行
    */
   async analyzeSEO(articleId, content, targetKeywords = []) {
@@ -228,18 +346,37 @@ class SupabaseIntegration {
 
   /**
    * 品質チェック実行
+   * 2つのシグネチャをサポート：
+   * 1. checkQuality(articleId, content, title) - 従来の呼び出し
+   * 2. checkQuality(article) - ContentGeneratorからの呼び出し
    */
-  async checkQuality(articleId, content, title) {
+  async checkQuality(articleIdOrArticle, content, title) {
+    // 引数が1つでオブジェクトの場合、articleオブジェクトとして扱う
+    let articleId, articleContent, articleTitle
+
+    if (typeof articleIdOrArticle === 'object' && articleIdOrArticle !== null) {
+      // ContentGeneratorからの呼び出し: checkQuality(article)
+      const article = articleIdOrArticle
+      articleId = article.id
+      articleContent = article.content
+      articleTitle = article.title
+    } else {
+      // 従来の呼び出し: checkQuality(articleId, content, title)
+      articleId = articleIdOrArticle
+      articleContent = content
+      articleTitle = title
+    }
+
     if (!this.isInitialized) {
-      return this.mockCheckQuality(content, title)
+      return this.mockCheckQuality(articleContent, articleTitle)
     }
 
     try {
       const { data, error } = await this.supabase.functions.invoke('check-quality', {
         body: {
           articleId,
-          content,
-          title
+          content: articleContent,
+          title: articleTitle
         }
       })
 
@@ -348,6 +485,121 @@ class SupabaseIntegration {
       success: true,
       projectId: mockProjectId,
       data: { id: mockProjectId, ...projectData }
+    }
+  }
+
+  /**
+   * モック構造生成
+   */
+  mockGenerateStructure(theme) {
+    const pillarPage = {
+      title: `${theme}完全ガイド`,
+      summary: `${theme}に関する包括的なガイドです。基本概念から実践的な手法まで、${theme}のすべてを網羅しています。`,
+      content: '',
+      internalLinks: []
+    }
+
+    const clusterPageTitles = [
+      `${theme}の基本概念と重要性`,
+      `${theme}を始めるための準備`,
+      `${theme}の効果的な戦略`,
+      `${theme}のベストプラクティス`,
+      `${theme}でよくある間違いと対策`,
+      `${theme}の成功事例と分析`,
+      `${theme}の最新トレンド`,
+      `${theme}のツールと技術`,
+      `${theme}の測定と改善方法`,
+      `${theme}の将来展望`
+    ]
+
+    const clusterPages = clusterPageTitles.map((title, index) => ({
+      id: `cluster-${index + 1}`,
+      title: title,
+      summary: `${title}について詳しく解説します。`,
+      wordCount: 0,
+      qualityStatus: '未生成'
+    }))
+
+    return { pillarPage, clusterPages }
+  }
+
+  /**
+   * モック見出し生成
+   */
+  mockGenerateHeadings(pageTitle) {
+    const baseHeadings = [
+      '概要と重要性',
+      '基本的な考え方',
+      '実践的な手法',
+      '成功のポイント'
+    ]
+
+    const headings = baseHeadings.map((heading, index) => ({
+      id: `h${index + 1}`,
+      text: `${heading}`,
+      level: 2
+    }))
+
+    return { headings }
+  }
+
+  /**
+   * モック記事生成
+   */
+  mockGenerateArticle(title, headings, targetWordCount) {
+    const wordCount = targetWordCount || 2000
+
+    // シンプルなモックコンテンツ生成
+    const paragraphs = [
+      `${title}は、現代のビジネス環境において重要な要素の一つです。`,
+      `この分野における基本的な理解を深めることで、より効果的な戦略を立てることができます。`,
+      `実践的なアプローチを通じて、具体的な成果を上げることが可能になります。`,
+      `多くの企業がこの手法を採用し、顕著な改善を実現しています。`,
+      `継続的な学習と改善により、長期的な成功を収めることができるでしょう。`
+    ]
+
+    let content = ''
+    let currentWordCount = 0
+
+    while (currentWordCount < wordCount) {
+      const paragraph = paragraphs[Math.floor(Math.random() * paragraphs.length)]
+      content += paragraph + '\n\n'
+      currentWordCount += paragraph.length
+    }
+
+    return {
+      content: content.trim(),
+      wordCount: content.length
+    }
+  }
+
+  /**
+   * モックピラーページ生成
+   */
+  mockGeneratePillarPage(clusterPages) {
+    let content = '# 包括的ガイド\n\n'
+    content += 'このガイドでは、以下のトピックについて詳しく解説します。\n\n'
+
+    const internalLinks = []
+
+    clusterPages.forEach((page, index) => {
+      content += `## ${index + 1}. ${page.title}\n\n`
+      content += `${page.summary || page.title + 'について詳しく解説します。'}\n\n`
+
+      internalLinks.push({
+        title: page.title,
+        url: `#${page.id}`,
+        description: page.summary || ''
+      })
+    })
+
+    content += '## まとめ\n\n'
+    content += 'これらの要素を組み合わせることで、効果的な戦略を構築できます。'
+
+    return {
+      content,
+      internalLinks,
+      wordCount: content.length
     }
   }
 
