@@ -23,6 +23,13 @@ class AuthManager {
    */
   async init() {
     try {
+      // 一時的にログイン機能を無効化
+      console.log('🚫 ログイン機能は一時的に無効化されています');
+      this.authMode = 'guest';
+      this.isGuest = true;
+      this.showMainApp();
+      return;
+
       // Supabase統合が初期化されるまで待機
       await this.waitForSupabase();
 
@@ -30,6 +37,7 @@ class AuthManager {
         console.warn('⚠️ Supabase未設定のため、ゲストモードで動作します');
         this.authMode = 'guest';
         this.isGuest = true;
+        this.showMainApp();
         return;
       }
 
@@ -62,6 +70,7 @@ class AuthManager {
       console.error('認証初期化エラー:', error);
       this.authMode = 'guest';
       this.isGuest = true;
+      this.showMainApp();
     }
   }
 
@@ -518,4 +527,3 @@ window.authManager = new AuthManager();
 
 // 認証マネージャーの準備完了を待つヘルパー
 window.waitForAuth = () => window.authManager.readyPromise;
-

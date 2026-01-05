@@ -11,8 +11,8 @@
     <link rel="stylesheet" href="./wordpress-styles.css">
 </head>
 <body>
-    <!-- 認証オーバーレイ -->
-    <div id="auth-overlay" class="auth-overlay">
+    <!-- 認証オーバーレイ（一時的に無効化） -->
+    <div id="auth-overlay" class="auth-overlay hidden">
         <div class="auth-card">
             <!-- ヘッダー -->
             <div class="auth-header">
@@ -152,8 +152,8 @@
         </div>
     </div>
 
-    <!-- メインアプリケーション -->
-    <div id="main-app" class="hidden">
+    <!-- メインアプリケーション（認証なしで直接表示） -->
+    <div id="main-app" class="">
         <!-- 全体プログレスバー -->
         <div class="overall-progress-container">
             <div class="overall-progress"></div>
@@ -1472,22 +1472,6 @@
                 }, 5000);
             }
         });
-                    left: 20px;
-                    right: 20px;
-                    background: #ff4444;
-                    color: white;
-                    padding: 15px;
-                    border-radius: 5px;
-                    z-index: 10000;
-                    font-family: monospace;
-                `;
-                errorMessage.innerHTML = `
-                    <strong>アプリケーションの初期化に失敗しました</strong><br>
-                    エラー: ${error.message}<br>
-                    <small>詳細はコンソールを確認してください</small><br>
-                    <button onclick="this.parentElement.style.display='none'" style="margin-top:10px;padding:5px 10px;background:white;color:black;border:none;cursor:pointer;">閉じる</button>
-                `;
-                document.body.appendChild(errorMessage);
 
                 // 最後の手段: 基本的なボタン機能だけでも動作させる
                 console.log('🔄 最後の手段: 基本的なボタン機能を設定中...');
@@ -1707,7 +1691,38 @@
     <script src="./image-generation.js"></script>
 
     <!-- メインアプリケーション初期化 -->
-    <!-- HubPilotApp.js が既に読み込まれているため、追加のスクリプトは不要 -->
+    <script>
+        // 認証なしでメインアプリを直接初期化
+        document.addEventListener('DOMContentLoaded', function() {
+            console.log('🚀 認証なしモードでアプリケーションを初期化中...');
+
+            // 認証オーバーレイを確実に非表示
+            const authOverlay = document.getElementById('auth-overlay');
+            if (authOverlay) {
+                authOverlay.style.display = 'none';
+                authOverlay.classList.add('hidden');
+            }
+
+            // メインアプリを確実に表示
+            const mainApp = document.getElementById('main-app');
+            if (mainApp) {
+                mainApp.classList.remove('hidden');
+                mainApp.style.display = 'block';
+            }
+
+            // メインアプリケーションを初期化
+            setTimeout(() => {
+                try {
+                    if (!window.app && typeof HubPilotApp !== 'undefined') {
+                        window.app = new HubPilotApp();
+                        console.log('✅ メインアプリケーションを初期化しました');
+                    }
+                } catch (error) {
+                    console.error('❌ メインアプリケーション初期化エラー:', error);
+                }
+            }, 100);
+        });
+    </script>
 
     <!-- WordPress統合UI JavaScript -->
     <script>
