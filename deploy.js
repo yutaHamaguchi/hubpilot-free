@@ -6,7 +6,6 @@
  */
 
 const fs = require('fs');
-const path = require('path');
 const { createClient } = require('@supabase/supabase-js');
 
 // 設定（環境変数から取得）
@@ -57,7 +56,7 @@ async function uploadFile(localPath, remotePath, contentType) {
 
     const fileBuffer = fs.readFileSync(localPath);
 
-    const { data, error } = await supabase.storage
+    const { error } = await supabase.storage
       .from('hubpilot-static')
       .upload(remotePath, fileBuffer, {
         contentType: contentType,

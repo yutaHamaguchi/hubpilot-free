@@ -261,7 +261,7 @@ class ImageGenerationManager {
   /**
    * 生成完了ハンドラ
    */
-  handleGenerationComplete(detail) {
+  handleGenerationComplete(_detail) {
 
     const progressStatus = document.getElementById('image-progress-status');
     if (progressStatus) {

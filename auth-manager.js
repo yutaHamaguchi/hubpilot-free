@@ -30,6 +30,9 @@ class AuthManager {
       this.showMainApp();
       return;
 
+      // eslint-disable-next-line no-unreachable
+      // 以下のコードは一時的に無効化されています
+      /*
       // Supabase統合が初期化されるまで待機
       await this.waitForSupabase();
 
@@ -65,6 +68,7 @@ class AuthManager {
 
       // 認証状態の変更を監視
       this.setupAuthListener();
+      */
 
     } catch (error) {
       console.error('認証初期化エラー:', error);
@@ -216,7 +220,7 @@ class AuthManager {
       // 環境に応じたリダイレクトURLを設定
       const redirectTo = this.getRedirectUrl();
 
-      const { data, error } = await this.supabase.auth.signInWithOAuth({
+      const { error } = await this.supabase.auth.signInWithOAuth({
         provider: provider, // 'google', 'github', 'azure', etc.
         options: {
           redirectTo: redirectTo
@@ -348,7 +352,7 @@ class AuthManager {
 
     try {
       // プロファイルの取得
-      const { data, error } = await this.supabase
+      const { error } = await this.supabase
         .from('user_profiles')
         .select('*')
         .eq('id', this.currentUser.id)

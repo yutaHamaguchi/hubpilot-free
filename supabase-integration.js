@@ -101,7 +101,7 @@ class SupabaseIntegration {
     }
 
     try {
-      const { data, error } = await this.supabase
+      const { error } = await this.supabase
         .from('projects')
         .select('count', { count: 'exact', head: true });
 
@@ -565,7 +565,7 @@ class SupabaseIntegration {
   /**
    * モック見出し生成
    */
-  mockGenerateHeadings(pageTitle) {
+  mockGenerateHeadings(_pageTitle) {
     const baseHeadings = [
       '概要と重要性',
       '基本的な考え方',
@@ -674,7 +674,7 @@ class SupabaseIntegration {
     };
   }
 
-  mockAnalyzeSEO(content) {
+  mockAnalyzeSEO(_content) {
     return {
       success: true,
       analysis: {
@@ -688,7 +688,7 @@ class SupabaseIntegration {
     };
   }
 
-  mockCheckQuality(content, title) {
+  mockCheckQuality(_content, _title) {
     return {
       success: true,
       quality: {
