@@ -190,17 +190,34 @@ class HubPilotApp {
      * イベントを設定
      */
     bindEvents() {
-        // DOM要素が存在するまで待機
-        setTimeout(() => {
-            // ナビゲーションボタン
-            this.bindNavigationEvents();
+        // DOM要素が存在するまで待機（複数回試行）
+        const bindEventsWithRetry = (attempts = 0) => {
+            const maxAttempts = 10;
 
-            // ステップ固有のイベント
-            this.bindStepEvents();
+            try {
+                // ナビゲーションボタン
+                this.bindNavigationEvents();
 
-            // ブラウザイベント
-            this.bindBrowserEvents();
-        }, 100);
+                // ステップ固有のイベント
+                this.bindStepEvents();
+
+                // ブラウザイベント
+                this.bindBrowserEvents();
+
+                console.log('✅ イベントバインディング完了');
+            } catch (error) {
+                console.warn(`⚠️ イベントバインディング試行 ${attempts + 1}/${maxAttempts} 失敗:`, error);
+
+                if (attempts < maxAttempts - 1) {
+                    setTimeout(() => bindEventsWithRetry(attempts + 1), 200);
+                } else {
+                    console.error('❌ イベントバインディングが最大試行回数に達しました');
+                }
+            }
+        };
+
+        // 初回実行
+        setTimeout(() => bindEventsWithRetry(), 100);
     }
 
     /**
@@ -252,6 +269,45 @@ class HubPilotApp {
 
         // Step 6: 最終承認
         this.bindStep6Events();
+
+        // イベント委譲を使用して動的に生成されるボタンも捕捉
+        document.addEventListener('click', (e) => {
+            // 「この構成で進める」ボタン
+            if (e.target.id === 'proceed-to-headings-btn' || e.target.closest('#proceed-to-headings-btn')) {
+                e.preventDefault();
+                console.log('🔘 「この構成で進める」ボタンがクリックされました');
+
+                // 構成データの検証
+                const currentData = this.wizardController.data;
+                if (!currentData.pillarPage || !currentData.clusterPages || currentData.clusterPages.length === 0) {
+                    this.notificationService.show('構成データが不完全です。構成案を生成してください。', 'error');
+                    return;
+                }
+
+                // 次のステップ（見出し構成）に移動
+                this.wizardController.nextStep();
+                return;
+            }
+
+            // 「記事執筆を開始」ボタン
+            if (e.target.id === 'start-writing-btn' || e.target.closest('#start-writing-btn')) {
+                e.preventDefault();
+                console.log('🔘 「記事執筆を開始」ボタンがクリックされました');
+
+                // 見出しデータの検証
+                const currentData = this.wizardController.data;
+                if (!currentData.headings || Object.keys(currentData.headings).length === 0) {
+                    this.notificationService.show('見出し構成が設定されていません。', 'error');
+                    return;
+                }
+
+                // 次のステップ（記事執筆）に移動
+                this.wizardController.nextStep();
+                return;
+            }
+
+            // その他の動的ボタンも同様に処理
+        });
     }
 
     /**
@@ -339,6 +395,22 @@ class HubPilotApp {
                 });
             }
         };
+
+        // 「この構成で進める」ボタン
+        const proceedBtn = document.getElementById('proceed-to-headings-btn');
+        if (proceedBtn) {
+            proceedBtn.addEventListener('click', () => {
+                // 構成データの検証
+                const currentData = this.wizardController.data;
+                if (!currentData.pillarPage || !currentData.clusterPages || currentData.clusterPages.length === 0) {
+                    this.notificationService.show('構成データが不完全です。構成案を生成してください。', 'error');
+                    return;
+                }
+
+                // 次のステップ（見出し構成）に移動
+                this.wizardController.nextStep();
+            });
+        }
 
         // ページ追加
         window.addNewPage = () => {
@@ -642,12 +714,130 @@ class HubPilotApp {
             import: (data) => this.importData(data),
             reset: () => this.wizardController.resetData(),
 
+            // ボタン修復
+            fixButtons: () => this.fixButtonEvents(),
+
             // 内部アクセス（開発用）
             _app: this,
             _wizard: this.wizardController,
             _generator: this.contentGenerator,
             _ui: this.uiRenderer
         };
+
+        // ボタン修復関数をグローバルに公開
+        window.fixCreateNewConfigButton = () => this.fixButtonEvents();
+    }
+
+    /**
+     * ボタンイベントを修復
+     */
+    fixButtonEvents() {
+        console.log('🔧 ボタンイベントを修復中...');
+
+        // 「この構成で進める」ボタンの修復
+        const proceedBtn = document.getElementById('proceed-to-headings-btn');
+        if (proceedBtn) {
+            // 既存のイベントリスナーを削除
+            const newBtn = proceedBtn.cloneNode(true);
+            proceedBtn.parentNode.replaceChild(newBtn, proceedBtn);
+
+            // 新しいイベントリスナーを追加
+            newBtn.addEventListener('click', (e) => {
+                e.preventDefault();
+                console.log('🔘 修復された「この構成で進める」ボタンがクリックされました');
+
+                // 構成データの検証
+                const currentData = this.wizardController.data;
+                if (!currentData.pillarPage || !currentData.clusterPages || currentData.clusterPages.length === 0) {
+                    this.notificationService.show('構成データが不完全です。構成案を生成してください。', 'error');
+                    return;
+                }
+
+                // 次のステップ（見出し構成）に移動
+                this.wizardController.nextStep();
+            });
+
+            console.log('✅ 「この構成で進める」ボタンを修復しました');
+        } else {
+            console.warn('⚠️ 「この構成で進める」ボタンが見つかりません');
+        }
+
+        // 「記事執筆を開始」ボタンの修復
+        const startWritingBtn = document.getElementById('start-writing-btn');
+        if (startWritingBtn) {
+            const newBtn = startWritingBtn.cloneNode(true);
+            startWritingBtn.parentNode.replaceChild(newBtn, startWritingBtn);
+
+            newBtn.addEventListener('click', (e) => {
+                e.preventDefault();
+                console.log('🔘 修復された「記事執筆を開始」ボタンがクリックされました');
+
+                // 見出しデータの検証
+                const currentData = this.wizardController.data;
+                if (!currentData.headings || Object.keys(currentData.headings).length === 0) {
+                    this.notificationService.show('見出し構成が設定されていません。', 'error');
+                    return;
+                }
+
+                // 次のステップ（記事執筆）に移動
+                this.wizardController.nextStep();
+            });
+
+            console.log('✅ 「記事執筆を開始」ボタンを修復しました');
+        }
+
+        // その他の重要なボタンも修復
+        this.fixOtherButtons();
+
+        return '✅ ボタンイベントの修復が完了しました';
+    }
+
+    /**
+     * その他のボタンを修復
+     */
+    fixOtherButtons() {
+        // 構成案生成ボタン
+        const generateBtn = document.getElementById('generate-structure-btn');
+        if (generateBtn && !generateBtn.hasAttribute('data-fixed')) {
+            generateBtn.setAttribute('data-fixed', 'true');
+            generateBtn.addEventListener('click', async (e) => {
+                e.preventDefault();
+                const themeInput = document.getElementById('theme-input');
+                const theme = themeInput ? themeInput.value.trim() : '';
+
+                if (!theme) {
+                    this.notificationService.show('テーマを入力してください', 'error');
+                    return;
+                }
+
+                try {
+                    await this.wizardController.generateStructure();
+                } catch (error) {
+                    this.errorHandler.handle(error, 'structure-generation', {
+                        customMessage: '構造の生成に失敗しました',
+                        notify: true
+                    });
+                }
+            });
+        }
+
+        // ナビゲーションボタン
+        const nextBtn = document.getElementById('next-btn');
+        const prevBtn = document.getElementById('prev-btn');
+
+        if (nextBtn && !nextBtn.hasAttribute('data-fixed')) {
+            nextBtn.setAttribute('data-fixed', 'true');
+            nextBtn.addEventListener('click', () => {
+                this.wizardController.nextStep();
+            });
+        }
+
+        if (prevBtn && !prevBtn.hasAttribute('data-fixed')) {
+            prevBtn.setAttribute('data-fixed', 'true');
+            prevBtn.addEventListener('click', () => {
+                this.wizardController.previousStep();
+            });
+        }
     }
 
     /**

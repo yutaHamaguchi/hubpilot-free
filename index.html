@@ -1480,6 +1480,12 @@
                             console.log('🔧 ボタン修復を実行中...');
                             window.fixCreateNewConfigButton();
                         }
+
+                        // 追加の修復処理
+                        if (window.app && typeof window.app.fixButtonEvents === 'function') {
+                            console.log('🔧 追加のボタン修復を実行中...');
+                            window.app.fixButtonEvents();
+                        }
                     }, 1000);
                 }
 
@@ -1537,12 +1543,190 @@
                             window.fixCreateNewConfigButton();
                             console.log('✅ 基本的なボタン機能を設定しました');
                         }
+
+                        // 緊急ボタン修復
+                        const emergencyFixButtons = () => {
+                            console.log('🚨 緊急ボタン修復を実行中...');
+
+                            // 「この構成で進める」ボタンの緊急修復
+                            const proceedBtn = document.getElementById('proceed-to-headings-btn');
+                            if (proceedBtn && !proceedBtn.hasAttribute('data-emergency-fixed')) {
+                                proceedBtn.setAttribute('data-emergency-fixed', 'true');
+                                proceedBtn.addEventListener('click', (e) => {
+                                    e.preventDefault();
+                                    console.log('🚨 緊急修復: 「この構成で進める」ボタンがクリックされました');
+
+                                    // URLパラメータでステップ3に移動
+                                    const url = new URL(window.location);
+                                    url.searchParams.set('step', '3');
+                                    window.location.href = url.toString();
+                                });
+                                console.log('✅ 緊急修復: 「この構成で進める」ボタンを修復');
+                            }
+
+                            // 「記事執筆を開始」ボタンの緊急修復
+                            const startWritingBtn = document.getElementById('start-writing-btn');
+                            if (startWritingBtn && !startWritingBtn.hasAttribute('data-emergency-fixed')) {
+                                startWritingBtn.setAttribute('data-emergency-fixed', 'true');
+                                startWritingBtn.addEventListener('click', (e) => {
+                                    e.preventDefault();
+                                    console.log('🚨 緊急修復: 「記事執筆を開始」ボタンがクリックされました');
+
+                                    // URLパラメータでステップ4に移動
+                                    const url = new URL(window.location);
+                                    url.searchParams.set('step', '4');
+                                    window.location.href = url.toString();
+                                });
+                                console.log('✅ 緊急修復: 「記事執筆を開始」ボタンを修復');
+                            }
+
+                            // 構成案生成ボタンの緊急修復
+                            const generateBtn = document.getElementById('generate-structure-btn');
+                            if (generateBtn && !generateBtn.hasAttribute('data-emergency-fixed')) {
+                                generateBtn.setAttribute('data-emergency-fixed', 'true');
+                                generateBtn.addEventListener('click', (e) => {
+                                    e.preventDefault();
+                                    console.log('🚨 緊急修復: 「構成案を作成」ボタンがクリックされました');
+
+                                    const themeInput = document.getElementById('theme-input');
+                                    const theme = themeInput ? themeInput.value.trim() : '';
+
+                                    if (!theme) {
+                                        alert('テーマを入力してください');
+                                        return;
+                                    }
+
+                                    // URLパラメータでステップ2に移動
+                                    const url = new URL(window.location);
+                                    url.searchParams.set('step', '2');
+                                    window.location.href = url.toString();
+                                });
+                                console.log('✅ 緊急修復: 「構成案を作成」ボタンを修復');
+                            }
+                        };
+
+                        // 緊急修復を実行
+                        emergencyFixButtons();
+
+                        // 定期的に緊急修復を実行（動的に生成されるボタン対応）
+                        setInterval(emergencyFixButtons, 5000);
+
+                        // URLパラメータからステップを読み込んで表示
+                        const urlParams = new URLSearchParams(window.location.search);
+                        const stepParam = urlParams.get('step');
+                        if (stepParam) {
+                            const step = parseInt(stepParam);
+                            if (step >= 1 && step <= 6) {
+                                console.log(`📍 URLパラメータからステップ${step}を読み込み`);
+
+                                // ステップインジケーターを更新
+                                document.querySelectorAll('.step-item').forEach((item, index) => {
+                                    item.classList.remove('active', 'completed');
+                                    const stepNumber = index + 1;
+                                    if (stepNumber === step) {
+                                        item.classList.add('active');
+                                    } else if (stepNumber < step) {
+                                        item.classList.add('completed');
+                                    }
+                                });
+
+                                // ステップコンテンツを表示
+                                document.querySelectorAll('.step-content').forEach(el => {
+                                    el.classList.remove('active');
+                                });
+                                const stepEl = document.getElementById(`step-${step}`);
+                                if (stepEl) {
+                                    stepEl.classList.add('active');
+                                }
+                            }
+                        }
+
                     } catch (fallbackError) {
                         console.error('❌ 最後の手段も失敗:', fallbackError);
                     }
                 }, 2000);
             }
         });
+
+        // デバッグ用のグローバル関数を追加
+        window.debugButtons = () => {
+            console.log('🔍 ボタンの状態をチェック中...');
+
+            const buttons = [
+                'proceed-to-headings-btn',
+                'start-writing-btn',
+                'generate-structure-btn',
+                'next-btn',
+                'prev-btn'
+            ];
+
+            buttons.forEach(id => {
+                const btn = document.getElementById(id);
+                if (btn) {
+                    console.log(`✅ ${id}: 存在する`, {
+                        disabled: btn.disabled,
+                        visible: btn.style.display !== 'none',
+                        hasEventListeners: btn.hasAttribute('data-fixed') || btn.hasAttribute('data-emergency-fixed')
+                    });
+                } else {
+                    console.log(`❌ ${id}: 見つからない`);
+                }
+            });
+        };
+
+        // 手動でボタンを修復する関数
+        window.manualFixButtons = () => {
+            console.log('🔧 手動でボタンを修復中...');
+
+            // 「この構成で進める」ボタン
+            const proceedBtn = document.getElementById('proceed-to-headings-btn');
+            if (proceedBtn) {
+                proceedBtn.onclick = (e) => {
+                    e.preventDefault();
+                    console.log('🔘 手動修復: 「この構成で進める」ボタンがクリックされました');
+                    const url = new URL(window.location);
+                    url.searchParams.set('step', '3');
+                    window.location.href = url.toString();
+                };
+                console.log('✅ 「この構成で進める」ボタンを手動修復');
+            }
+
+            // 「記事執筆を開始」ボタン
+            const startWritingBtn = document.getElementById('start-writing-btn');
+            if (startWritingBtn) {
+                startWritingBtn.onclick = (e) => {
+                    e.preventDefault();
+                    console.log('🔘 手動修復: 「記事執筆を開始」ボタンがクリックされました');
+                    const url = new URL(window.location);
+                    url.searchParams.set('step', '4');
+                    window.location.href = url.toString();
+                };
+                console.log('✅ 「記事執筆を開始」ボタンを手動修復');
+            }
+
+            // 構成案生成ボタン
+            const generateBtn = document.getElementById('generate-structure-btn');
+            if (generateBtn) {
+                generateBtn.onclick = (e) => {
+                    e.preventDefault();
+                    console.log('🔘 手動修復: 「構成案を作成」ボタンがクリックされました');
+                    const themeInput = document.getElementById('theme-input');
+                    const theme = themeInput ? themeInput.value.trim() : '';
+
+                    if (!theme) {
+                        alert('テーマを入力してください');
+                        return;
+                    }
+
+                    const url = new URL(window.location);
+                    url.searchParams.set('step', '2');
+                    window.location.href = url.toString();
+                };
+                console.log('✅ 「構成案を作成」ボタンを手動修復');
+            }
+
+            console.log('✅ 手動ボタン修復完了');
+        };
     </script>
 
     <!-- 画像生成機能 -->
