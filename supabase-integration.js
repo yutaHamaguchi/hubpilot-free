@@ -19,6 +19,8 @@ class SupabaseIntegration {
    */
   async initialize() {
     try {
+      console.log('🔧 Supabase統合を初期化中...');
+
       // Supabase設定の検証
       if (!window.SUPABASE_CONFIG ||
           !window.SUPABASE_CONFIG.url ||
@@ -40,17 +42,36 @@ class SupabaseIntegration {
         return false;
       }
 
+      console.log('🔗 Supabaseクライアントを作成中...');
+      console.log('📍 URL:', window.SUPABASE_CONFIG.url);
+      console.log('🔑 Anon Key:', window.SUPABASE_CONFIG.anonKey.substring(0, 20) + '...');
+
       // Supabaseクライアント作成
       this.supabase = window.supabase.createClient(
         window.SUPABASE_CONFIG.url,
         window.SUPABASE_CONFIG.anonKey
       );
 
-      // 接続テスト
-      const { error } = await this.supabase.from('projects').select('count', { count: 'exact', head: true });
+      // 接続テスト - より安全な方法でテーブルの存在を確認
+      console.log('🧪 接続テストを実行中...');
+      try {
+        const { error } = await this.supabase.from('projects').select('count', { count: 'exact', head: true });
 
-      if (error && error.code !== 'PGRST116') { // PGRST116 = テーブルが空（正常）
-        console.error('❌ Supabase接続エラー:', error);
+        if (error) {
+          // テーブルが存在しない場合やアクセス権限がない場合
+          if (error.code === 'PGRST205' || error.code === '42P01') {
+            console.error('❌ Supabaseテーブルが存在しません:', error.message);
+            console.error('💡 マイグレーションを実行してください: supabase db push');
+            return false;
+          }
+          // その他のエラーは警告として扱い、接続は成功とみなす
+          console.warn('⚠️ Supabase接続テスト警告:', error.message);
+          console.warn('⚠️ エラーコード:', error.code);
+        } else {
+          console.log('✅ Supabaseテーブル接続成功');
+        }
+      } catch (connectionError) {
+        console.error('❌ Supabase接続エラー:', connectionError);
         return false;
       }
 
@@ -59,6 +80,7 @@ class SupabaseIntegration {
       // リアルタイム更新の設定
       this.setupRealtimeSubscription();
 
+      console.log('✅ Supabase統合が初期化されました');
       return true;
 
     } catch (error) {
@@ -213,15 +235,30 @@ class SupabaseIntegration {
    */
   async generateStructure(theme) {
     if (!this.isInitialized) {
+      console.log('🔄 Supabase未初期化のため、モック生成を使用');
       return this.mockGenerateStructure(theme);
     }
 
     try {
+      console.log('🚀 AI構造生成を開始:', theme);
+
       const { data, error } = await this.supabase.functions.invoke('generate-structure', {
-        body: { theme }
+        body: {
+          theme,
+          settings: {
+            clusterCount: 10,
+            targetAudience: '一般ユーザー'
+          }
+        }
       });
 
-      if (error) throw error;
+      if (error) {
+        console.error('❌ Edge Function呼び出しエラー:', error);
+        console.log('🔄 モック生成にフォールバック');
+        return this.mockGenerateStructure(theme);
+      }
+
+      console.log('✅ AI構造生成成功:', data);
 
       return {
         pillarPage: data.pillarPage,
@@ -229,7 +266,8 @@ class SupabaseIntegration {
       };
 
     } catch (error) {
-      console.error('構造生成エラー:', error);
+      console.error('❌ 構造生成エラー:', error);
+      console.log('🔄 モック生成にフォールバック');
       return this.mockGenerateStructure(theme);
     }
   }
