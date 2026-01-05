@@ -156,7 +156,7 @@ class HubPilotApp {
         }
 
         // 認証管理の初期化
-        if (this.authManager) {
+        if (this.authManager && typeof this.authManager.initialize === 'function') {
             try {
                 await this.authManager.initialize();
             } catch (error) {

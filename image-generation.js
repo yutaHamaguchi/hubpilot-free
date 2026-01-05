@@ -4,6 +4,11 @@
 
 class ImageGenerationManager {
   constructor(app) {
+    if (!app) {
+      console.warn('ImageGenerationManager: appインスタンスが提供されていません');
+      return;
+    }
+
     this.app = app;
     this.generatedImages = new Map(); // articleId -> images[]
     this.isGenerating = false;
@@ -77,7 +82,7 @@ class ImageGenerationManager {
     const illustrationCount = parseInt(document.getElementById('illustration-count')?.value || 3);
     const provider = document.getElementById('image-provider')?.value || 'auto';
 
-    const articleCount = this.app.data.clusterPages?.length || 10;
+    const articleCount = this.app?.data?.clusterPages?.length || 10;
 
     let costPerArticle = 0;
 
@@ -406,8 +411,15 @@ window.ImageGenerationManager = ImageGenerationManager;
 // アプリ初期化時にインスタンス化
 document.addEventListener('DOMContentLoaded', () => {
   setTimeout(() => {
-    if (window.app) {
-      window.imageGenerationManager = new ImageGenerationManager(window.app);
+    if (window.app || window.hubpilot) {
+      try {
+        const appInstance = window.app || window.hubpilot?._app;
+        if (appInstance) {
+          window.imageGenerationManager = new ImageGenerationManager(appInstance);
+        }
+      } catch (error) {
+        console.warn('ImageGenerationManager初期化に失敗:', error);
+      }
     }
-  }, 500); // app.jsの初期化後に実行
+  }, 1000); // より長い遅延でapp.jsの初期化を確実に待つ
 });
