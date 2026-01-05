@@ -246,7 +246,7 @@ async function generateStructureWithOpenAI(
     body: JSON.stringify({
       model: 'gpt-4',
       messages: [{ role: 'user', content: prompt }],
-      ms: 2000,
+      max_tokens: 2000,
       temperature: 0.7,
     }),
   })
