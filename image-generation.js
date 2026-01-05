@@ -408,18 +408,5 @@ class ImageGenerationManager {
 // グローバルに公開
 window.ImageGenerationManager = ImageGenerationManager;
 
-// アプリ初期化時にインスタンス化
-document.addEventListener('DOMContentLoaded', () => {
-  setTimeout(() => {
-    if (window.app || window.hubpilot) {
-      try {
-        const appInstance = window.app || window.hubpilot?._app;
-        if (appInstance) {
-          window.imageGenerationManager = new ImageGenerationManager(appInstance);
-        }
-      } catch (error) {
-        console.warn('ImageGenerationManager初期化に失敗:', error);
-      }
-    }
-  }, 1000); // より長い遅延でapp.jsの初期化を確実に待つ
-});
+// 手動初期化用（index.htmlから呼び出される）
+// 自動初期化は削除して、index.htmlから制御する

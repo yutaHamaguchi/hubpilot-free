@@ -926,16 +926,8 @@ class SupabaseIntegration {
 // グローバルインスタンス作成
 window.supabaseIntegration = new SupabaseIntegration();
 
-// ページロード時に初期化
-document.addEventListener('DOMContentLoaded', async () => {
-  const success = await window.supabaseIntegration.initialize();
-
-  if (success) {
-    console.log('✅ Supabase統合が初期化されました');
-  } else {
-    console.error('❌ Supabase統合の初期化に失敗しました');
-  }
-});
+// 手動初期化用（index.htmlから呼び出される）
+// 自動初期化は削除して、index.htmlから制御する
 
 // ページアンロード時にクリーンアップ
 window.addEventListener('beforeunload', () => {

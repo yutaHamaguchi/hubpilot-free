@@ -1384,43 +1384,23 @@
         document.addEventListener('DOMContentLoaded', async () => {
             try {
                 console.log('🚀 HubPilot Free を初期化中...');
-                console.log('📍 現在のURL:', window.location.href);
-                console.log('📍 ホスト名:', window.location.hostname);
 
-                // 必要なオブジェクトの存在確認
-                if (typeof window.SUPABASE_CONFIG === 'undefined') {
-                    console.warn('⚠️ Supabase設定が読み込まれていません');
+                // 重複初期化を防ぐ
+                if (window.appInitialized) {
+                    console.log('⚠️ アプリケーションは既に初期化済みです');
+                    return;
+                }
+                window.appInitialized = true;
+
+                // Supabase統合を初期化
+                if (window.supabaseIntegration && !window.supabaseIntegration.isInitialized) {
+                    console.log('🔧 Supabase統合を初期化中...');
+                    await window.supabaseIntegration.initialize();
                 }
 
-                if (typeof window.authManager === 'undefined') {
-                    console.warn('⚠️ 認証マネージャーが見つかりません。読み込みを待機中...');
-                }
-
-                // 認証マネージャーの準備完了を待つ
-                console.log('🔐 認証マネージャーの初期化を待機中...');
-
-                // waitForAuth関数が存在するかチェック
-                if (typeof window.waitForAuth === 'function') {
-                    await window.waitForAuth();
-                    console.log('✅ 認証マネージャーの初期化完了');
-                } else {
-                    console.warn('⚠️ waitForAuth関数が見つかりません。直接初期化を試行します。');
-
-                    // 認証マネージャーが読み込まれるまで待機
-                    let attempts = 0;
-                    while (typeof window.authManager === 'undefined' && attempts < 50) {
-                        await new Promise(resolve => setTimeout(resolve, 100));
-                        attempts++;
-                    }
-
-                    if (typeof window.authManager === 'undefined') {
-                        console.warn('⚠️ 認証マネージャーの読み込みがタイムアウトしました。ゲストモードで続行します。');
-                    }
-                }
-
-                // 認証状態に基づいてUIを表示
+                // 認証モードを確認（簡素化）
                 let authMode = 'guest'; // デフォルトはゲストモード
-                if (window.authManager) {
+                if (window.authManager && typeof window.authManager.getAuthMode === 'function') {
                     authMode = window.authManager.getAuthMode();
                 }
                 console.log('🔍 認証モード:', authMode);
@@ -1428,76 +1408,70 @@
                 if (authMode === 'unauthenticated') {
                     // 認証が必要な場合は認証画面を表示
                     console.log('📝 認証画面を表示');
-                    if (window.authManager) {
+                    if (window.authManager && typeof window.authManager.showAuthUI === 'function') {
                         window.authManager.showAuthUI();
                     }
                 } else {
-                    // 認証済みまたはゲストモードの場合はメインアプリを初期化
+                    // メインアプリケーションを初期化
                     console.log('🎯 メインアプリケーションを初期化');
 
-                    // HubPilotAppクラスが存在するかチェック
+                    let app = null;
                     if (typeof HubPilotApp !== 'undefined') {
                         console.log('📱 HubPilotAppクラスを使用');
-                        try {
-                            app = new HubPilotApp();
-                            window.app = app;
-                            console.log('✅ HubPilotApp初期化成功');
-                        } catch (error) {
-                            console.error('❌ HubPilotApp初期化失敗:', error);
-                            throw error;
-                        }
+                        app = new HubPilotApp();
+                        window.app = app;
+                        console.log('✅ HubPilotApp初期化成功');
                     } else if (typeof HubPilotAppSimple !== 'undefined') {
                         console.log('📱 HubPilotAppSimpleクラスを使用（フォールバック）');
-                        try {
-                            app = new HubPilotAppSimple();
-                            await app.init();
-                            window.app = app;
-                            console.log('✅ HubPilotAppSimple初期化成功');
-                        } catch (error) {
-                            console.error('❌ HubPilotAppSimple初期化失敗:', error);
-                            throw error;
-                        }
-                    } else if (typeof SimpleApp !== 'undefined') {
-                        console.log('📱 SimpleAppクラスを使用（最終フォールバック）');
-                        try {
-                            app = new SimpleApp();
-                            window.app = app;
-                            window.simpleApp = app;
-                            console.log('✅ SimpleApp初期化成功');
-                        } catch (error) {
-                            console.error('❌ SimpleApp初期化失敗:', error);
-                            throw error;
-                        }
+                        app = new HubPilotAppSimple();
+                        await app.init();
+                        window.app = app;
+                        console.log('✅ HubPilotAppSimple初期化成功');
                     } else {
                         throw new Error('HubPilotAppクラスが読み込まれていません');
                     }
 
+                    // 画像生成機能を初期化
+                    if (typeof ImageGenerationManager !== 'undefined' && app) {
+                        try {
+                            window.imageGenerationManager = new ImageGenerationManager(app);
+                            console.log('✅ 画像生成機能が初期化されました');
+                        } catch (error) {
+                            console.warn('⚠️ 画像生成機能の初期化に失敗:', error);
+                        }
+                    }
+
                     console.log('✅ HubPilot Free が正常に初期化されました');
-
-                    // ボタンの問題を自動修復
-                    setTimeout(() => {
-                        if (typeof window.fixCreateNewConfigButton === 'function') {
-                            console.log('🔧 ボタン修復を実行中...');
-                            window.fixCreateNewConfigButton();
-                        }
-
-                        // 追加の修復処理
-                        if (window.app && typeof window.app.fixButtonEvents === 'function') {
-                            console.log('🔧 追加のボタン修復を実行中...');
-                            window.app.fixButtonEvents();
-                        }
-                    }, 1000);
                 }
 
             } catch (error) {
                 console.error('❌ アプリケーションの初期化に失敗しました:', error);
-                console.error('📍 エラー詳細:', error.stack);
 
                 // エラー情報をユーザーに表示
                 const errorMessage = document.createElement('div');
                 errorMessage.style.cssText = `
                     position: fixed;
                     top: 20px;
+                    left: 50%;
+                    transform: translateX(-50%);
+                    background: #ff4444;
+                    color: white;
+                    padding: 15px 20px;
+                    border-radius: 8px;
+                    z-index: 10000;
+                    font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+                `;
+                errorMessage.textContent = 'アプリケーションの初期化に失敗しました。ページを再読み込みしてください。';
+                document.body.appendChild(errorMessage);
+
+                // 5秒後にエラーメッセージを削除
+                setTimeout(() => {
+                    if (errorMessage.parentNode) {
+                        errorMessage.parentNode.removeChild(errorMessage);
+                    }
+                }, 5000);
+            }
+        });
                     left: 20px;
                     right: 20px;
                     background: #ff4444;
