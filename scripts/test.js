@@ -69,7 +69,6 @@ function testJavaScriptSyntax() {
   console.log(`${colors.blue}📝 JavaScript構文チェック${colors.reset}\n`);
 
   const jsFiles = [
-    'simple-app.js',
     'wordpress-integration.js',
     'auth-manager.js',
     'supabase-integration.js',
