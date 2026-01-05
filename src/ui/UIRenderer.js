@@ -73,12 +73,14 @@ class UIRenderer {
     renderStep2(data) {
         // ピラーページタイトルを表示
         const pillarTitleEl = document.getElementById('pillar-page-title');
-        if (pillarTitleEl && data.pillarPage && data.pillarPage.title) {
-            pillarTitleEl.textContent = data.pillarPage.title;
+        if (pillarTitleEl) {
+            const title = data?.pillarPage?.title || 'ピラーページタイトル未設定';
+            pillarTitleEl.textContent = title;
         }
 
         // クラスターページリストを表示
-        this.renderClusterPagesList(data.clusterPages || []);
+        const clusterPages = data?.clusterPages || [];
+        this.renderClusterPagesList(clusterPages);
 
         // 統計を更新
         this.updateStructureStats(data);
@@ -90,10 +92,10 @@ class UIRenderer {
      */
     renderStep3(data) {
         // 見出し統計を更新
-        this.updateHeadingsStats(data);
+        this.updateHeadingsStats(data || {});
 
         // 見出しアコーディオンを表示
-        this.renderHeadingsAccordion(data);
+        this.renderHeadingsAccordion(data || {});
     }
 
     /**
@@ -202,8 +204,8 @@ class UIRenderer {
         const accordionEl = document.getElementById('headings-accordion');
         if (!accordionEl || !this.templateEngine) return;
 
-        const clusterPages = data.clusterPages || [];
-        const headings = data.headings || {};
+        const clusterPages = data?.clusterPages || [];
+        const headings = data?.headings || {};
 
         const html = clusterPages.map((page, index) => {
             const pageHeadings = headings[page.id] || [];
@@ -285,8 +287,8 @@ class UIRenderer {
      * @param {Object} data - データ
      */
     updateHeadingsStats(data) {
-        const clusterPages = data.clusterPages || [];
-        const headings = data.headings || {};
+        const clusterPages = data?.clusterPages || [];
+        const headings = data?.headings || {};
 
         const totalArticles = clusterPages.length;
         const totalHeadings = Object.values(headings).reduce((sum, pageHeadings) =>

@@ -146,7 +146,16 @@ class WizardController {
         if (this.dataStore) {
             const savedData = this.dataStore.load();
             if (savedData) {
-                this.data = { ...this.data, ...savedData };
+                // デフォルト値とマージして、必要なプロパティが確実に存在するようにする
+                this.data = {
+                    theme: '',
+                    pillarPage: {},
+                    clusterPages: [],
+                    headings: {},
+                    articles: [],
+                    qualityChecks: [],
+                    ...savedData
+                };
                 this.lastSavedData = JSON.parse(JSON.stringify(this.data));
             }
         }

@@ -416,7 +416,12 @@ class HubPilotApp {
         // 記事生成開始
         window.startGeneration = async () => {
             try {
-                const pages = this.wizardController.data.clusterPages;
+                const pages = this.wizardController.data?.clusterPages || [];
+
+                if (pages.length === 0) {
+                    this.notificationService.show('生成対象のページがありません', 'warning');
+                    return;
+                }
 
                 // 進捗コールバック
                 const progressCallback = (progress) => {
@@ -465,7 +470,13 @@ class HubPilotApp {
         // 品質チェック開始
         window.startQualityCheck = async () => {
             try {
-                const articles = this.wizardController.data.articles;
+                const articles = this.wizardController.data?.articles || [];
+
+                if (articles.length === 0) {
+                    this.notificationService.show('品質チェック対象の記事がありません', 'warning');
+                    return;
+                }
+
                 const qualityChecks = await this.contentGenerator.performQualityCheck(articles);
 
                 this.wizardController.saveData({ qualityChecks });
