@@ -78,7 +78,6 @@ jobs:
           echo "Checking for required files..."
           files=(
             "index.html"
-            "app.js"
             "styles.css"
             "supabase-config.js"
             "supabase-integration.js"

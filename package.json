@@ -8,7 +8,7 @@
     "build": "echo 'Building static files...' && npm run validate",
     "validate": "node scripts/validate-config.js",
     "deploy": "npm run build && supabase db push && supabase functions deploy --no-verify-jwt",
-    "deploy:storage": "supabase storage upload --bucket public index.html && supabase storage upload --bucket public app.js && supabase storage upload --bucket public styles.css",
+    "deploy:storage": "supabase storage upload --bucket public index.html && supabase storage upload --bucket public styles.css",
     "supabase:start": "supabase start",
     "supabase:stop": "supabase stop",
     "supabase:reset": "supabase db reset",

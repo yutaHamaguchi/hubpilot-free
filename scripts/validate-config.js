@@ -93,7 +93,6 @@ function validateFiles() {
 
   const requiredFiles = [
     'index.html',
-    'simple-app.js',
     'styles.css',
     'supabase-config.js',
     'supabase-integration.js',
