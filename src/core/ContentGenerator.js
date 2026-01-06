@@ -42,7 +42,7 @@ class ContentGenerator {
     async generateStructureWithAI(theme) {
         try {
             const result = await this.supabaseIntegration.generateStructure(theme);
-            this.notificationService?.show('構成案の生成が完了しました', 'success');
+            this.notificationService?.show('構成案の生成が完了しました！次のステップに進みます...', 'success');
             return result;
         } catch (error) {
             console.error('AI構造生成エラー:', error);
@@ -67,7 +67,7 @@ class ContentGenerator {
 
         const clusterPages = this.generateClusterPageTitles(theme);
 
-        this.notificationService?.show('構成案の生成が完了しました', 'success');
+        this.notificationService?.show('構成案の生成が完了しました！次のステップに進みます...', 'success');
 
         return {
             pillarPage,

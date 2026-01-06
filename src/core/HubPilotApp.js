@@ -339,8 +339,34 @@ class HubPilotApp {
                         return;
                     }
 
+                    // ボタンを無効化して重複実行を防止
+                    generateBtn.disabled = true;
+                    generateBtn.textContent = '生成中...';
+
                     await this.wizardController.generateStructure();
+
+                    // ボタンを元に戻す
+                    generateBtn.disabled = false;
+                    generateBtn.innerHTML = `
+                        <span class="btn-icon">
+                            <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                                <path d="M13 2L3 14h9l-1 8 10-12h-9l1-8z"></path>
+                            </svg>
+                        </span>
+                        構成案を作成
+                    `;
                 } catch (error) {
+                    // エラー時もボタンを元に戻す
+                    generateBtn.disabled = false;
+                    generateBtn.innerHTML = `
+                        <span class="btn-icon">
+                            <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                                <path d="M13 2L3 14h9l-1 8 10-12h-9l1-8z"></path>
+                            </svg>
+                        </span>
+                        構成案を作成
+                    `;
+
                     this.errorHandler.handle(error, 'structure-generation', {
                         customMessage: '構造の生成に失敗しました',
                         notify: true
@@ -810,9 +836,35 @@ class HubPilotApp {
                     return;
                 }
 
+                // ボタンを無効化
+                generateBtn.disabled = true;
+                generateBtn.textContent = '生成中...';
+
                 try {
                     await this.wizardController.generateStructure();
+
+                    // ボタンを元に戻す
+                    generateBtn.disabled = false;
+                    generateBtn.innerHTML = `
+                        <span class="btn-icon">
+                            <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                                <path d="M13 2L3 14h9l-1 8 10-12h-9l1-8z"></path>
+                            </svg>
+                        </span>
+                        構成案を作成
+                    `;
                 } catch (error) {
+                    // エラー時もボタンを元に戻す
+                    generateBtn.disabled = false;
+                    generateBtn.innerHTML = `
+                        <span class="btn-icon">
+                            <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                                <path d="M13 2L3 14h9l-1 8 10-12h-9l1-8z"></path>
+                            </svg>
+                        </span>
+                        構成案を作成
+                    `;
+
                     this.errorHandler.handle(error, 'structure-generation', {
                         customMessage: '構造の生成に失敗しました',
                         notify: true

@@ -364,9 +364,13 @@ class WizardController {
                 const structure = await this.contentGenerator.generateStructure(this.data.theme);
                 this.saveData(structure);
 
-                // 構造生成完了後は自動移動せず、ユーザーが確認してから手動で次のステップに移動
                 // UIを再描画して生成された構造を表示
                 this.renderCurrentStep();
+
+                // 構造生成完了後、自動的に次のステップ（構成案確認）に移動
+                setTimeout(() => {
+                    this.nextStep();
+                }, 1000); // 1秒後に自動移動（ユーザーが生成完了を確認できるように）
 
             } catch (error) {
                 this.notificationService?.show('構造の生成に失敗しました', 'error');

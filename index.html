@@ -1542,7 +1542,7 @@
                             const generateBtn = document.getElementById('generate-structure-btn');
                             if (generateBtn && !generateBtn.hasAttribute('data-emergency-fixed')) {
                                 generateBtn.setAttribute('data-emergency-fixed', 'true');
-                                generateBtn.addEventListener('click', (e) => {
+                                generateBtn.addEventListener('click', async (e) => {
                                     e.preventDefault();
                                     console.log('🚨 緊急修復: 「構成案を作成」ボタンがクリックされました');
 
@@ -1554,10 +1554,28 @@
                                         return;
                                     }
 
-                                    // URLパラメータでステップ2に移動
-                                    const url = new URL(window.location);
-                                    url.searchParams.set('step', '2');
-                                    window.location.href = url.toString();
+                                    // ボタンを無効化
+                                    generateBtn.disabled = true;
+                                    generateBtn.textContent = '生成中...';
+
+                                    try {
+                                        // 実際のアプリがある場合は構造生成を実行
+                                        if (window.app && window.app.wizardController) {
+                                            await window.app.wizardController.generateStructure();
+                                        } else {
+                                            // フォールバック: 2秒後にステップ2に移動
+                                            await new Promise(resolve => setTimeout(resolve, 2000));
+                                            const url = new URL(window.location);
+                                            url.searchParams.set('step', '2');
+                                            window.location.href = url.toString();
+                                        }
+                                    } catch (error) {
+                                        console.error('構造生成エラー:', error);
+                                        // エラー時もステップ2に移動
+                                        const url = new URL(window.location);
+                                        url.searchParams.set('step', '2');
+                                        window.location.href = url.toString();
+                                    }
                                 });
                                 console.log('✅ 緊急修復: 「構成案を作成」ボタンを修復');
                             }
@@ -1665,7 +1683,7 @@
             // 構成案生成ボタン
             const generateBtn = document.getElementById('generate-structure-btn');
             if (generateBtn) {
-                generateBtn.onclick = (e) => {
+                generateBtn.onclick = async (e) => {
                     e.preventDefault();
                     console.log('🔘 手動修復: 「構成案を作成」ボタンがクリックされました');
                     const themeInput = document.getElementById('theme-input');
@@ -1676,9 +1694,28 @@
                         return;
                     }
 
-                    const url = new URL(window.location);
-                    url.searchParams.set('step', '2');
-                    window.location.href = url.toString();
+                    // ボタンを無効化
+                    generateBtn.disabled = true;
+                    generateBtn.textContent = '生成中...';
+
+                    try {
+                        // 実際のアプリがある場合は構造生成を実行
+                        if (window.app && window.app.wizardController) {
+                            await window.app.wizardController.generateStructure();
+                        } else {
+                            // フォールバック: 2秒後にステップ2に移動
+                            await new Promise(resolve => setTimeout(resolve, 2000));
+                            const url = new URL(window.location);
+                            url.searchParams.set('step', '2');
+                            window.location.href = url.toString();
+                        }
+                    } catch (error) {
+                        console.error('構造生成エラー:', error);
+                        // エラー時もステップ2に移動
+                        const url = new URL(window.location);
+                        url.searchParams.set('step', '2');
+                        window.location.href = url.toString();
+                    }
                 };
                 console.log('✅ 「構成案を作成」ボタンを手動修復');
             }
