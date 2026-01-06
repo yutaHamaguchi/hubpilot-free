@@ -48,7 +48,7 @@ function testIntegrationTestExecution() {
                 const headings = {};
                 pages.forEach(page => {
                     headings[page.id] = [
-h1', text: '概要', level: 2 },
+                        { id: 'h1', text: '概要', level: 1 },
                         { id: 'h2', text: '詳細', level: 2 }
                     ];
                 });

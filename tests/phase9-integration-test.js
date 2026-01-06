@@ -39,7 +39,7 @@ async function runPhase9IntegrationTest() {
         console.log('\n📊 ========== Phase 9 統合テスト結果 ==========');
         console.log(`コンポーネント統合: ${testResults.componentIntegration.success ? '✅ 成功' : '❌ 失敗'}`);
         console.log(`後方互換性: ${testResults.backwardCompatibility.success ? '✅ 成功' : '❌ 失敗'}`);
-        console.log ${testResults.comprehensiveTest.success ? '✅ 成功' : '❌ 失敗'}`);
+        console.log(`包括的テスト: ${testResults.comprehensiveTest.success ? '✅ 成功' : '❌ 失敗'}`);
         console.log(`パフォーマンス検証: ${testResults.performanceValidation.success ? '✅ 成功' : '❌ 失敗'}`);
 
         if (allSuccess) {

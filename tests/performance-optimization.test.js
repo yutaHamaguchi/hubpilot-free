@@ -41,7 +41,7 @@ function testPerformanceConstraints() {
     const property = (testData) => {
         try {
             // PerformanceMonitorとResourceManagerが利用可能かチェック
-window.performanceMonitor || !window.resourceManager) {
+            if (!window.performanceMonitor || !window.resourceManager) {
                 return {
                     success: false,
                     error: 'PerformanceMonitorまたはResourceManagerが初期化されていません'

@@ -433,7 +433,7 @@ error: '構造生成に失敗しました'
             testResults.push({
                 test: 'memoryUsage',
                 success: memoryIncrease < 50, // 50MB以内の増加
-                initialMemoritialMemory.toFixed(2) + 'MB',
+                initialMemory: initialMemory.toFixed(2) + 'MB',
                 finalMemory: finalMemory.toFixed(2) + 'MB',
                 memoryIncrease: memoryIncrease.toFixed(2) + 'MB'
             });

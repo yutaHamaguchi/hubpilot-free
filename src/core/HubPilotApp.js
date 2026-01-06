@@ -1294,10 +1294,7 @@ class HubPilotApp {
     saveData(data) {
         this.wizardController.saveData(data);
     }
-}
 
-// グローバルに公開
-window.HubPilotApp = HubPilotApp;
     /**
      * 開発者テストを実行
      */
@@ -1420,3 +1417,7 @@ window.HubPilotApp = HubPilotApp;
 
         return total;
     }
+}
+
+// グローバルに公開
+window.HubPilotApp = HubPilotApp;
