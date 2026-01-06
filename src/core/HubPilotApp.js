@@ -32,6 +32,17 @@ class HubPilotApp {
         this.wizardController = new WizardController();
         this.contentGenerator = new ContentGenerator();
 
+        // Phase 7-8で追加された新しいコンポーネント
+        this.performanceMonitor = window.performanceMonitor || null;
+        this.resourceManager = window.resourceManager || null;
+        this.dataValidator = window.dataValidator || null;
+        this.logger = window.logger || null;
+        this.progressManager = window.progressManager || null;
+
+        // テストスイート
+        this.developerTestSuite = new DeveloperTestSuite();
+        this.integrationTestSuite = new IntegrationTestSuite();
+
         // 依存関係の注入
         this.setupDependencies();
 
@@ -66,6 +77,26 @@ class HubPilotApp {
             window.supabaseIntegration, // 既存のSupabase統合
             this.notificationService
         );
+
+        // 新しいコンポーネントの依存関係設定
+        if (this.developerTestSuite) {
+            this.developerTestSuite.setDependencies(
+                this.contentGenerator,
+                window.supabaseIntegration,
+                this.progressManager,
+                this.errorHandler
+            );
+        }
+
+        if (this.integrationTestSuite) {
+            this.integrationTestSuite.setDependencies(
+                this,
+                this.contentGenerator,
+                window.supabaseIntegration,
+                this.progressManager,
+                this.errorHandler
+            );
+        }
     }
 
     /**
@@ -735,6 +766,15 @@ class HubPilotApp {
             test: () => this.runTests(),
             quality: () => this.runQualityCheck(),
 
+            // 新しいテスト機能
+            testDeveloper: () => this.runDeveloperTests(),
+            testIntegration: () => this.runIntegrationTests(),
+            testAll: () => this.runAllTests(),
+
+            // パフォーマンス監視
+            performance: () => this.performanceMonitor ? this.performanceMonitor.showPerformanceReport() : 'PerformanceMonitor未利用',
+            resources: () => this.resourceManager ? this.resourceManager.logResourceStats() : 'ResourceManager未利用',
+
             // ユーティリティ
             export: () => this.exportData(),
             import: (data) => this.importData(data),
@@ -747,7 +787,11 @@ class HubPilotApp {
             _app: this,
             _wizard: this.wizardController,
             _generator: this.contentGenerator,
-            _ui: this.uiRenderer
+            _ui: this.uiRenderer,
+            _performance: this.performanceMonitor,
+            _resources: this.resourceManager,
+            _testDev: this.developerTestSuite,
+            _testIntegration: this.integrationTestSuite
         };
 
         // ボタン修復関数をグローバルに公開
@@ -1123,21 +1167,108 @@ class HubPilotApp {
     }
 
     /**
-     * 総文字数を計算
+     * 開発者テストを実行
      */
-    calculateTotalWordCount() {
-        const data = this.wizardController.data;
-        let total = 0;
+    async runDeveloperTests() {
+        console.log('🚀 開発者テストスイート実行開始');
 
-        if (data.pillarPage && data.pillarPage.content) {
-            total += data.pillarPage.content.length;
+        if (!this.developerTestSuite) {
+            console.error('❌ DeveloperTestSuiteが利用できません');
+            return { success: false, error: 'DeveloperTestSuiteが初期化されていません' };
         }
 
-        if (data.articles) {
-            total += data.articles.reduce((sum, article) => sum + (article.wordCount || 0), 0);
+        try {
+            const result = await this.developerTestSuite.runAllTests();
+            console.log('✅ 開発者テストスイート完了');
+            return result;
+        } catch (error) {
+            console.error('❌ 開発者テスト実行中にエラー:', error);
+            return { success: false, error: error.message };
+        }
+    }
+
+    /**
+     * 統合テストを実行
+     */
+    async runIntegrationTests() {
+        console.log('🚀 統合テストスイート実行開始');
+
+        if (!this.integrationTestSuite) {
+            console.error('❌ IntegrationTestSuiteが利用できません');
+            return { success: false, error: 'IntegrationTestSuiteが初期化されていません' };
         }
 
-        return total;
+        try {
+            const result = await this.integrationTestSuite.runAllIntegrationTests();
+            console.log('✅ 統合テストスイート完了');
+            return result;
+        } catch (error) {
+            console.error('❌ 統合テスト実行中にエラー:', error);
+            return { success: false, error: error.message };
+        }
+    }
+
+    /**
+     * 全テストを実行
+     */
+    async runAllTests() {
+        console.log('🚀 ========== 全テストスイート実行開始 ==========');
+
+        const startTime = performance.now();
+        const results = {
+            basic: null,
+            developer: null,
+            integration: null
+        };
+
+        try {
+            // 1. 基本テスト
+            console.log('\n1️⃣ 基本テスト実行');
+            results.basic = this.runTests();
+
+            // 2. 開発者テスト
+            console.log('\n2️⃣ 開発者テスト実行');
+            results.developer = await this.runDeveloperTests();
+
+            // 3. 統合テスト
+            console.log('\n3️⃣ 統合テスト実行');
+            results.integration = await this.runIntegrationTests();
+
+            const endTime = performance.now();
+            const totalDuration = endTime - startTime;
+
+            // 結果サマリー
+            console.log('\n📊 ========== 全テスト結果サマリー ==========');
+            console.log(`総実行時間: ${totalDuration.toFixed(2)}ms`);
+            console.log(`基本テスト: ${results.basic.passed}/${results.basic.total}件成功`);
+            console.log(`開発者テスト: ${results.developer.success ? '✅ 成功' : '❌ 失敗'}`);
+            console.log(`統合テスト: ${results.integration.success ? '✅ 成功' : '❌ 失敗'}`);
+
+            const allSuccess = results.basic.passed === results.basic.total &&
+                             results.developer.success &&
+                             results.integration.success;
+
+            if (allSuccess) {
+                console.log('\n🎉 すべてのテストが成功しました！');
+            } else {
+                console.log('\n⚠️ 一部のテストが失敗しました。詳細を確認してください。');
+            }
+            console.log('===============================================');
+
+            return {
+                success: allSuccess,
+                duration: totalDuration,
+                results
+            };
+
+        } catch (error) {
+            console.error('❌ 全テスト実行中にエラーが発生:', error);
+            return {
+                success: false,
+                error: error.message,
+                results
+            };
+        }
     }
 
     /**
@@ -1167,3 +1298,125 @@ class HubPilotApp {
 
 // グローバルに公開
 window.HubPilotApp = HubPilotApp;
+    /**
+     * 開発者テストを実行
+     */
+    async runDeveloperTests() {
+        console.log('🚀 開発者テストスイート実行開始');
+
+        if (!this.developerTestSuite) {
+            console.error('❌ DeveloperTestSuiteが利用できません');
+            return { success: false, error: 'DeveloperTestSuiteが初期化されていません' };
+        }
+
+        try {
+            const result = await this.developerTestSuite.runAllTests();
+            console.log('✅ 開発者テストスイート完了');
+            return result;
+        } catch (error) {
+            console.error('❌ 開発者テスト実行中にエラー:', error);
+            return { success: false, error: error.message };
+        }
+    }
+
+    /**
+     * 統合テストを実行
+     */
+    async runIntegrationTests() {
+        console.log('🚀 統合テストスイート実行開始');
+
+        if (!this.integrationTestSuite) {
+            console.error('❌ IntegrationTestSuiteが利用できません');
+            return { success: false, error: 'IntegrationTestSuiteが初期化されていません' };
+        }
+
+        try {
+            const result = await this.integrationTestSuite.runAllIntegrationTests();
+            console.log('✅ 統合テストスイート完了');
+            return result;
+        } catch (error) {
+            console.error('❌ 統合テスト実行中にエラー:', error);
+            return { success: false, error: error.message };
+        }
+    }
+
+    /**
+     * 全テストを実行
+     */
+    async runAllTests() {
+        console.log('🚀 ========== 全テストスイート実行開始 ==========');
+
+        const startTime = performance.now();
+        const results = {
+            basic: null,
+            developer: null,
+            integration: null
+        };
+
+        try {
+            // 1. 基本テスト
+            console.log('\n1️⃣ 基本テスト実行');
+            results.basic = this.runTests();
+
+            // 2. 開発者テスト
+            console.log('\n2️⃣ 開発者テスト実行');
+            results.developer = await this.runDeveloperTests();
+
+            // 3. 統合テスト
+            console.log('\n3️⃣ 統合テスト実行');
+            results.integration = await this.runIntegrationTests();
+
+            const endTime = performance.now();
+            const totalDuration = endTime - startTime;
+
+            // 結果サマリー
+            console.log('\n📊 ========== 全テスト結果サマリー ==========');
+            console.log(`総実行時間: ${totalDuration.toFixed(2)}ms`);
+            console.log(`基本テスト: ${results.basic.passed}/${results.basic.total}件成功`);
+            console.log(`開発者テスト: ${results.developer.success ? '✅ 成功' : '❌ 失敗'}`);
+            console.log(`統合テスト: ${results.integration.success ? '✅ 成功' : '❌ 失敗'}`);
+
+            const allSuccess = results.basic.passed === results.basic.total &&
+                             results.developer.success &&
+                             results.integration.success;
+
+            if (allSuccess) {
+                console.log('\n🎉 すべてのテストが成功しました！');
+            } else {
+                console.log('\n⚠️ 一部のテストが失敗しました。詳細を確認してください。');
+            }
+            console.log('===============================================');
+
+            return {
+                success: allSuccess,
+                duration: totalDuration,
+                results
+            };
+
+        } catch (error) {
+            console.error('❌ 全テスト実行中にエラーが発生:', error);
+            return {
+                success: false,
+                error: error.message,
+                results
+            };
+        }
+    }
+
+    /**
+     * 総文字数を計算
+     */
+    calculateTotalWordCount() {
+        const data = this.wizardController.data;
+        let total = 0;
+
+        if (data.pillarPage && data.pillarPage.content) {
+            total += data.pillarPage.content.length;
+        }
+
+        if (data.articles) {
+            total += data.articles.reduce((sum, article) => sum + (article.wordCount || 0), 0);
+        }
+
+        return total;
+    }

@@ -7,15 +7,19 @@ class ContentGenerator {
         this.generationState = null;
         this.supabaseIntegration = null;
         this.notificationService = null;
+        this.progressManager = null; // 進捗管理機能を追加
+        this.performanceMonitor = window.performanceMonitor; // パフォーマンス監視
+        this.resourceManager = window.resourceManager; // リソース管理
     }
 
     /**
      * 依存関係を設定
      */
-    setDependencies(generationState, supabaseIntegration, notificationService) {
+    setDependencies(generationState, supabaseIntegration, notificationService, progressManager = null) {
         this.generationState = generationState;
         this.supabaseIntegration = supabaseIntegration;
         this.notificationService = notificationService;
+        this.progressManager = progressManager; // ProgressManagerを設定
     }
 
     /**
@@ -26,14 +30,17 @@ class ContentGenerator {
             throw new Error('テーマが指定されていません');
         }
 
-        this.notificationService?.show('構成案を生成中...', 'info');
+        // パフォーマンス監視付きで実行
+        return await this.performanceMonitor.trackOperation('構造生成', async () => {
+            this.notificationService?.show('構成案を生成中...', 'info');
 
-        // Supabase統合が利用可能な場合は実際のAI生成を使用
-        if (this.supabaseIntegration && await this.supabaseIntegration.isConfigured()) {
-            return await this.generateStructureWithAI(theme);
-        } else {
-            return await this.generateStructureMock(theme);
-        }
+            // Supabase統合が利用可能な場合は実際のAI生成を使用
+            if (this.supabaseIntegration && await this.supabaseIntegration.isConfigured()) {
+                return await this.generateStructureWithAI(theme);
+            } else {
+                return await this.generateStructureMock(theme);
+            }
+        }, { timeout: 45000 }); // 45秒タイムアウト
     }
 
     /**
@@ -182,58 +189,133 @@ class ContentGenerator {
             throw new Error('生成対象のページが指定されていません');
         }
 
-        this.isGenerating = true;
+        // リソース管理に操作を登録
+        const operationId = `article-generation-${Date.now()}`;
+        this.resourceManager.registerOperation(operationId, {
+            type: 'article-generation',
+            pageCount: pages.length,
+            abortController: new AbortController()
+        });
 
-        if (this.generationState) {
-            this.generationState.start(pages.length);
-        }
+        // パフォーマンス監視付きで実行
+        return await this.performanceMonitor.trackOperation('記事生成', async () => {
+            this.isGenerating = true;
 
-        try {
+            // 進捗管理開始
+            if (this.progressManager) {
+                this.progressManager.start(
+                    pages.length,
+                    progressCallback, // 進捗更新コールバック
+                    (completionData) => { // 完了コールバック
+                        console.log('記事生成完了:', completionData);
+                        this.notificationService?.show('すべての記事の生成が完了しました', 'success');
+                    },
+                    (errorData) => { // エラーコールバック
+                        console.error('進捗管理エラー:', errorData);
+                        this.notificationService?.show(`進捗管理エラー: ${errorData.message}`, 'error');
+                    }
+                );
+            }
+
+            // 従来の生成状態管理も維持（後方互換性）
+            if (this.generationState) {
+                this.generationState.start(pages.length);
+            }
+
             const articles = [];
 
-            for (let i = 0; i < pages.length; i++) {
-                const page = pages[i];
+            try {
+                for (let i = 0; i < pages.length; i++) {
+                    const page = pages[i];
 
-                // 進捗コールバック
-                if (progressCallback) {
-                    progressCallback({
-                        current: i + 1,
-                        total: pages.length,
-                        currentPage: page.title,
-                        progress: ((i + 1) / pages.length) * 100
-                    });
+                    // 進捗管理更新（開始時）
+                    if (this.progressManager) {
+                        this.progressManager.updateProgress(i, page.title);
+                    }
+
+                    // 従来の進捗コールバック実行（後方互換性）
+                    this.executeProgressCallback(progressCallback, i + 1, pages.length, page.title);
+
+                    // 記事生成（フォールバック付き）
+                    const article = await this.generateSingleArticleWithFallback(page);
+                    articles.push(article);
+
+                    // 生成状態更新（従来の方式）
+                    if (this.generationState) {
+                        this.generationState.updateProgress(i + 1, pages.length);
+                    }
+
+                    // 進捗管理更新（完了後）
+                    if (this.progressManager) {
+                        this.progressManager.updateProgress(i + 1, '');
+                    }
                 }
 
-                // Supabase統合が利用可能な場合は実際のAI生成を使用
-                let article;
-                if (this.supabaseIntegration && await this.supabaseIntegration.isConfigured()) {
-                    article = await this.generateArticleWithAI(page);
-                } else {
-                    article = await this.generateArticleMock(page);
-                }
-
-                articles.push(article);
-
-                // 生成状態の更新
+                // 完了処理
                 if (this.generationState) {
-                    this.generationState.updateProgress(i + 1, pages.length);
+                    this.generationState.complete();
                 }
+
+                // 進捗管理は自動的に完了する（updateProgressで100%になったとき）
+                if (!this.progressManager) {
+                    this.notificationService?.show('すべての記事の生成が完了しました', 'success');
+                }
+
+                return articles;
+
+            } catch (error) {
+                // エラー処理
+                if (this.generationState) {
+                    this.generationState.error(error.message);
+                }
+
+                if (this.progressManager) {
+                    this.progressManager.handleError('記事生成中にエラーが発生しました');
+                }
+
+                console.error('記事生成プロセスエラー:', error);
+                throw error;
+            } finally {
+                this.isGenerating = false;
+                // リソース管理から操作を解放
+                this.resourceManager.unregisterOperation(operationId);
             }
+        }, { timeout: 300000 }); // 5分タイムアウト
+    }
 
-            if (this.generationState) {
-                this.generationState.complete();
+    /**
+     * 単一記事生成（フォールバック付き）
+     */
+    async generateSingleArticleWithFallback(page) {
+        try {
+            // AI生成を試行
+            if (this.supabaseIntegration && await this.supabaseIntegration.isConfigured()) {
+                return await this.generateArticleWithAI(page);
+            } else {
+                console.log('Supabase未設定のため、モック生成を使用:', page.title);
+                return await this.generateArticleMock(page);
             }
-
-            this.notificationService?.show('すべての記事の生成が完了しました', 'success');
-            return articles;
-
         } catch (error) {
-            if (this.generationState) {
-                this.generationState.error(error.message);
+            console.warn(`AI生成失敗、モック生成にフォールバック: ${page.title}`, error);
+            return await this.generateArticleMock(page);
+        }
+    }
+
+    /**
+     * 進捗コールバック実行
+     */
+    executeProgressCallback(callback, current, total, currentPage) {
+        if (typeof callback === 'function') {
+            try {
+                callback({
+                    current,
+                    total,
+                    currentPage,
+                    progress: (current / total) * 100
+                });
+            } catch (error) {
+                console.error('進捗コールバックエラー:', error);
             }
-            throw error;
-        } finally {
-            this.isGenerating = false;
         }
     }
 

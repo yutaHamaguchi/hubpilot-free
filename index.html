@@ -1208,6 +1208,8 @@
     <!-- コア層（基本クラス） -->
     <script src="./src/core/DataStore.js"></script>
     <script src="./src/core/GenerationState.js"></script>
+    <script src="./src/core/PerformanceMonitor.js"></script>
+    <script src="./src/core/ResourceManager.js"></script>
 
     <!-- UI層 -->
     <script src="./src/ui/TemplateEngine.js"></script>
@@ -1218,6 +1220,8 @@
     <script src="./src/core/WizardController.js"></script>
     <script src="./src/core/HubPilotApp.js"></script>
     <script src="./src/core/HubPilotApp-simple.js"></script>
+    <script src="./src/core/DeveloperTestSuite.js"></script>
+    <script src="./src/core/IntegrationTestSuite.js"></script>
 
     <!-- Supabase設定 -->
     <script src="./supabase-config.js"></script>
@@ -1965,6 +1969,13 @@
     <!-- 画像生成機能 -->
     <script src="./image-generation.js"></script>
 
+    <!-- パフォーマンステスト -->
+    <script src="./tests/performance-optimization.test.js"></script>
+    <script src="./tests/resource-management.test.js"></script>
+    <script src="./tests/developer-test-suite.test.js"></script>
+    <script src="./tests/integration-test-execution.test.js"></script>
+    <script src="./tests/phase9-integration-test.js"></script>
+
     <!-- メインアプリケーション初期化 -->
     <script>
         // 認証なしでメインアプリを直接初期化
@@ -1997,6 +2008,87 @@
                 }
             }, 100);
         });
+
+        // 開発者向けコンソールコマンドを定義
+        setTimeout(() => {
+            // DeveloperTestSuiteコマンド
+            if (window.DeveloperTestSuite) {
+                const developerTestSuite = new window.DeveloperTestSuite();
+
+                // 依存関係を設定
+                if (window.app) {
+                    developerTestSuite.setDependencies(
+                        window.app.contentGenerator,
+                        window.app.supabaseIntegration,
+                        window.app.progressManager,
+                        window.app.errorHandler
+                    );
+                }
+
+                // グローバルコマンドを定義
+                window.runAllDeveloperTests = () => developerTestSuite.runAllTests();
+                window.runArticleGenerationTest = () => developerTestSuite.runArticleGenerationTest();
+                window.runApiConnectionTest = () => developerTestSuite.runApiConnectionTest();
+                window.runMockGenerationTest = () => developerTestSuite.runMockGenerationTest();
+                window.runProgressManagementTest = () => developerTestSuite.runProgressManagementTest();
+                window.runErrorHandlingTest = () => developerTestSuite.runErrorHandlingTest();
+            }
+
+            // IntegrationTestSuiteコマンド
+            if (window.IntegrationTestSuite) {
+                const integrationTestSuite = new window.IntegrationTestSuite();
+
+                // 依存関係を設定
+                if (window.app) {
+                    integrationTestSuite.setDependencies(
+                        window.app,
+                        window.app.contentGenerator,
+                        window.app.supabaseIntegration,
+                        window.app.progressManager,
+                        window.app.errorHandler
+                    );
+                }
+
+                // グローバルコマンドを定義
+                window.runAllIntegrationTests = () => integrationTestSuite.runAllIntegrationTests();
+                window.runEndToEndTest = () => integrationTestSuite.runEndToEndTest();
+                window.runErrorScenarioTest = () => integrationTestSuite.runErrorScenarioTest();
+                window.runPerformanceTest = () => integrationTestSuite.runPerformanceTest();
+                window.runComponentIntegrationTest = () => integrationTestSuite.runComponentIntegrationTest();
+            }
+
+            // ヘルプコマンド
+            window.showTestCommands = () => {
+                console.log('🧪 ========== 利用可能なテストコマンド ==========');
+                console.log('');
+                console.log('📝 開発者テスト:');
+                console.log('  runAllDeveloperTests()        - 全開発者テストを実行');
+                console.log('  runArticleGenerationTest()    - 記事生成テストを実行');
+                console.log('  runApiConnectionTest()        - API接続テストを実行');
+                console.log('  runMockGenerationTest()       - モック生成テストを実行');
+                console.log('  runProgressManagementTest()   - 進捗管理テストを実行');
+                console.log('  runErrorHandlingTest()        - エラーハンドリングテストを実行');
+                console.log('');
+                console.log('🔗 統合テスト:');
+                console.log('  runAllIntegrationTests()      - 全統合テストを実行');
+                console.log('  runEndToEndTest()             - エンドツーエンドテストを実行');
+                console.log('  runErrorScenarioTest()        - エラーシナリオテストを実行');
+                console.log('  runPerformanceTest()          - パフォーマンステストを実行');
+                console.log('  runComponentIntegrationTest() - コンポーネント統合テストを実行');
+                console.log('');
+                console.log('📊 パフォーマンス監視:');
+                console.log('  performanceMonitor.showPerformanceReport() - パフォーマンスレポート表示');
+                console.log('  resourceManager.logResourceStats()         - リソース統計表示');
+                console.log('');
+                console.log('🎯 その他:');
+                console.log('  showTestCommands()            - このヘルプを表示');
+                console.log('===============================================');
+            };
+
+            console.log('✅ 開発者向けテストコマンドが利用可能になりました');
+            console.log('💡 showTestCommands() でコマンド一覧を表示できます');
+
+        }, 2000);
     </script>
 
     <!-- WordPress統合UI JavaScript -->
